@@ -1,10 +1,4 @@
-//
-// Created by Tieran on 24/11/2019.
-//
-
-#ifndef IGNITERENDERER_VULKANRENDERAPI_H
-#define IGNITERENDERER_VULKANRENDERAPI_H
-
+#pragma once
 #include "ignite/RendererAPI.h"
 
 namespace Ignite {
@@ -22,5 +16,3 @@ namespace Ignite {
         void Clear() override;
     };
 }
-
-#endif //IGNITERENDERER_VULKANRENDERAPI_H

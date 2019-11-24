@@ -1,6 +1,4 @@
-#ifndef IGNITERENDERER_RENDERERAPI_H
-#define IGNITERENDERER_RENDERERAPI_H
-
+#pragma once
 #include <cstdint>
 #include <memory>
 #include <glm/glm.hpp>
@@ -31,4 +29,3 @@ namespace Ignite {
         static API s_API;
     };
 }
-#endif //IGNITERENDERER_RENDERERAPI_H

@@ -1,10 +1,4 @@
-//
-// Created by Tieran on 24/11/2019.
-//
-
-#ifndef IGNITERENDERER_LOG_H
-#define IGNITERENDERER_LOG_H
-
+#pragma once
 #include <memory>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -32,5 +26,3 @@ namespace Ignite
 #define LOG_CORE_FATAL(...) ::Ignite::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
 #define CORE_ASSERT(x, ...) { if(!(x)) { LOG_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-
-#endif //IGNITERENDERER_LOG_H
