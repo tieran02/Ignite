@@ -1,16 +1,18 @@
 #pragma once
-#include <cstdint>
-#include <memory>
+#include "igpch.h"
 #include <glm/glm.hpp>
+//#include "GraphicsContext.h"
 
 namespace Ignite {
-    class RendererAPI {
+    class Renderer {
     public:
         enum class API {
             NONE,
             VULKAN
         };
     public:
+		virtual ~Renderer() = default;
+
         virtual void Init() = 0;
 
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
@@ -23,9 +25,10 @@ namespace Ignite {
 
         static API GetAPI() { return s_API; }
 
-        static std::unique_ptr<RendererAPI> Create();
+        static std::unique_ptr<Renderer> Create();
 
     private:
         static API s_API;
+        //std::unique_ptr<GraphicsContext> m_graphicsContext;
     };
 }

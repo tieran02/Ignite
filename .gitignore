@@ -533,3 +533,12 @@ MigrationBackup/
 # End of https://www.gitignore.io/api/c++,cmake,linux,clion,windows,visualstudio
 
 .idea/
+
+bin-int/
+bin/
+
+*.vcxproj
+
+*.filters
+
+Ignite.sln

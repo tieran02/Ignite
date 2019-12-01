@@ -1,6 +1,6 @@
 [submodule "IgniteRenderer/vendor/spdlog"]
-	path = IgniteRenderer/vendor/spdlog
+	path = ./vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
 [submodule "IgniteRenderer/vendor/glm"]
-	path = IgniteRenderer/vendor/glm
+	path = ./vendor/glm
 	url = https://github.com/g-truc/glm.git

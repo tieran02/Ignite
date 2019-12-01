@@ -1,12 +1,12 @@
 #pragma once
-#include "ignite/RendererAPI.h"
+#include "Ignite/Renderer.h"
 
 namespace Ignite {
-    class VulkanRenderAPI : public RendererAPI {
+    class VulkanRenderer : public Renderer {
     public:
-        VulkanRenderAPI();
-        ~VulkanRenderAPI();
-        
+        VulkanRenderer();
+        ~VulkanRenderer();
+
         void Init() override;
 
         void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
