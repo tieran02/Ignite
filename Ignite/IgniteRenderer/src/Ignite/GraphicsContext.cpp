@@ -2,6 +2,7 @@
 #include <Ignite/Renderer.h>
 #include "Ignite/GraphicsContext.h"
 #include "Ignite/Log.h"
+#include <platform\Vulkan\VulkanContext.h>
 
 namespace Ignite
 {
@@ -10,7 +11,7 @@ namespace Ignite
         switch (Renderer::GetAPI())
         {
             case Renderer::API::NONE:    CORE_ASSERT(false, "Renderer::NONE is currently not supported!"); return nullptr;
-            case Renderer::API::VULKAN:  return nullptr;
+			case Renderer::API::VULKAN:  return std::unique_ptr<VulkanContext>(new VulkanContext);
         }
             return std::unique_ptr<GraphicsContext>();
     }

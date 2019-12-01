@@ -3,11 +3,14 @@
 
 namespace Ignite {
     class VulkanRenderer : public Renderer {
-    public:
-        VulkanRenderer();
-        ~VulkanRenderer();
+	friend class Renderer;
+    protected:
+		VulkanRenderer();
 
         void Init() override;
+		void Cleanup() override;
+	public:
+		~VulkanRenderer() override;
 
         void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 

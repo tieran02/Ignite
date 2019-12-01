@@ -1,19 +1,23 @@
 #pragma once
 #include "igpch.h"
+#include "Ignite/GraphicsContext.h"
+
 #include <glm/glm.hpp>
-//#include "GraphicsContext.h"
 
 namespace Ignite {
-    class Renderer {
+    class Renderer : NonCopyable
+	{
     public:
         enum class API {
             NONE,
             VULKAN
         };
+	protected:
+		Renderer();
+		virtual void Init() = 0;
+		virtual void Cleanup() = 0;
     public:
-		virtual ~Renderer() = default;
-
-        virtual void Init() = 0;
+		virtual ~Renderer() {};
 
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
@@ -27,8 +31,10 @@ namespace Ignite {
 
         static std::unique_ptr<Renderer> Create();
 
+		GraphicsContext& GetGraphicsContext();
+
     private:
         static API s_API;
-        //std::unique_ptr<GraphicsContext> m_graphicsContext;
+		std::unique_ptr<GraphicsContext> m_graphicsContext;
     };
 }

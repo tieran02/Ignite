@@ -6,11 +6,14 @@ namespace Ignite
 {
     class VulkanContext : public GraphicsContext
     {
-    public:
+	friend class GraphicsContext;
+    protected:
         VulkanContext();
-        ~VulkanContext();
 
-        void Init() override;
+		void Init() override;
+		void Cleanup() override;
+	public:
+        ~VulkanContext();
 
         void SwapBuffers() override;
     };

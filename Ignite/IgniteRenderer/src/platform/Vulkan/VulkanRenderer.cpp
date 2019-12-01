@@ -3,20 +3,24 @@
 #include "platform/Vulkan/VulkanRenderer.h"
 #include "platform/Vulkan/VulkanContext.h"
 
-Ignite::VulkanRenderer::VulkanRenderer()
+Ignite::VulkanRenderer::VulkanRenderer() : Renderer()
 {
-    LOG_CORE_INFO("Using VulkanRenderer");
-    Init();
-}
-
-Ignite::VulkanRenderer::~VulkanRenderer()
-{
-
+	Init();
 }
 
 void Ignite::VulkanRenderer::Init()
 {
     LOG_CORE_INFO("Initialising VulkanRenderer");
+}
+
+void Ignite::VulkanRenderer::Cleanup()
+{
+	LOG_CORE_INFO("Cleaning VulkanRenderer");
+}
+
+Ignite::VulkanRenderer::~VulkanRenderer()
+{
+	Cleanup();
 }
 
 void Ignite::VulkanRenderer::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
