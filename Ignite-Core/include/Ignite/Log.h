@@ -2,6 +2,7 @@
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
+#include "NonCopyable.h"
 
 namespace Ignite
 {
@@ -15,7 +16,7 @@ namespace Ignite
     };
 }
 
-//Renderer log macros
+//IRenderer log macros
 #define LOG_CORE_TRACE(...) ::Ignite::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define LOG_CORE_INFO(...) ::Ignite::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define LOG_CORE_WARNING(...) ::Ignite::Log::GetCoreLogger()->warning(__VA_ARGS__)

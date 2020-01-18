@@ -3,7 +3,7 @@
 #include "platform/Vulkan/VulkanRenderer.h"
 #include "platform/Vulkan/VulkanContext.h"
 
-Ignite::VulkanRenderer::VulkanRenderer() : Renderer()
+Ignite::VulkanRenderer::VulkanRenderer() : IRenderer()
 {
 	Init();
 }

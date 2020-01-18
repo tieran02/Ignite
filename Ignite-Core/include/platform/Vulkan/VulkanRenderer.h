@@ -1,9 +1,9 @@
 #pragma once
-#include "Ignite/Renderer.h"
+#include "Ignite/IRenderer.h"
 
 namespace Ignite {
-    class VulkanRenderer : public Renderer {
-	friend class Renderer;
+    class VulkanRenderer : public IRenderer {
+	friend class IRenderer;
     protected:
 		VulkanRenderer();
 

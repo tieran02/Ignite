@@ -542,3 +542,5 @@ bin/
 *.filters
 
 Ignite.sln
+
+*.sln

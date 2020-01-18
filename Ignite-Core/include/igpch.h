@@ -1,6 +1,5 @@
 #pragma once
 
-#include "NonCopyable.h"
 #include <iostream>
 #include <memory>
 #include <utility>

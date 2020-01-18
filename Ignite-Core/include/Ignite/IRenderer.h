@@ -1,11 +1,11 @@
 #pragma once
 #include "igpch.h"
-#include "Ignite/GraphicsContext.h"
+#include "Ignite/IGraphicsContext.h"
 
 #include <glm/glm.hpp>
 
 namespace Ignite {
-    class Renderer : NonCopyable
+    class IRenderer : NonCopyable
 	{
     public:
         enum class API {
@@ -13,11 +13,11 @@ namespace Ignite {
             VULKAN
         };
 	protected:
-		Renderer();
+		IRenderer();
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
     public:
-		virtual ~Renderer() {};
+		virtual ~IRenderer() {};
 
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
@@ -29,12 +29,12 @@ namespace Ignite {
 
         static API GetAPI() { return s_API; }
 
-        static std::unique_ptr<Renderer> Create();
+        static std::unique_ptr<IRenderer> Create();
 
-		GraphicsContext& GetGraphicsContext();
+		IGraphicsContext& GetGraphicsContext();
 
     private:
         static API s_API;
-		std::unique_ptr<GraphicsContext> m_graphicsContext;
+		std::unique_ptr<IGraphicsContext> m_graphicsContext;
     };
 }
