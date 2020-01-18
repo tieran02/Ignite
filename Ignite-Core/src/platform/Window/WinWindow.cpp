@@ -15,8 +15,10 @@ Ignite::WinWindow::~WinWindow()
 void Ignite::WinWindow::Init()
 {
 	LOG_CORE_INFO("Creating Windows Window");
-
+	
+	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	m_glfwWindow = glfwCreateWindow(1280, 720, "Ignite Engine", nullptr, nullptr);
 	
 	m_renderer = IRenderer::Create();
