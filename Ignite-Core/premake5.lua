@@ -47,7 +47,7 @@ project "Ignite-Core"
 		defines
 		{
 			"IGCORE_PLATFORM_WINDOWS",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_VULKAN"
 		}
 
 	filter "configurations:Debug"

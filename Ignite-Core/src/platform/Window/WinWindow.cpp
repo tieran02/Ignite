@@ -4,12 +4,12 @@
 
 Ignite::WinWindow::WinWindow() : IWindow()
 {
-	Init();
+	WinWindow::Init();
 }
 
 Ignite::WinWindow::~WinWindow()
 {
-	Cleanup();
+	WinWindow::Cleanup();
 }
 
 void Ignite::WinWindow::Init()
