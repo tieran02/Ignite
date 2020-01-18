@@ -23,7 +23,7 @@ namespace Ignite
 #define LOG_CORE_ERROR(...) ::Ignite::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define LOG_CORE_FATAL(...) ::Ignite::Log::GetCoreLogger()->critical(__VA_ARGS__)
 
-#ifdef IG_ENABLE_ASSERTS
+#ifdef IGCORE_DEBUG
 	#define CORE_ASSERT(x, ...) { if(!(x)) { LOG_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }	
 #else
 	#define CORE_ASSERT(x, ...)
