@@ -10,17 +10,17 @@ namespace Ignite {
     IRenderer::API IRenderer::s_API = IRenderer::API::VULKAN;
 
 
-	IRenderer::IRenderer()
+	IRenderer::IRenderer(IWindow* window)
 	{
-		m_graphicsContext = IGraphicsContext::Create();
+		m_graphicsContext = IGraphicsContext::Create(window);
 	}
 
-	std::unique_ptr<IRenderer> IRenderer::Create()
+	std::unique_ptr<IRenderer> IRenderer::Create(IWindow* window)
     {
         switch (s_API)
         {
             case IRenderer::API::NONE:    CORE_ASSERT(false, "IRenderer::NONE is currently not supported!"); return nullptr;
-            case IRenderer::API::VULKAN:  return std::unique_ptr<VulkanRenderer>(new VulkanRenderer);
+            case IRenderer::API::VULKAN:  return std::unique_ptr<VulkanRenderer>(new VulkanRenderer(window));
         }
         return nullptr;
     }

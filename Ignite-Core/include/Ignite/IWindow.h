@@ -14,6 +14,7 @@ namespace Ignite
 		virtual ~IWindow() {};
 
 		static std::unique_ptr<IWindow> Create();
+		virtual void* GetHandle() = 0;
 	protected:
 		std::unique_ptr<IRenderer> m_renderer;
 	};

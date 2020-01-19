@@ -6,12 +6,12 @@
 
 namespace Ignite
 {
-    std::unique_ptr<IGraphicsContext> Ignite::IGraphicsContext::Create()
+    std::unique_ptr<IGraphicsContext> Ignite::IGraphicsContext::Create(IWindow* window)
     {
         switch (IRenderer::GetAPI())
         {
             case IRenderer::API::NONE:    CORE_ASSERT(false, "IRenderer::NONE is currently not supported!"); return nullptr;
-			case IRenderer::API::VULKAN:  return std::unique_ptr<VulkanContext>(new VulkanContext);
+			case IRenderer::API::VULKAN:  return std::unique_ptr<VulkanContext>(new VulkanContext(window));
         }
             return std::unique_ptr<IGraphicsContext>();
     }

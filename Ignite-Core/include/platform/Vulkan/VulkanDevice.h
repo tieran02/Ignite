@@ -4,6 +4,8 @@
 
 namespace Ignite
 {
+	class IWindow;
+
 	struct QueueFamilyIndices {
 		std::optional<uint32_t> m_graphicsFamily;
 
@@ -15,16 +17,17 @@ namespace Ignite
 	class VulkanDevice : NonCopyable
 	{
 	public:
-		VulkanDevice();
+		VulkanDevice(IWindow* window);
 		~VulkanDevice();
 
 	private:
-		void create();
+		void create(IWindow* window);
 		void cleanup();
 
 		void createInstance();
 		void pickPhysicalDevice();
 		void createLogicalDevice();
+		void createSurface(IWindow* window);
 	private:
 		const std::vector<const char*> m_validationLayers
 		{
@@ -40,9 +43,10 @@ namespace Ignite
 		VkInstance m_instance{nullptr};
 		VkDebugUtilsMessengerEXT m_debugMessenger;
 		/** @brief Physical m_device representation */
-		VkPhysicalDevice m_physicalDevice{ nullptr };
-		VkDevice m_device{ nullptr };
-		VkQueue m_graphicsQueue;
+		VkPhysicalDevice m_physicalDevice { nullptr };
+		VkDevice m_device { nullptr };
+		VkQueue m_graphicsQueue{ nullptr };
+		VkSurfaceKHR m_surface{ nullptr };
 
 		const std::vector<const char*> getRequiredExtensions();
 		bool checkValidationLayerSupport() const;

@@ -3,7 +3,9 @@
 
 namespace Ignite
 {
-    class IGraphicsContext : NonCopyable
+	class IWindow;
+
+	class IGraphicsContext : NonCopyable
     {
 	protected:
 		IGraphicsContext() = default;
@@ -13,6 +15,6 @@ namespace Ignite
 		virtual ~IGraphicsContext() = default;
         virtual void SwapBuffers() = 0;
 
-        static std::unique_ptr<IGraphicsContext> Create();
+        static std::unique_ptr<IGraphicsContext> Create(IWindow* window);
     };
 }

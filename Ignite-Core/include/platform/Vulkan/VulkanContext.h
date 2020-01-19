@@ -2,6 +2,7 @@
 
 #include <Ignite/IGraphicsContext.h>
 #include <platform\Vulkan\VulkanDevice.h>
+#include "Ignite/IWindow.h"
 
 #define VK_CHECK_RESULT(f)																				\
 {																										\
@@ -15,7 +16,7 @@ namespace Ignite
     {
 	friend class IGraphicsContext;
     protected:
-        VulkanContext();
+        VulkanContext(IWindow* window);
 
 		void Init() override;
 		void Cleanup() override;
@@ -24,6 +25,7 @@ namespace Ignite
 
         void SwapBuffers() override;
 	private:
+		IWindow* m_window;
 		std::unique_ptr<VulkanDevice> m_vulkanDevice;
     };
 }

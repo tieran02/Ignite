@@ -31,9 +31,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 	return VK_FALSE;
 }
 
-Ignite::VulkanDevice::VulkanDevice()
+Ignite::VulkanDevice::VulkanDevice(IWindow* window)
 {
-	create();
+	create(window);
 }
 
 Ignite::VulkanDevice::~VulkanDevice()
@@ -41,18 +41,21 @@ Ignite::VulkanDevice::~VulkanDevice()
 	cleanup();
 }
 
-void Ignite::VulkanDevice::create()
+void Ignite::VulkanDevice::create(IWindow* window)
 {
 	LOG_CORE_INFO("Creating vulkan m_device");
 	createInstance();
 	setupDebugMessenger();
 	pickPhysicalDevice();
 	createLogicalDevice();
+	createSurface(window);
 }
 
 void Ignite::VulkanDevice::cleanup()
 {
 	vkDestroyDevice(m_device,nullptr);
+	vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+	
 	LOG_CORE_INFO("Cleaning vulkan m_device");
 	if (ENABLE_VALIDATION) {
 		DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
@@ -171,6 +174,14 @@ void Ignite::VulkanDevice::createLogicalDevice()
 
 	VK_CHECK_RESULT(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
 	vkGetDeviceQueue(m_device, indices.m_graphicsFamily.value(), 0, &m_graphicsQueue);
+}
+
+void Ignite::VulkanDevice::createSurface(IWindow* window)
+{
+	//TODO implement a way we can create a surface for all windows without passing down the GLFW window
+	CORE_ASSERT(window, "IWindow pointer is null");
+	glfwCreateWindowSurface(m_instance, static_cast<GLFWwindow*>(window->GetHandle()),nullptr,&m_surface);
+	
 }
 
 const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()

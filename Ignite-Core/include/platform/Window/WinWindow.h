@@ -15,6 +15,7 @@ namespace Ignite
 	public:
 		~WinWindow();
 
+		void* GetHandle() override;
 	private:
 		GLFWwindow* m_glfwWindow;
 	};

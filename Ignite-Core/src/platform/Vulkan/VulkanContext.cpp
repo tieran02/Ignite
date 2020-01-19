@@ -4,7 +4,7 @@
 
 namespace Ignite
 {
-	VulkanContext::VulkanContext() : IGraphicsContext()
+	VulkanContext::VulkanContext(IWindow* window) : m_window(window), IGraphicsContext()
     {
         Init();
     }
@@ -17,7 +17,7 @@ namespace Ignite
     void VulkanContext::Init()
     {
         LOG_CORE_INFO("Initialising VulkanContext");
-		m_vulkanDevice = std::make_unique<VulkanDevice>();
+		m_vulkanDevice = std::make_unique<VulkanDevice>(m_window);
     }
 
 	void VulkanContext::Cleanup()

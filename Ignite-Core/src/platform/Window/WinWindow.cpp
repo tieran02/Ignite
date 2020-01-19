@@ -12,6 +12,11 @@ Ignite::WinWindow::~WinWindow()
 	WinWindow::Cleanup();
 }
 
+void* Ignite::WinWindow::GetHandle()
+{
+	return m_glfwWindow;
+}
+
 void Ignite::WinWindow::Init()
 {
 	LOG_CORE_INFO("Creating Windows Window");
@@ -21,7 +26,7 @@ void Ignite::WinWindow::Init()
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	m_glfwWindow = glfwCreateWindow(1280, 720, "Ignite Engine", nullptr, nullptr);
 	
-	m_renderer = IRenderer::Create();
+	m_renderer = IRenderer::Create(this);
 }
 
 void Ignite::WinWindow::Cleanup()

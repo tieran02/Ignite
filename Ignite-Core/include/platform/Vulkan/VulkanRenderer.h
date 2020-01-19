@@ -5,7 +5,7 @@ namespace Ignite {
     class VulkanRenderer : public IRenderer {
 	friend class IRenderer;
     protected:
-		VulkanRenderer();
+		VulkanRenderer(IWindow* window);
 
         void Init() override;
 		void Cleanup() override;

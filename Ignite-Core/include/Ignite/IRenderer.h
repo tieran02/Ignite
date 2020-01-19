@@ -13,7 +13,7 @@ namespace Ignite {
             VULKAN
         };
 	protected:
-		IRenderer();
+		IRenderer(IWindow* window);
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
     public:
@@ -29,7 +29,7 @@ namespace Ignite {
 
         static API GetAPI() { return s_API; }
 
-        static std::unique_ptr<IRenderer> Create();
+        static std::unique_ptr<IRenderer> Create(IWindow* window);
 
 		IGraphicsContext& GetGraphicsContext();
 
