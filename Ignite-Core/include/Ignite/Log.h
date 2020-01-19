@@ -19,7 +19,7 @@ namespace Ignite
 //IRenderer log macros
 #define LOG_CORE_TRACE(...) ::Ignite::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define LOG_CORE_INFO(...) ::Ignite::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define LOG_CORE_WARNING(...) ::Ignite::Log::GetCoreLogger()->warning(__VA_ARGS__)
+#define LOG_CORE_WARNING(...) ::Ignite::Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define LOG_CORE_ERROR(...) ::Ignite::Log::GetCoreLogger()->error(__VA_ARGS__)
 #define LOG_CORE_FATAL(...) ::Ignite::Log::GetCoreLogger()->critical(__VA_ARGS__)
 

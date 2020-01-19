@@ -3,12 +3,31 @@
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "GLFW/glfw3.h"
+#include <map>
 
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
 	std::string msg = "validation layer: " + std::string(pCallbackData->pMessage);
-	LOG_CORE_INFO(msg);
+	switch (messageSeverity)
+	{
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+		LOG_CORE_TRACE(msg);
+		break;
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		LOG_CORE_INFO(msg);
+		break;
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		LOG_CORE_WARNING(msg);
+		break;
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		LOG_CORE_ERROR(msg);
+		break;
+	case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+		LOG_CORE_ERROR(msg);
+		break;
+	}
+
 	return VK_FALSE;
 }
 
@@ -27,10 +46,13 @@ void Ignite::VulkanDevice::create()
 	LOG_CORE_INFO("Creating vulkan device");
 	createInstance();
 	setupDebugMessenger();
+	pickPhysicalDevice();
+	createLogicalDevice();
 }
 
 void Ignite::VulkanDevice::cleanup()
 {
+	vkDestroyDevice(device,nullptr);
 	LOG_CORE_INFO("Cleaning vulkan device");
 	if (ENABLE_VALIDATION) {
 		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
@@ -85,7 +107,70 @@ void Ignite::VulkanDevice::createInstance()
 
 void Ignite::VulkanDevice::pickPhysicalDevice()
 {
+	uint32_t deviceCount = 0;
+	//get device count
+	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	std::vector<VkPhysicalDevice> devices(deviceCount);
+	//poulate devices
+	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+
+	//find the best gpu
+	// Use an ordered map to automatically sort candidates by increasing score
+	std::multimap<int, VkPhysicalDevice> candidates;
+	for (const auto& device : devices)
+	{
+		int score = rateDeviceSuitability(device);
+		candidates.insert(std::make_pair(score, device));
+
+		// Check if the best candidate is suitable at all
+		if (candidates.rbegin()->first > 0) {
+			physicalDevice = candidates.rbegin()->second;
+			
+			VkPhysicalDeviceProperties deviceProperties;
+			vkGetPhysicalDeviceProperties(device, &deviceProperties);
+			LOG_CORE_INFO("VULAKN GPU SELECTED: " + std::string(deviceProperties.deviceName));
+		}
+		else {
+			CORE_ASSERT(false,"failed to find a suitable GPU!");
+		}
+			
+	}
+}
+
+void Ignite::VulkanDevice::createLogicalDevice()
+{
+	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+	VkDeviceQueueCreateInfo queueCreateInfo = {};
+	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+	queueCreateInfo.queueCount = 1;
+
+	float queuePriority = 1.0f;
+	queueCreateInfo.pQueuePriorities = &queuePriority;
+
+	VkPhysicalDeviceFeatures deviceFeatures = {};
+
+	VkDeviceCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+	createInfo.pQueueCreateInfos = &queueCreateInfo;
+	createInfo.queueCreateInfoCount = 1;
+
+	createInfo.pEnabledFeatures = &deviceFeatures;
+
+	createInfo.enabledExtensionCount = 0;
 	
+	if (ENABLE_VALIDATION) {
+		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		createInfo.ppEnabledLayerNames = validationLayers.data();
+	}
+	else {
+		createInfo.enabledLayerCount = 0;
+	}
+
+	VK_CHECK_RESULT(vkCreateDevice(physicalDevice, &createInfo, nullptr, &device));
+	vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
 }
 
 const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()
@@ -127,7 +212,7 @@ const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()
 	return extensions;
 }
 
-const bool Ignite::VulkanDevice::checkValidationLayerSupport() const
+bool Ignite::VulkanDevice::checkValidationLayerSupport() const
 {
 	uint32_t layerCount;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -153,7 +238,59 @@ const bool Ignite::VulkanDevice::checkValidationLayerSupport() const
 	return true;
 }
 
-const void Ignite::VulkanDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+int Ignite::VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
+{
+	VkPhysicalDeviceProperties deviceProperties;
+	VkPhysicalDeviceFeatures deviceFeatures;
+	vkGetPhysicalDeviceProperties(device, &deviceProperties);
+	vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+	
+	int score = 0;
+
+	// Discrete GPUs have a significant performance advantage
+	if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+		score += 1000;
+	}
+
+	// Maximum possible size of textures affects graphics quality
+	score += deviceProperties.limits.maxImageDimension2D;
+
+	// Application can't function without geometry shaders and has queue families
+	QueueFamilyIndices indices = findQueueFamilies(device);
+	if (!deviceFeatures.geometryShader || !indices.isComplete()) {
+		return 0;
+	}
+
+	return score;
+}
+
+Ignite::QueueFamilyIndices Ignite::VulkanDevice::findQueueFamilies(VkPhysicalDevice physicalDevice)
+{
+	QueueFamilyIndices indices;
+
+	uint32_t queueFamilyCount = 0;
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, nullptr);
+
+	std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+	vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies.data());
+
+	int i = 0;
+	for (const auto& queueFamily : queueFamilies) {
+		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+			indices.graphicsFamily = i;
+		}
+
+		if (indices.isComplete()) {
+			break;
+		}
+
+		i++;
+	}
+
+	return indices;
+}
+
+void Ignite::VulkanDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
 {
 	createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
