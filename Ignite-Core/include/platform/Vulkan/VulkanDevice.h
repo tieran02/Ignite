@@ -5,10 +5,10 @@
 namespace Ignite
 {
 	struct QueueFamilyIndices {
-		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> m_graphicsFamily;
 
 		bool isComplete() {
-			return graphicsFamily.has_value();
+			return m_graphicsFamily.has_value();
 		}
 	};
 	
@@ -26,23 +26,23 @@ namespace Ignite
 		void pickPhysicalDevice();
 		void createLogicalDevice();
 	private:
-		const std::vector<const char*> validationLayers
+		const std::vector<const char*> m_validationLayers
 		{
 			"VK_LAYER_KHRONOS_validation"
 		};
 
-		const std::vector<const char*> GpuExtensions =
+		const std::vector<const char*> m_gpuExtensions =
 		{
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 		};
 
 		const bool ENABLE_VALIDATION{ true };
-		VkInstance instance{nullptr};
-		VkDebugUtilsMessengerEXT debugMessenger;
-		/** @brief Physical device representation */
-		VkPhysicalDevice physicalDevice{ nullptr };
-		VkDevice device{ nullptr };
-		VkQueue graphicsQueue;
+		VkInstance m_instance{nullptr};
+		VkDebugUtilsMessengerEXT m_debugMessenger;
+		/** @brief Physical m_device representation */
+		VkPhysicalDevice m_physicalDevice{ nullptr };
+		VkDevice m_device{ nullptr };
+		VkQueue m_graphicsQueue;
 
 		const std::vector<const char*> getRequiredExtensions();
 		bool checkValidationLayerSupport() const;

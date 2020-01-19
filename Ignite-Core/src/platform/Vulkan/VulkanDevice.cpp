@@ -43,7 +43,7 @@ Ignite::VulkanDevice::~VulkanDevice()
 
 void Ignite::VulkanDevice::create()
 {
-	LOG_CORE_INFO("Creating vulkan device");
+	LOG_CORE_INFO("Creating vulkan m_device");
 	createInstance();
 	setupDebugMessenger();
 	pickPhysicalDevice();
@@ -52,13 +52,13 @@ void Ignite::VulkanDevice::create()
 
 void Ignite::VulkanDevice::cleanup()
 {
-	vkDestroyDevice(device,nullptr);
-	LOG_CORE_INFO("Cleaning vulkan device");
+	vkDestroyDevice(m_device,nullptr);
+	LOG_CORE_INFO("Cleaning vulkan m_device");
 	if (ENABLE_VALIDATION) {
-		DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
 	}
 	
-	vkDestroyInstance(instance, nullptr);
+	vkDestroyInstance(m_instance, nullptr);
 
 }
 
@@ -81,7 +81,7 @@ void Ignite::VulkanDevice::createInstance()
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
-	//get instance extensions
+	//get m_instance extensions
 	std::vector<const char*> extensions = getRequiredExtensions();
 	createInfo.enabledExtensionCount = extensions.size();
 	createInfo.ppEnabledExtensionNames = extensions.data();
@@ -90,8 +90,8 @@ void Ignite::VulkanDevice::createInstance()
 	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
 	if (ENABLE_VALIDATION)
 	{
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
+		createInfo.ppEnabledLayerNames = m_validationLayers.data();
 
 		populateDebugMessengerCreateInfo(debugCreateInfo);
 		createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
@@ -102,17 +102,17 @@ void Ignite::VulkanDevice::createInstance()
 		createInfo.ppEnabledLayerNames = nullptr;
 	}
 
-	VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &instance));
+	VK_CHECK_RESULT(vkCreateInstance(&createInfo, nullptr, &m_instance));
 }
 
 void Ignite::VulkanDevice::pickPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
-	//get device count
-	vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
+	//get m_device count
+	vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	//poulate devices
-	vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
+	vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
 
 	//find the best gpu
 	// Use an ordered map to automatically sort candidates by increasing score
@@ -124,7 +124,7 @@ void Ignite::VulkanDevice::pickPhysicalDevice()
 
 		// Check if the best candidate is suitable at all
 		if (candidates.rbegin()->first > 0) {
-			physicalDevice = candidates.rbegin()->second;
+			m_physicalDevice = candidates.rbegin()->second;
 			
 			VkPhysicalDeviceProperties deviceProperties;
 			vkGetPhysicalDeviceProperties(device, &deviceProperties);
@@ -139,11 +139,11 @@ void Ignite::VulkanDevice::pickPhysicalDevice()
 
 void Ignite::VulkanDevice::createLogicalDevice()
 {
-	QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+	QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
 
 	VkDeviceQueueCreateInfo queueCreateInfo = {};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+	queueCreateInfo.queueFamilyIndex = indices.m_graphicsFamily.value();
 	queueCreateInfo.queueCount = 1;
 
 	float queuePriority = 1.0f;
@@ -162,15 +162,15 @@ void Ignite::VulkanDevice::createLogicalDevice()
 	createInfo.enabledExtensionCount = 0;
 	
 	if (ENABLE_VALIDATION) {
-		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-		createInfo.ppEnabledLayerNames = validationLayers.data();
+		createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
+		createInfo.ppEnabledLayerNames = m_validationLayers.data();
 	}
 	else {
 		createInfo.enabledLayerCount = 0;
 	}
 
-	VK_CHECK_RESULT(vkCreateDevice(physicalDevice, &createInfo, nullptr, &device));
-	vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+	VK_CHECK_RESULT(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
+	vkGetDeviceQueue(m_device, indices.m_graphicsFamily.value(), 0, &m_graphicsQueue);
 }
 
 const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()
@@ -188,7 +188,7 @@ const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()
 		wantedExtensions.push_back(glfwExtensions[j]);
 	}
 
-	//get instance extension count
+	//get m_instance extension count
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 	//populate extensions
@@ -220,7 +220,7 @@ bool Ignite::VulkanDevice::checkValidationLayerSupport() const
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
 
-	for (const char* layerName : validationLayers) {
+	for (const char* layerName : m_validationLayers) {
 		bool layerFound = false;
 
 		for (const auto& layerProperties : availableLayers) {
@@ -277,7 +277,7 @@ Ignite::QueueFamilyIndices Ignite::VulkanDevice::findQueueFamilies(VkPhysicalDev
 	int i = 0;
 	for (const auto& queueFamily : queueFamilies) {
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-			indices.graphicsFamily = i;
+			indices.m_graphicsFamily = i;
 		}
 
 		if (indices.isComplete()) {
@@ -306,7 +306,7 @@ void Ignite::VulkanDevice::setupDebugMessenger()
 	VkDebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
 
-	VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger));
+	VK_CHECK_RESULT(CreateDebugUtilsMessengerEXT(m_instance, &createInfo, nullptr, &m_debugMessenger));
 }
 
 VkResult Ignite::VulkanDevice::CreateDebugUtilsMessengerEXT(VkInstance instance,
