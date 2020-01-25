@@ -7,10 +7,11 @@ namespace Ignite
 	class IWindow;
 
 	struct QueueFamilyIndices {
-		std::optional<uint32_t> m_graphicsFamily;
+		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
 
 		bool isComplete() {
-			return m_graphicsFamily.has_value();
+			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 	};
 	
@@ -19,6 +20,12 @@ namespace Ignite
 	public:
 		VulkanDevice(IWindow* window);
 		~VulkanDevice();
+
+		const VkPhysicalDevice& PhysicalDevice() const { return m_physicalDevice; }
+		const VkDevice& LogicalDevice() const { return m_device; }
+		const VkSurfaceKHR& Surface() const { return m_surface; }
+		const QueueFamilyIndices& QueueFamilies() const { return m_queueFamilies; }
+		
 
 	private:
 		void create(IWindow* window);
@@ -46,7 +53,10 @@ namespace Ignite
 		VkPhysicalDevice m_physicalDevice { nullptr };
 		VkDevice m_device { nullptr };
 		VkQueue m_graphicsQueue{ nullptr };
+		VkQueue m_presentQueue{ nullptr };
 		VkSurfaceKHR m_surface{ nullptr };
+		QueueFamilyIndices m_queueFamilies;
+		
 
 		const std::vector<const char*> getRequiredExtensions();
 		bool checkValidationLayerSupport() const;

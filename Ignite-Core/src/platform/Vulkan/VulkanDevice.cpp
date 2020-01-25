@@ -46,9 +46,9 @@ void Ignite::VulkanDevice::create(IWindow* window)
 	LOG_CORE_INFO("Creating vulkan m_device");
 	createInstance();
 	setupDebugMessenger();
+	createSurface(window);
 	pickPhysicalDevice();
 	createLogicalDevice();
-	createSurface(window);
 }
 
 void Ignite::VulkanDevice::cleanup()
@@ -142,27 +142,34 @@ void Ignite::VulkanDevice::pickPhysicalDevice()
 
 void Ignite::VulkanDevice::createLogicalDevice()
 {
-	QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+	m_queueFamilies = findQueueFamilies(m_physicalDevice);
 
-	VkDeviceQueueCreateInfo queueCreateInfo = {};
-	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queueCreateInfo.queueFamilyIndex = indices.m_graphicsFamily.value();
-	queueCreateInfo.queueCount = 1;
+	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+	std::set<uint32_t> uniqueQueueFamilies = { m_queueFamilies.graphicsFamily.value(), m_queueFamilies.presentFamily.value() };
 
 	float queuePriority = 1.0f;
-	queueCreateInfo.pQueuePriorities = &queuePriority;
+	for (uint32_t queueFamily : uniqueQueueFamilies) {
+		VkDeviceQueueCreateInfo queueCreateInfo = {};
+		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+		queueCreateInfo.queueFamilyIndex = queueFamily;
+		queueCreateInfo.queueCount = 1;
+		queueCreateInfo.pQueuePriorities = &queuePriority;
+		queueCreateInfos.push_back(queueCreateInfo);
+	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
-	createInfo.pQueueCreateInfos = &queueCreateInfo;
-	createInfo.queueCreateInfoCount = 1;
+	createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
 	createInfo.pEnabledFeatures = &deviceFeatures;
 
-	createInfo.enabledExtensionCount = 0;
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(m_gpuExtensions.size());
+	createInfo.ppEnabledExtensionNames = m_gpuExtensions.data();
+
 	
 	if (ENABLE_VALIDATION) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.size());
@@ -173,7 +180,8 @@ void Ignite::VulkanDevice::createLogicalDevice()
 	}
 
 	VK_CHECK_RESULT(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
-	vkGetDeviceQueue(m_device, indices.m_graphicsFamily.value(), 0, &m_graphicsQueue);
+	vkGetDeviceQueue(m_device, m_queueFamilies.graphicsFamily.value(), 0, &m_graphicsQueue);
+	vkGetDeviceQueue(m_device, m_queueFamilies.presentFamily.value(), 0, &m_presentQueue);
 }
 
 void Ignite::VulkanDevice::createSurface(IWindow* window)
@@ -288,7 +296,14 @@ Ignite::QueueFamilyIndices Ignite::VulkanDevice::findQueueFamilies(VkPhysicalDev
 	int i = 0;
 	for (const auto& queueFamily : queueFamilies) {
 		if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-			indices.m_graphicsFamily = i;
+			indices.graphicsFamily = i;
+		}
+
+		VkBool32 presentSupport = false;
+		vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, m_surface, &presentSupport);
+
+		if (presentSupport) {
+			indices.presentFamily = i;
 		}
 
 		if (indices.isComplete()) {

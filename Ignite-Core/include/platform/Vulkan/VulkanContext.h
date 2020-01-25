@@ -3,6 +3,7 @@
 #include <Ignite/IGraphicsContext.h>
 #include <platform\Vulkan\VulkanDevice.h>
 #include "Ignite/IWindow.h"
+#include "VulkanSwapChain.h"
 
 #define VK_CHECK_RESULT(f)																				\
 {																										\
@@ -27,5 +28,6 @@ namespace Ignite
 	private:
 		IWindow* m_window;
 		std::unique_ptr<VulkanDevice> m_vulkanDevice;
+		std::unique_ptr<VulkanSwapChain> m_vulkanSwapchain;
     };
 }
