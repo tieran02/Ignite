@@ -18,7 +18,7 @@ namespace Ignite
 	class VulkanDevice : NonCopyable
 	{
 	public:
-		VulkanDevice(IWindow* window);
+		VulkanDevice();
 		~VulkanDevice();
 
 		const VkPhysicalDevice& PhysicalDevice() const { return m_physicalDevice; }
@@ -28,13 +28,13 @@ namespace Ignite
 		
 
 	private:
-		void create(IWindow* window);
+		void create();
 		void cleanup();
 
 		void createInstance();
 		void pickPhysicalDevice();
 		void createLogicalDevice();
-		void createSurface(IWindow* window);
+		void createSurface();
 	private:
 		const std::vector<const char*> m_validationLayers
 		{

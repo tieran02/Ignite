@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 
 namespace Ignite {
-    class IRenderer : NonCopyable
+    class IRendererAPI : NonCopyable
 	{
     public:
         enum class API {
@@ -13,11 +13,11 @@ namespace Ignite {
             VULKAN
         };
 	protected:
-		IRenderer(IWindow* window);
+		IRendererAPI();
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
     public:
-		virtual ~IRenderer() {};
+		virtual ~IRendererAPI() {};
 
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
@@ -29,9 +29,9 @@ namespace Ignite {
 
         static API GetAPI() { return s_API; }
 
-        static std::unique_ptr<IRenderer> Create(IWindow* window);
+        static std::unique_ptr<IRendererAPI> Create();
 
-		IGraphicsContext& GetGraphicsContext();
+		const IGraphicsContext& GetGraphicsContext() const;
 
     private:
         static API s_API;

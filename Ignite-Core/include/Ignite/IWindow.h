@@ -1,6 +1,6 @@
 #pragma once
 #include "NonCopyable.h"
-#include "IRenderer.h"
+#include "IRendererAPI.h"
 
 namespace Ignite
 {
@@ -13,10 +13,13 @@ namespace Ignite
 	public:
 		virtual ~IWindow() {};
 
-		static std::unique_ptr<IWindow> Create();
-		virtual void* GetHandle() = 0;
-	protected:
-		std::unique_ptr<IRenderer> m_renderer;
+		static IWindow& Create();
+		static IWindow& GetInstance();
+		
+		virtual void* GetHandle() const = 0;
+		void Close();
+	private:
+		static std::unique_ptr<IWindow> s_instance;
 	};
 }
 

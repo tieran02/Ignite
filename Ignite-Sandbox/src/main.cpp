@@ -1,7 +1,11 @@
-#include "Ignite/IWindow.h"
+#include "Ignite/Ignite.h"
+#include <memory>
 
 int main()
 {
-    auto window = Ignite::IWindow::Create();
+    Ignite::Ignite ignite;
+    ignite.Init();
+
+    std::unique_ptr<Ignite::IPipeline> pipeline = Ignite::IPipeline::Create("", "");
     return 0;
 }

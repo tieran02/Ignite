@@ -14,8 +14,7 @@ namespace Ignite{
 
     std::shared_ptr<spdlog::logger> &Log::GetCoreLogger()
     {
-        if(!s_CoreLogger)
-            Init();
+        assert(s_CoreLogger);
         return s_CoreLogger;
     }
 }

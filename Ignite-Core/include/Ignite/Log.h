@@ -9,14 +9,14 @@ namespace Ignite
     class Log : NonCopyable
     {
     public:
+        static void Init();
         static std::shared_ptr<spdlog::logger>& GetCoreLogger();
     private:
-        static void Init();
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
     };
 }
 
-//IRenderer log macros
+//IRendererAPI log macros
 #define LOG_CORE_TRACE(...) ::Ignite::Log::GetCoreLogger()->trace(__VA_ARGS__)
 #define LOG_CORE_INFO(...) ::Ignite::Log::GetCoreLogger()->info(__VA_ARGS__)
 #define LOG_CORE_WARNING(...) ::Ignite::Log::GetCoreLogger()->warn(__VA_ARGS__)

@@ -13,8 +13,8 @@ namespace Ignite
 		virtual void Cleanup() = 0;
     public:
 		virtual ~IGraphicsContext() = default;
-        virtual void SwapBuffers() = 0;
+        virtual void SwapBuffers() const = 0;
 
-        static std::unique_ptr<IGraphicsContext> Create(IWindow* window);
+        static std::unique_ptr<IGraphicsContext> Create();
     };
 }

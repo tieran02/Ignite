@@ -17,16 +17,17 @@ namespace Ignite
     {
 	friend class IGraphicsContext;
     protected:
-        VulkanContext(IWindow* window);
+        VulkanContext();
 
 		void Init() override;
 		void Cleanup() override;
 	public:
         ~VulkanContext();
 
-        void SwapBuffers() override;
+        void SwapBuffers() const override;
+		const VulkanDevice& Device() const { return *m_vulkanDevice; }
+		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
 	private:
-		IWindow* m_window;
 		std::unique_ptr<VulkanDevice> m_vulkanDevice;
 		std::unique_ptr<VulkanSwapChain> m_vulkanSwapchain;
     };

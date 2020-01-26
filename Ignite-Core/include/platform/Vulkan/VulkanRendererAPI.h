@@ -1,16 +1,16 @@
 #pragma once
-#include "Ignite/IRenderer.h"
+#include "Ignite/IRendererAPI.h"
 
 namespace Ignite {
-    class VulkanRenderer : public IRenderer {
-	friend class IRenderer;
+    class VulkanRendererAPI : public IRendererAPI {
+	friend class IRendererAPI;
     protected:
-		VulkanRenderer(IWindow* window);
+		VulkanRendererAPI();
 
         void Init() override;
 		void Cleanup() override;
 	public:
-		~VulkanRenderer() override;
+		~VulkanRendererAPI() override;
 
         void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
 
