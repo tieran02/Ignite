@@ -20,5 +20,7 @@ namespace Ignite {
         void SetClearColor(const glm::vec4 &color) override;
         
         void Clear() override;
+    private:
+        glm::vec4 m_clearColour{ 0.0f,0.0f,0.0f,1.0f };
     };
 }

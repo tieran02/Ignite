@@ -13,6 +13,8 @@ int main()
     while (ignite.Running())
     {
         //start scene
+        Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
+    	
         Ignite::Renderer::BeginScene();
 
         Ignite::Renderer::Submit(pipeline.get());

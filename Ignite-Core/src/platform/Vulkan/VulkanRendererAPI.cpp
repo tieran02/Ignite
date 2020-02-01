@@ -57,13 +57,12 @@ void Ignite::VulkanRendererAPI::BeginScene()
 		renderPassInfo.renderArea.extent = VkExtent2D{ vulkanContext->Swapchain().Width() ,vulkanContext->Swapchain().Height() };
 
 		//clear colour as a test
-		VkClearValue clearColor = { 0.2f, 0.2f, 0.2f, 1.0f };
+		VkClearValue clearColor = { m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a };
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
 
 		//begin render pass
 		vkCmdBeginRenderPass(vulkanContext->CommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 
 		//LOG_CORE_INFO("Scene Recording Started");
 	}
@@ -93,10 +92,12 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 
 }
 
-void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color) {
-
+void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color)
+{
+	m_clearColour = color;
 }
 
-void Ignite::VulkanRendererAPI::Clear() {
+void Ignite::VulkanRendererAPI::Clear()
+{
 
 }

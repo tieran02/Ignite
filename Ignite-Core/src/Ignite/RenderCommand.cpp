@@ -18,6 +18,7 @@ namespace Ignite
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
+		s_renderer->SetClearColor(color);
 	}
 
 	void RenderCommand::Clear()
