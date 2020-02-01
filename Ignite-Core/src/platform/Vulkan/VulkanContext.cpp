@@ -1,6 +1,7 @@
 #include "igpch.h"
 #include <Ignite/Log.h>
 #include "platform/Vulkan/VulkanContext.h"
+#include <Ignite/IWindow.h>
 
 namespace Ignite
 {
@@ -18,7 +19,7 @@ namespace Ignite
     {
 		LOG_CORE_INFO("Initialising VulkanContext");
 		m_vulkanDevice = std::make_unique<VulkanDevice>();
-		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, 1280, 720);
+		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, IWindow::GetInstance().Width(), IWindow::GetInstance().Height());
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 
 		createCommandPool();
@@ -109,6 +110,18 @@ namespace Ignite
 		vkWaitForFences(m_vulkanDevice->LogicalDevice(), MAX_FRAMES_IN_FLIGHT, &inFlightFences[0], VK_TRUE, UINT64_MAX);
 	}
 
+	void VulkanContext::recreateSwapchain()
+	{
+		vkDeviceWaitIdle(m_vulkanDevice->LogicalDevice());
+
+		cleanupSwapchain();
+
+		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, 1280, 720);
+		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
+
+		createCommandBuffers();
+	}
+
 	void VulkanContext::createCommandPool()
 	{
 		LOG_CORE_INFO("Creating Vulkan Command Pool");
@@ -166,5 +179,15 @@ namespace Ignite
 			VK_CHECK_RESULT(vkCreateSemaphore(m_vulkanDevice->LogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]));
 			VK_CHECK_RESULT(vkCreateFence(m_vulkanDevice->LogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]));
 		}
+	}
+
+	void VulkanContext::cleanupSwapchain()
+	{
+
+		LOG_CORE_INFO("Cleaning up vulkan swapchain for recreation");
+		//free command buffers
+		vkFreeCommandBuffers(m_vulkanDevice->LogicalDevice(), m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
+		m_renderpass.reset();
+		m_vulkanSwapchain.reset();
 	}
 }

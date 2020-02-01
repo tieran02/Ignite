@@ -1,5 +1,5 @@
 #include "igpch.h"
-#include "Ignite/RenderCommand.h"
+#include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Log.h"
 
 namespace Ignite

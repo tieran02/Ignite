@@ -1,6 +1,6 @@
 #pragma once
 #include "igpch.h"
-#include "Ignite/IGraphicsContext.h"
+#include "Ignite/Renderer/IGraphicsContext.h"
 
 #include <glm/glm.hpp>
 

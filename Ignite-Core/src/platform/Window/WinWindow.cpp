@@ -2,7 +2,7 @@
 #include "platform/Window/WinWindow.h"
 #include "Ignite/Log.h"
 
-Ignite::WinWindow::WinWindow()
+Ignite::WinWindow::WinWindow(uint32_t width, uint32_t height) : IWindow(width, height)
 {
 	WinWindow::Init();
 }
@@ -34,7 +34,7 @@ void Ignite::WinWindow::Init()
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-	m_glfwWindow = glfwCreateWindow(1280, 720, "Ignite Engine", nullptr, nullptr);
+	m_glfwWindow = glfwCreateWindow(m_width, m_height, "Ignite Engine", nullptr, nullptr);
 }
 
 void Ignite::WinWindow::Cleanup()

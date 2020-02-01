@@ -1,9 +1,9 @@
 #include "igpch.h"
 #include "platform/Vulkan/VulkanDevice.h"
 #include "Ignite/Log.h"
+#include "Ignite/IWindow.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "GLFW/glfw3.h"
-#include <map>
 
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)

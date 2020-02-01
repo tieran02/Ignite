@@ -6,13 +6,17 @@
 namespace Ignite
 {
 	std::unique_ptr<IWindow> IWindow::s_instance = nullptr;
-	
-	IWindow& IWindow::Create()
+
+	IWindow::IWindow(uint32_t width, uint32_t height) : m_width(width), m_height(height)
+	{
+	}
+
+	IWindow& IWindow::Create(uint32_t width, uint32_t height)
 	{
 		if(s_instance == nullptr)
 		{
 			LOG_CORE_INFO("Creating IWindow");
-			s_instance = std::unique_ptr<WinWindow>(new WinWindow);
+			s_instance = std::unique_ptr<WinWindow>(new WinWindow(width,height));
 		}
 		else
 		{

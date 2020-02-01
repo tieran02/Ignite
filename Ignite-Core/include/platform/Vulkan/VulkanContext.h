@@ -1,8 +1,7 @@
 #pragma once
 
-#include <Ignite/IGraphicsContext.h>
+#include <Ignite/Renderer/IGraphicsContext.h>
 #include <platform\Vulkan\VulkanDevice.h>
-#include "Ignite/IWindow.h"
 #include "VulkanSwapChain.h"
 #include "VulkenRenderpass.h"
 
@@ -23,16 +22,17 @@ namespace Ignite
 		void Init() override;
 		void Cleanup() override;
 	public:
-        ~VulkanContext();
-
-        void SwapBuffers() override;
 		const VulkanDevice& Device() const { return *m_vulkanDevice; }
 		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
 		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
 
+		~VulkanContext();
+
+		void SwapBuffers() override;
 		void WaitTillFree() const;
+		void recreateSwapchain();
 	private:
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -54,5 +54,6 @@ namespace Ignite
 		void createCommandPool();
 		void createCommandBuffers();
 		void createSyncObjects();
+		void cleanupSwapchain();
     };
 }

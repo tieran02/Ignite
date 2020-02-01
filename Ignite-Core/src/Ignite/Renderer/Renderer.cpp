@@ -1,7 +1,7 @@
 #include "igpch.h"
-#include "Ignite/Renderer.h"
-#include "Ignite/RenderCommand.h"
-#include "Ignite/IPipeline.h"
+#include "Ignite/Renderer/Renderer.h"
+#include "Ignite/Renderer/RenderCommand.h"
+#include "Ignite/Renderer/IPipeline.h"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -12,7 +12,7 @@ void Ignite::Renderer::Init()
 
 void Ignite::Renderer::Shutdown()
 {
-	RenderCommand::s_renderer = nullptr;
+	RenderCommand::s_renderer.reset();
 }
 
 bool Ignite::Renderer::IsInitialised()

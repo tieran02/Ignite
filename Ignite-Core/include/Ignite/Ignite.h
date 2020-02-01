@@ -1,7 +1,7 @@
 #pragma once
-#include "Ignite/IPipeline.h"
-#include "Ignite/Renderer.h"
-#include "Ignite/RenderCommand.h"
+#include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Renderer/Renderer.h"
+#include "Ignite/Renderer/RenderCommand.h"
 
 namespace Ignite
 {
@@ -11,7 +11,7 @@ namespace Ignite
 		Ignite();
 		~Ignite();
 
-		void Init();
+		void Init(uint32_t width, uint32_t height);
 		bool Running();
 		void Close();
 	private:

@@ -65,6 +65,7 @@ namespace Ignite
 
 	void VulkenRenderpass::cleanup()
 	{
+		vkDeviceWaitIdle(m_context.Device().LogicalDevice());
 		LOG_CORE_INFO("Cleaning up vulkan framebuffers");
 		for (auto framebuffer : m_swapChainFramebuffers) {
 			vkDestroyFramebuffer(m_context.Device().LogicalDevice(), framebuffer, nullptr);

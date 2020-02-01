@@ -2,7 +2,7 @@
 #include "Ignite/Ignite.h"
 #include "Ignite/Log.h"
 #include "Ignite/IWindow.h"
-#include "Ignite/Renderer.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace Ignite
 {
@@ -16,13 +16,13 @@ namespace Ignite
 		Close();
 	}
 
-	void Ignite::Init()
+	void Ignite::Init(uint32_t width, uint32_t height)
 	{
 		Log::Init();
 
 		LOG_CORE_INFO("Ignition has started");
 		
-		IWindow::Create();
+		IWindow::Create(width,height);
 		Renderer::Init();
 		m_running = true;
 	}
@@ -38,8 +38,6 @@ namespace Ignite
 
 	void Ignite::Close()
 	{
-		if (!m_running)
-			return;
 
 		LOG_CORE_INFO("Ignite shutting down");
 		

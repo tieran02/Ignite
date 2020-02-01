@@ -1,5 +1,5 @@
 #pragma once
-#include "Ignite/IPipeline.h"
+#include "Ignite/Renderer/IPipeline.h"
 #include <vulkan/vulkan_core.h>
 
 namespace  Ignite

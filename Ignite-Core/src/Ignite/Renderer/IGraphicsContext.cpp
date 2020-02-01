@@ -1,6 +1,6 @@
 #include "igpch.h"
-#include <Ignite/IRendererAPI.h>
-#include "Ignite/IGraphicsContext.h"
+#include <Ignite/Renderer/IRendererAPI.h>
+#include "Ignite/Renderer/IGraphicsContext.h"
 #include "Ignite/Log.h"
 #include <platform\Vulkan\VulkanContext.h>
 

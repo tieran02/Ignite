@@ -5,7 +5,7 @@
 int main()
 {
     Ignite::Ignite ignite;
-    ignite.Init();
+    ignite.Init(1920, 1080);
 
     std::unique_ptr<Ignite::IPipeline> pipeline = Ignite::IPipeline::Create("resources/shaders/vert.spv", "resources/shaders/frag.spv");
 

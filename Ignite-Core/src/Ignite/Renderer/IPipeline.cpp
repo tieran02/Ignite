@@ -1,9 +1,9 @@
 #include "igpch.h"
-#include <Ignite/IPipeline.h>
+#include <Ignite/Renderer/IPipeline.h>
 #include "Ignite/Log.h"
-#include "Ignite/IRendererAPI.h"
+#include "Ignite/Renderer/IRendererAPI.h"
 #include "platform/Vulkan/VulkanPipeline.h"
-#include "Ignite/Renderer.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace Ignite
 {

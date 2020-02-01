@@ -1,5 +1,6 @@
 #pragma once
 #include "Ignite/IWindow.h"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -9,7 +10,7 @@ namespace Ignite
 	{
 		friend class IWindow;
 	protected:
-		WinWindow();
+		WinWindow(uint32_t width, uint32_t height);
 		void Init() override;
 		void Cleanup() override;
 	public:
