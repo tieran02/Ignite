@@ -21,7 +21,6 @@ namespace  Ignite
 	{
 		LOG_CORE_INFO("Creating Vulkan Pipeline");
 		createPipeline();
-		createFrameBuffers();
 	}
 
 	void VulkanPipeline::Cleanup()
@@ -29,16 +28,11 @@ namespace  Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		
 		vkDeviceWaitIdle(vulkanContext->Device().LogicalDevice());
-		
-		LOG_CORE_INFO("Cleaning up vulkan framebuffers");
-		for (auto framebuffer : m_swapChainFramebuffers) {
-			vkDestroyFramebuffer(vulkanContext->Device().LogicalDevice(), framebuffer, nullptr);
-		}
+	
 
 		LOG_CORE_INFO("Cleaning up Vulkan Pipeline");
 		vkDestroyPipeline(vulkanContext->Device().LogicalDevice(), m_pipeline, nullptr);
 		vkDestroyPipelineLayout(vulkanContext->Device().LogicalDevice(), m_pipelineLayout, nullptr);
-		vkDestroyRenderPass(vulkanContext->Device().LogicalDevice(), m_renderPass, nullptr);
 	}
 
 	void VulkanPipeline::Bind() const
@@ -49,47 +43,18 @@ namespace  Ignite
 		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind pipeline, vulkan command buffers are empty");
 		
 		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++) {
-			VkCommandBufferBeginInfo beginInfo = {};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = 0; // Optional
-			beginInfo.pInheritanceInfo = nullptr; // Optional
-
-			VK_CHECK_RESULT(vkBeginCommandBuffer(vulkanContext->CommandBuffers()[i], &beginInfo));
-
-			//TODO renderpass should be seperate to pipeline
-			//TODO start renderpass should start on begin scene
-			VkRenderPassBeginInfo renderPassInfo = {};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = m_renderPass;
-			renderPassInfo.framebuffer = m_swapChainFramebuffers[i];
-			renderPassInfo.renderArea.offset = { 0, 0 };
-			renderPassInfo.renderArea.extent = VkExtent2D{ vulkanContext->Swapchain().Width() ,vulkanContext->Swapchain().Height() };
-
-			//clear colour as a test
-			VkClearValue clearColor = { 0.2f, 0.2f, 0.2f, 1.0f };
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
-
-			//begin render pass
-			vkCmdBeginRenderPass(vulkanContext->CommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 			//bind pipeline
 			vkCmdBindPipeline(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 			//draw test
 			vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
-
-			//end renderpass
-			vkCmdEndRenderPass(vulkanContext->CommandBuffers()[i]);
-
-			//end recording
-			VK_CHECK_RESULT(vkEndCommandBuffer(vulkanContext->CommandBuffers()[i]));
 		}
 	}
 
 	void VulkanPipeline::Unbind() const
 	{
 		//TODO when unbinding a pipeline we need to create a new command to end the render pass
-		
+
 	}
 
 	VkShaderModule VulkanPipeline::createShaderModule(const VulkanDevice& device, const std::vector<char>& code)
@@ -263,8 +228,6 @@ namespace  Ignite
 
 		VK_CHECK_RESULT(vkCreatePipelineLayout(vulkanContext->Device().LogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
 
-		createRenderPass();
-
 		//create pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo = {};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -281,7 +244,7 @@ namespace  Ignite
 		pipelineInfo.pDynamicState = nullptr; // Optional
 		pipelineInfo.layout = m_pipelineLayout;
 
-		pipelineInfo.renderPass = m_renderPass;
+		pipelineInfo.renderPass = vulkanContext->Renderpass().Renderpass();
 		pipelineInfo.subpass = 0;
 		
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
@@ -293,79 +256,4 @@ namespace  Ignite
 		vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), vertShaderModule, nullptr);
 	}
 
-	void VulkanPipeline::createRenderPass()
-	{
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		
-		VkAttachmentDescription colorAttachment = {};
-		colorAttachment.format = vulkanContext->Swapchain().ImageFormat().format;
-		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-		//subpasses/attacments
-		VkAttachmentReference colorAttachmentRef = {};
-		colorAttachmentRef.attachment = 0;
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		
-		VkSubpassDescription subpass = {};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &colorAttachmentRef;
-
-		//create renderpass
-		VkRenderPassCreateInfo renderPassInfo = {};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = 1;
-		renderPassInfo.pAttachments = &colorAttachment;
-		renderPassInfo.subpassCount = 1;
-		renderPassInfo.pSubpasses = &subpass;
-
-		//Subpass dependencies
-		VkSubpassDependency dependency = {};
-		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependency.dstSubpass = 0;	
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.srcAccessMask = 0;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-		renderPassInfo.dependencyCount = 1;
-		renderPassInfo.pDependencies = &dependency;
-
-		VK_CHECK_RESULT(vkCreateRenderPass(vulkanContext->Device().LogicalDevice(), &renderPassInfo, nullptr, &m_renderPass));
-	}
-
-	void VulkanPipeline::createFrameBuffers()
-	{
-		LOG_CORE_INFO("Creating vulkan framebuffers");
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-
-		CORE_ASSERT(vulkanContext, "Failed to create vulkan framebuffer as context is null")
-		
-		m_swapChainFramebuffers.resize(vulkanContext->Swapchain().ImageViews().size());
-
-		CORE_ASSERT(m_swapChainFramebuffers.size(), "Failed to create vulkan framebuffer as swapchain image view is empty")
-		
-		for (size_t i = 0; i < vulkanContext->Swapchain().ImageViews().size(); i++) {
-			VkImageView attachments[] = {
-				vulkanContext->Swapchain().ImageViews()[i]
-			};
-
-			VkFramebufferCreateInfo framebufferInfo = {};
-			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			framebufferInfo.renderPass = m_renderPass;
-			framebufferInfo.attachmentCount = 1;
-			framebufferInfo.pAttachments = attachments;
-			framebufferInfo.width = vulkanContext->Swapchain().Width();
-			framebufferInfo.height = vulkanContext->Swapchain().Height();
-			framebufferInfo.layers = 1;
-
-			VK_CHECK_RESULT(vkCreateFramebuffer(vulkanContext->Device().LogicalDevice(), &framebufferInfo, nullptr, &m_swapChainFramebuffers[i]));
-		}
-	}
 }

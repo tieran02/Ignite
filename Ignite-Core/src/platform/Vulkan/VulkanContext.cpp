@@ -19,6 +19,7 @@ namespace Ignite
 		LOG_CORE_INFO("Initialising VulkanContext");
 		m_vulkanDevice = std::make_unique<VulkanDevice>();
 		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, 1280, 720);
+		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 
 		createCommandPool();
 		createCommandBuffers();
@@ -38,7 +39,8 @@ namespace Ignite
 		
 		LOG_CORE_INFO("Cleaning Vulkan Command pool");
 		vkDestroyCommandPool(m_vulkanDevice->LogicalDevice(), m_commandPool, nullptr);
-		
+
+		m_renderpass.reset();
 		m_vulkanSwapchain.reset();
 		m_vulkanDevice.reset();
 		LOG_CORE_INFO("Cleaning VulkanContext");

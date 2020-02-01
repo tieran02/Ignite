@@ -23,16 +23,9 @@ namespace  Ignite
 		void Unbind() const override;	
 	private:
 		VkPipelineLayout m_pipelineLayout;
-		VkRenderPass m_renderPass;
 		VkPipeline m_pipeline;
-
-		std::vector<VkFramebuffer> m_swapChainFramebuffers;
 		
 		VkShaderModule createShaderModule(const VulkanDevice& device, const std::vector<char>& code);
 		void createPipeline();
-		void createRenderPass();
-
-		//todo move framebuffer out of pipeline
-		void createFrameBuffers();
 	};
 }

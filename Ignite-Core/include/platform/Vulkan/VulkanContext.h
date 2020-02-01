@@ -4,6 +4,7 @@
 #include <platform\Vulkan\VulkanDevice.h>
 #include "Ignite/IWindow.h"
 #include "VulkanSwapChain.h"
+#include "VulkenRenderpass.h"
 
 #define VK_CHECK_RESULT(f)																				\
 {																										\
@@ -27,6 +28,7 @@ namespace Ignite
         void SwapBuffers() override;
 		const VulkanDevice& Device() const { return *m_vulkanDevice; }
 		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
+		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
 
@@ -36,6 +38,7 @@ namespace Ignite
 
 		std::unique_ptr<VulkanDevice> m_vulkanDevice;
 		std::unique_ptr<VulkanSwapChain> m_vulkanSwapchain;
+		std::unique_ptr<VulkenRenderpass> m_renderpass;
 
     	//comands
 		VkCommandPool m_commandPool;
