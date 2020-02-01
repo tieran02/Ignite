@@ -33,6 +33,11 @@ project "Ignite-Sandbox"
 			"IGCORE_PLATFORM_WINDOWS"
 		}
 
+		postbuildcommands
+		{
+		  ("{COPY} %{prj.location}/resources ../bin/" .. outputdir .. "/%{prj.name}/resources")
+		}
+
 	filter "configurations:Debug"
 		defines "IGCORE_DEBUG"
 		runtime "Debug"

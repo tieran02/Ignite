@@ -17,6 +17,16 @@ void* Ignite::WinWindow::GetHandle() const
 	return m_glfwWindow;
 }
 
+void Ignite::WinWindow::PollEvents()
+{
+	glfwPollEvents();
+}
+
+bool Ignite::WinWindow::ShouldClose() const
+{
+	return glfwWindowShouldClose(m_glfwWindow);
+}
+
 void Ignite::WinWindow::Init()
 {
 	LOG_CORE_INFO("Creating Windows Window");

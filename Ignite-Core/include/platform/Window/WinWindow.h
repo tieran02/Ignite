@@ -16,6 +16,8 @@ namespace Ignite
 		~WinWindow();
 
 		void* GetHandle() const override;
+		void PollEvents() override;
+		bool ShouldClose() const override;
 	private:
 		GLFWwindow* m_glfwWindow;
 	};

@@ -24,11 +24,32 @@ namespace Ignite
 	public:
         ~VulkanContext();
 
-        void SwapBuffers() const override;
+        void SwapBuffers() override;
 		const VulkanDevice& Device() const { return *m_vulkanDevice; }
 		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
+		const VkCommandPool& CommandPool() const { return  m_commandPool; }
+		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
+
+		void WaitTillFree() const;
 	private:
+		const int MAX_FRAMES_IN_FLIGHT = 2;
+
 		std::unique_ptr<VulkanDevice> m_vulkanDevice;
 		std::unique_ptr<VulkanSwapChain> m_vulkanSwapchain;
+
+    	//comands
+		VkCommandPool m_commandPool;
+		std::vector<VkCommandBuffer> m_commandBuffers;
+
+    	//semaphores
+		std::vector<VkSemaphore> imageAvailableSemaphores;
+		std::vector<VkSemaphore> renderFinishedSemaphores;
+		std::vector<VkFence> inFlightFences;
+		std::vector<VkFence> imagesInFlight;
+		size_t currentFrame = 0;
+
+		void createCommandPool();
+		void createCommandBuffers();
+		void createSyncObjects();
     };
 }

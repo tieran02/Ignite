@@ -1,4 +1,5 @@
 #pragma once
+#include "IGraphicsContext.h"
 
 namespace Ignite {
 	class IPipeline;
@@ -17,6 +18,12 @@ namespace Ignite {
 		static void EndScene();
 
 		//static void Submit(const IPipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline& pipeline);
+		static void Submit(const IPipeline* pipeline);
+
+		static void SwapBuffers();
+
+		static IGraphicsContext* GraphicsContext();
+	private:
+		static bool m_recordingScene;
 	};
 }

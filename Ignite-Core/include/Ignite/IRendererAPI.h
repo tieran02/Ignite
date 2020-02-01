@@ -19,6 +19,9 @@ namespace Ignite {
     public:
 		virtual ~IRendererAPI() {};
 
+        virtual void BeginScene() = 0;
+        virtual void EndScene() = 0;
+    	
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
 
         virtual void SetClearColor(const glm::vec4& color) = 0;
@@ -31,7 +34,7 @@ namespace Ignite {
 
         static std::unique_ptr<IRendererAPI> Create();
 
-		const IGraphicsContext& GetGraphicsContext() const;
+        IGraphicsContext* GetGraphicsContext() const;
 
     private:
         static API s_API;

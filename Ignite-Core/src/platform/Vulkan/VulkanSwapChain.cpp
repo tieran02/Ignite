@@ -16,6 +16,12 @@ namespace Ignite
 		cleanup();
 	}
 
+	void VulkanSwapChain::Resize(uint32_t width, uint32_t height)
+	{
+		
+	}
+
+
 	void VulkanSwapChain::create()
 	{
 		LOG_CORE_INFO("Creating vulkan swapchain");

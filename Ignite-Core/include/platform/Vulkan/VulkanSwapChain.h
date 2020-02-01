@@ -10,6 +10,14 @@ namespace Ignite
 		~VulkanSwapChain();
 
 		void Resize(uint32_t width, uint32_t height);
+
+		uint32_t Width() const { return m_width; }
+		uint32_t Height() const { return m_height; }
+
+		const VkSurfaceFormatKHR& ImageFormat() const { return m_selectedFormat; }
+		const std::vector<VkImage>& Images() const { return m_swapChainImages; }
+		const std::vector<VkImageView>& ImageViews() const { return m_swapChainImageViews; }
+		const VkSwapchainKHR& Swapchain() const { return m_swapchain; }
 	private:
 		uint32_t m_width, m_height;
 		const VulkanDevice& m_device;

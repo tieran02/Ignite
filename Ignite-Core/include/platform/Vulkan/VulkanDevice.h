@@ -25,7 +25,8 @@ namespace Ignite
 		const VkDevice& LogicalDevice() const { return m_device; }
 		const VkSurfaceKHR& Surface() const { return m_surface; }
 		const QueueFamilyIndices& QueueFamilies() const { return m_queueFamilies; }
-		
+		const VkQueue& GraphicsQueue() const { return m_graphicsQueue; }
+		const VkQueue& PresentQueue() const { return m_presentQueue; }
 
 	private:
 		void create();

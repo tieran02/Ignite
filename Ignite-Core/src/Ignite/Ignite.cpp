@@ -27,6 +27,15 @@ namespace Ignite
 		m_running = true;
 	}
 
+	bool Ignite::Running()
+	{
+		//TODO poll window
+		IWindow::GetInstance().PollEvents();
+
+		m_running = !IWindow::GetInstance().ShouldClose();
+		return m_running;
+	}
+
 	void Ignite::Close()
 	{
 		if (!m_running)

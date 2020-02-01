@@ -15,7 +15,9 @@ namespace Ignite
 
 		static IWindow& Create();
 		static IWindow& GetInstance();
-		
+
+		virtual void PollEvents() = 0;
+		virtual bool ShouldClose() const = 0;
 		virtual void* GetHandle() const = 0;
 		void Close();
 	private:

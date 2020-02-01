@@ -25,9 +25,9 @@ namespace Ignite {
         return nullptr;
     }
 
-	const IGraphicsContext& IRendererAPI::GetGraphicsContext() const
+	IGraphicsContext* IRendererAPI::GetGraphicsContext() const
 	{
-		return *m_graphicsContext;
+		return m_graphicsContext.get();
 	}
 
 }

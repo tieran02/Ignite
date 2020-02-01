@@ -8,9 +8,11 @@
 namespace Ignite
 {
 	IPipeline::IPipeline(const std::string& vertexShader, const std::string& fragmentShader) :
+		m_context(Renderer::GraphicsContext()),
 		m_vertexShader(vertexShader),
 	    m_fragmentShader(fragmentShader)
 	{
+
 	}
 
 	std::unique_ptr<IPipeline> IPipeline::Create(const std::string& vertexShader, const std::string& fragmentShader)
