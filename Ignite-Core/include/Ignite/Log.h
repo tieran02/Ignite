@@ -10,7 +10,8 @@ namespace Ignite
     {
     public:
         static void Init();
-        static std::shared_ptr<spdlog::logger>& GetCoreLogger();
+        static void Clean();
+        static std::shared_ptr<spdlog::logger> GetCoreLogger();
     private:
         static std::shared_ptr<spdlog::logger> s_CoreLogger;
     };

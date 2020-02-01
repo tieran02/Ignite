@@ -2,6 +2,7 @@
 #include <Ignite/Log.h>
 #include "platform/Vulkan/VulkanContext.h"
 #include <Ignite/IWindow.h>
+#include "Ignite/Application.h"
 
 namespace Ignite
 {
@@ -19,7 +20,7 @@ namespace Ignite
     {
 		LOG_CORE_INFO("Initialising VulkanContext");
 		m_vulkanDevice = std::make_unique<VulkanDevice>();
-		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, IWindow::GetInstance().Width(), IWindow::GetInstance().Height());
+		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, Application::Instance().Window()->Width(), Application::Instance().Window()->Height());
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 
 		createCommandPool();

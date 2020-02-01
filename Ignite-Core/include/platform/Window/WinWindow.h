@@ -10,15 +10,16 @@ namespace Ignite
 	{
 		friend class IWindow;
 	protected:
-		WinWindow(uint32_t width, uint32_t height);
+		WinWindow(const WindowProperites& properites);
 		void Init() override;
 		void Cleanup() override;
 	public:
 		~WinWindow();
 
 		void* GetHandle() const override;
-		void PollEvents() override;
-		bool ShouldClose() const override;
+		void OnUpdate() override;
+		void Close() override;
+		void SetEventCallback(const EventCallbackFn& callback) override;
 	private:
 		GLFWwindow* m_glfwWindow;
 	};

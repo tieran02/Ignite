@@ -4,6 +4,7 @@
 #include "Ignite/IWindow.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "GLFW/glfw3.h"
+#include "Ignite/Application.h"
 
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
@@ -187,7 +188,7 @@ void Ignite::VulkanDevice::createLogicalDevice()
 void Ignite::VulkanDevice::createSurface()
 {
 	//TODO implement a way we can create a surface for all windows without passing down the GLFW window
-	glfwCreateWindowSurface(m_instance, static_cast<GLFWwindow*>(IWindow::GetInstance().GetHandle()),nullptr,&m_surface);
+	glfwCreateWindowSurface(m_instance, static_cast<GLFWwindow*>(Application::Instance().Window()->GetHandle()),nullptr,&m_surface);
 	
 }
 

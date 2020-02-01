@@ -1,8 +1,8 @@
 #include "igpch.h"
 #include "Ignite/Log.h"
 
-namespace Ignite{
-
+namespace Ignite
+{
     std::shared_ptr<spdlog::logger> Log::s_CoreLogger = nullptr;
 
     void Log::Init()
@@ -12,7 +12,12 @@ namespace Ignite{
         s_CoreLogger->set_level(spdlog::level::trace);
     }
 
-    std::shared_ptr<spdlog::logger> &Log::GetCoreLogger()
+    void Log::Clean()
+    {
+        s_CoreLogger.reset();
+    }
+
+    std::shared_ptr<spdlog::logger> Log::GetCoreLogger()
     {
         assert(s_CoreLogger);
         return s_CoreLogger;

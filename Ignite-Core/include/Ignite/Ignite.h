@@ -1,7 +1,5 @@
 #pragma once
-#include "Ignite/Renderer/IPipeline.h"
-#include "Ignite/Renderer/Renderer.h"
-#include "Ignite/Renderer/RenderCommand.h"
+#include "Ignite/Application.h"
 
 namespace Ignite
 {
@@ -11,10 +9,8 @@ namespace Ignite
 		Ignite();
 		~Ignite();
 
-		void Init(uint32_t width, uint32_t height);
-		bool Running();
-		void Close();
+		Ignite::Application& App() { return *m_application; }
 	private:
-		bool m_running;
+		Ignite::Application* m_application;
 	};
 }
