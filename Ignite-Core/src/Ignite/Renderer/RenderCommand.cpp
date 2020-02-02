@@ -14,6 +14,7 @@ namespace Ignite
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
+		s_renderer->SetViewPort(x, y, width, height);
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)

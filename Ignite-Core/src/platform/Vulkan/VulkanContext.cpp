@@ -3,6 +3,7 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include <Ignite/IWindow.h>
 #include "Ignite/Application.h"
+#include "Ignite/Renderer/IPipeline.h"
 
 namespace Ignite
 {
@@ -42,6 +43,12 @@ namespace Ignite
 		LOG_CORE_INFO("Cleaning Vulkan Command pool");
 		vkDestroyCommandPool(m_vulkanDevice->LogicalDevice(), m_commandPool, nullptr);
 
+		//clean pipeline
+		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		{
+			pipeline.second->Free();
+		}
+		
 		m_renderpass.reset();
 		m_vulkanSwapchain.reset();
 		m_vulkanDevice.reset();
@@ -52,10 +59,11 @@ namespace Ignite
     {
 		//wait for in flight fences
 		vkWaitForFences(m_vulkanDevice->LogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-		vkResetFences(m_vulkanDevice->LogicalDevice(), 1, &inFlightFences[currentFrame]);
 
 		//draw frame
 		uint32_t imageIndex;
+
+		//TODO recrate swapchain if not compatible 
 		vkAcquireNextImageKHR(m_vulkanDevice->LogicalDevice(), m_vulkanSwapchain->Swapchain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
 		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
@@ -81,6 +89,7 @@ namespace Ignite
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
+		
 		//reset command buffer fence
 		//vkResetFences(m_vulkanDevice->LogicalDevice(), 1, &m_commnadBufferFence);
 		vkResetFences(m_vulkanDevice->LogicalDevice(), 1, &inFlightFences[currentFrame]);
@@ -101,7 +110,7 @@ namespace Ignite
 		presentInfo.pResults = nullptr; // Optional
 		
 		vkQueuePresentKHR(m_vulkanDevice->PresentQueue(), &presentInfo);
-
+		
 		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
     }
@@ -111,14 +120,26 @@ namespace Ignite
 		vkWaitForFences(m_vulkanDevice->LogicalDevice(), MAX_FRAMES_IN_FLIGHT, &inFlightFences[0], VK_TRUE, UINT64_MAX);
 	}
 
-	void VulkanContext::recreateSwapchain()
+	void VulkanContext::RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		vkDeviceWaitIdle(m_vulkanDevice->LogicalDevice());
 
+		//clean pipeline
+		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		{
+			pipeline.second->Free();
+		}
+		
 		cleanupSwapchain();
-
-		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, 1280, 720);
+		//TODO pass width as paramters along with viewport x,y
+		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, width, height);
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
+		
+		//clean pipeline
+		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		{
+			pipeline.second->Recreate();
+		}
 
 		createCommandBuffers();
 	}

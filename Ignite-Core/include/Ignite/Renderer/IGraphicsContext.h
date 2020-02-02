@@ -8,6 +8,7 @@ namespace Ignite
 
 	class IGraphicsContext : NonCopyable
     {
+		friend class IPipeline;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
@@ -17,5 +18,7 @@ namespace Ignite
         virtual void SwapBuffers() = 0;
 
         static std::unique_ptr<IGraphicsContext> Create();
+	protected:
+		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
     };
 }

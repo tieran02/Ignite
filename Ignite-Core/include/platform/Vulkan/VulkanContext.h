@@ -32,7 +32,7 @@ namespace Ignite
 
 		void SwapBuffers() override;
 		void WaitTillFree() const;
-		void recreateSwapchain();
+		void RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 	private:
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 

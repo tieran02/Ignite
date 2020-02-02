@@ -6,8 +6,8 @@
 
 namespace  Ignite
 {
-	VulkanPipeline::VulkanPipeline(const std::string& vertexShader, const std::string& fragmentShader)
-	: IPipeline(vertexShader, fragmentShader)
+	VulkanPipeline::VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader)
+	: IPipeline(name, vertexShader, fragmentShader)
 	{
 		Init();
 	}
@@ -19,20 +19,34 @@ namespace  Ignite
 
 	void VulkanPipeline::Init()
 	{
-		LOG_CORE_INFO("Creating Vulkan Pipeline");
 		createPipeline();
 	}
 
 	void VulkanPipeline::Cleanup()
 	{
+		if(m_deleted)
+			return;
+		
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		
 		vkDeviceWaitIdle(vulkanContext->Device().LogicalDevice());
 	
 
-		LOG_CORE_INFO("Cleaning up Vulkan Pipeline");
+		LOG_CORE_INFO("Cleaning up Vulkan Pipeline: " + m_name);
 		vkDestroyPipeline(vulkanContext->Device().LogicalDevice(), m_pipeline, nullptr);
 		vkDestroyPipelineLayout(vulkanContext->Device().LogicalDevice(), m_pipelineLayout, nullptr);
+		m_deleted = true;
+	}
+
+	void VulkanPipeline::Free()
+	{
+		Cleanup();
+	}
+
+	void VulkanPipeline::Recreate()
+	{
+		Cleanup();
+		createPipeline();
 	}
 
 	void VulkanPipeline::Bind() const
@@ -254,6 +268,9 @@ namespace  Ignite
 
 		vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), fragShaderModule, nullptr);
 		vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), vertShaderModule, nullptr);
+
+		LOG_CORE_INFO("Created Vulkan Pipeline: " + m_name);
+		m_deleted = false;
 	}
 
 }

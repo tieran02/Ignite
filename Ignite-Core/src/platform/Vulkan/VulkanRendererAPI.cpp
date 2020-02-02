@@ -88,8 +88,10 @@ void Ignite::VulkanRendererAPI::EndScene()
 	//LOG_CORE_INFO("Scene Recording Ended");
 }
 
-void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
-
+void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
+	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
 void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color)

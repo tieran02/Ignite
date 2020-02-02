@@ -3,6 +3,7 @@
 #include "Ignite/Log.h"
 #include "Ignite/Events/ApplicationEvent.h"
 #include "Ignite/Renderer/Renderer.h"
+#include "Ignite/Renderer/RenderCommand.h"
 
 namespace Ignite
 {
@@ -56,6 +57,7 @@ namespace Ignite
 			for (Layer* layer : m_layerStack)
 				layer->OnUpdate();
 
+			
 			Renderer::SwapBuffers();
 		}
 	}
@@ -128,6 +130,10 @@ namespace Ignite
 
 	bool Application::OnWindowResize(WindowResizeEvent e)
 	{
+		if (e.GetWidth() > 0 && e.GetHeight() > 0) 
+		{
+			RenderCommand::SetViewport(0, 0, e.GetWidth(), e.GetHeight());
+		}
 		return true;
 	}
 }

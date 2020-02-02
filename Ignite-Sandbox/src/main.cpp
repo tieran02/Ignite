@@ -13,12 +13,11 @@ public:
 
 	void OnAttach() override
 	{
-		pipeline = Ignite::IPipeline::Create("resources/shaders/vert.spv", "resources/shaders/frag.spv");
+		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv");
 	}
 
 	void OnDetach() override
 	{
-		pipeline.reset();
 	}
 
 	void OnUpdate() override
@@ -47,7 +46,7 @@ public:
 	}
 
 private:
-	std::unique_ptr<Ignite::IPipeline> pipeline;
+	std::shared_ptr<Ignite::IPipeline> pipeline;
 };
 
 int main()

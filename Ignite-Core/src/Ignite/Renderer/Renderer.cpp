@@ -2,6 +2,7 @@
 #include "Ignite/Renderer/Renderer.h"
 #include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Application.h"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -22,6 +23,9 @@ bool Ignite::Renderer::IsInitialised()
 
 void Ignite::Renderer::BeginScene()
 {
+	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
+		return;
+	
 	m_recordingScene = true;
 	//get the renderer api
 	RenderCommand::s_renderer->BeginScene();
@@ -29,12 +33,18 @@ void Ignite::Renderer::BeginScene()
 
 void Ignite::Renderer::EndScene()
 {
+	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
+		return;
+	
 	m_recordingScene = false;
 	RenderCommand::s_renderer->EndScene();
 }
 
 void Ignite::Renderer::Submit(const IPipeline* pipeline)
 {
+	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
+		return;
+	
 	//TODO sumbit vertex buffer aswell
 
 	//bind pipeline
@@ -47,6 +57,9 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline)
 
 void Ignite::Renderer::SwapBuffers()
 {
+	if(Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
+		return;
+	
 	//swap buffers
 	GraphicsContext()->SwapBuffers();
 }
