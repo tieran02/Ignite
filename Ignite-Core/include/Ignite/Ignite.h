@@ -1,5 +1,11 @@
 #pragma once
+#include "Ignite/Input.h"
+#include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Renderer/RenderCommand.h"
+#include "Ignite/Renderer/Renderer.h"
 #include "Ignite/Application.h"
+#include "Ignite/Renderer/IBuffer.h"
+#include "Ignite/Renderer/PipelineInputLayout.h"
 
 namespace Ignite
 {

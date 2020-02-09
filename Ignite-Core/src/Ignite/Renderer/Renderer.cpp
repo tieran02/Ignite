@@ -40,7 +40,7 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IVertexBuffer* vertexBuffer, const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
@@ -50,6 +50,9 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline)
 	//bind pipeline
 	pipeline->Bind();
 	//TODO draw stuff here
+	vertexBuffer->Bind();
+	
+	RenderCommand::DrawIndexed(vertexBuffer);
 	
 	pipeline->Unbind();
 	

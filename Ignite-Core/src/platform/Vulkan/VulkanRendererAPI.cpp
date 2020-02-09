@@ -94,6 +94,22 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
+void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* buffer)
+{
+	//TODO when binding a pipeline we need to create a new command to start the render pass
+	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
+	CORE_ASSERT(vulkanContext, "Failed to bind pipeline, vulkan context is null");
+	CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind pipeline, vulkan command buffers are empty");
+
+	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++) {
+
+		//draw test
+		//TODO add index buffer
+		vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
+	}
+	
+}
+
 void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color)
 {
 	m_clearColour = color;

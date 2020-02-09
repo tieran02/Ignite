@@ -7,8 +7,9 @@
 
 namespace Ignite
 {
-	IPipeline::IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader) :
+	IPipeline::IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout) :
 		m_context(Renderer::GraphicsContext()),
+		m_inputLayout(inputLayout),
 		m_name(name),
 		m_vertexShader(vertexShader),
 	    m_fragmentShader(fragmentShader)
@@ -16,7 +17,7 @@ namespace Ignite
 
 	}
 
-	std::shared_ptr<IPipeline> IPipeline::Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader)
+	std::shared_ptr<IPipeline> IPipeline::Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create render pipeline, Renderer is null")
 		
@@ -26,7 +27,7 @@ namespace Ignite
 		case IRendererAPI::API::VULKAN:
 			if (Renderer::GraphicsContext()->m_pipelines.find(name) == Renderer::GraphicsContext()->m_pipelines.end()) 
 			{
-				std::shared_ptr<VulkanPipeline> pipeline = std::shared_ptr<VulkanPipeline>(new VulkanPipeline(name, vertexShader, fragmentShader));
+				std::shared_ptr<VulkanPipeline> pipeline = std::shared_ptr<VulkanPipeline>(new VulkanPipeline(name, vertexShader, fragmentShader, inputLayout));
 				Renderer::GraphicsContext()->m_pipelines.insert(std::make_pair(name, pipeline));
 				return pipeline;
 			}

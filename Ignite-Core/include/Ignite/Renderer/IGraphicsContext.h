@@ -1,5 +1,6 @@
 #pragma once
 #include "NonCopyable.h"
+#include "IBuffer.h"
 
 namespace Ignite
 {
@@ -9,6 +10,8 @@ namespace Ignite
 	class IGraphicsContext : NonCopyable
     {
 		friend class IPipeline;
+		friend class IBuffer;
+		friend class IVertexBuffer;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
@@ -20,5 +23,6 @@ namespace Ignite
         static std::unique_ptr<IGraphicsContext> Create();
 	protected:
 		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
+		std::vector<std::shared_ptr<IBuffer>> m_buffers;
     };
 }

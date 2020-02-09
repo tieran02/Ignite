@@ -55,10 +55,13 @@ namespace Ignite
 				break;
 			
 			for (Layer* layer : m_layerStack)
+			{
 				layer->OnUpdate();
+			}
 
-			
-			Renderer::SwapBuffers();
+			//only swap buffers if running, the user can close the application within the layers, so we need to check again
+			if(m_running)
+				Renderer::SwapBuffers();
 		}
 	}
 

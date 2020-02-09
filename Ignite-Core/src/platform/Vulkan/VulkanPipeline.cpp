@@ -6,8 +6,8 @@
 
 namespace  Ignite
 {
-	VulkanPipeline::VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader)
-	: IPipeline(name, vertexShader, fragmentShader)
+	VulkanPipeline::VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout)
+	: IPipeline(name, vertexShader, fragmentShader, inputLayout)
 	{
 		Init();
 	}
@@ -60,8 +60,8 @@ namespace  Ignite
 
 			//bind pipeline
 			vkCmdBindPipeline(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
-			//draw test
-			vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
+			////draw test
+			//vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
 		}
 	}
 
@@ -81,6 +81,74 @@ namespace  Ignite
 		VkShaderModule shaderModule;
 		VK_CHECK_RESULT(vkCreateShaderModule(device.LogicalDevice(), &createInfo, nullptr, &shaderModule));
 		return shaderModule;
+	}
+
+	VkVertexInputBindingDescription VulkanPipeline::getBindingDescription()
+	{
+		VkVertexInputBindingDescription bindingDescription = {};
+		bindingDescription.binding = 0;
+		bindingDescription.stride = m_inputLayout.GetStride();
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+		return bindingDescription;
+	}
+
+	std::vector<VkVertexInputAttributeDescription> VulkanPipeline::getAttributeDescriptions()
+	{
+		std::vector<VkVertexInputAttributeDescription> attributes(m_inputLayout.GetElements().size());
+		//convert input element to attribute description
+		int location = 0;
+		for (auto& inputElement : m_inputLayout)
+		{
+			VkVertexInputAttributeDescription attributeDescription;
+			attributeDescription.binding = 0; //vertex data is always going to be on binding 0
+			attributeDescription.location = location;
+			attributeDescription.offset = inputElement.Offset;
+
+			//convert type to vulkan type
+			switch (inputElement.Type)
+			{
+			case PipelineDataType::eNone:
+				attributeDescription.format = VK_FORMAT_UNDEFINED;
+				break;
+			case PipelineDataType::eFloat:
+				attributeDescription.format = VK_FORMAT_R32_SFLOAT;
+				break;
+			case PipelineDataType::eFloat2:
+				attributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+				break;
+			case PipelineDataType::eFloat3:
+				attributeDescription.format = VK_FORMAT_R32G32B32_SFLOAT;
+				break;
+			case PipelineDataType::eFloat4:
+				attributeDescription.format = VK_FORMAT_R32G32B32A32_SFLOAT;
+				break;
+			case PipelineDataType::eMat3:
+				LOG_CORE_FATAL("Mat3 value is currently unsupported in vertex attribute arrays");
+				break;
+			case PipelineDataType::eMat4:
+				LOG_CORE_FATAL("Mat4 value is currently unsupported in vertex attribute arrays");
+				break;
+			case PipelineDataType::eInt:
+				attributeDescription.format = VK_FORMAT_R32_SINT;
+				break;
+			case PipelineDataType::eInt2:
+				attributeDescription.format = VK_FORMAT_R32G32_SINT;
+				break;
+			case PipelineDataType::eInt3:
+				attributeDescription.format = VK_FORMAT_R32G32B32_SINT;
+				break;
+			case PipelineDataType::eInt4:
+				attributeDescription.format = VK_FORMAT_R32G32B32A32_SINT;
+				break;
+			case PipelineDataType::eBool:
+				LOG_CORE_FATAL("Boolean value is currently unsupported in vertex attribute arrays");
+				break;
+			default: ;
+			}
+
+			attributes[location++] = attributeDescription;
+		}
+		return attributes;
 	}
 
 	void VulkanPipeline::createPipeline()
@@ -119,12 +187,15 @@ namespace  Ignite
 		///
 
 		//vertex input
+		auto bindingDescription = getBindingDescription();
+		auto attributeDescriptions = getAttributeDescriptions();
+		
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 0;
-		vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-		vertexInputInfo.vertexAttributeDescriptionCount = 0;
-		vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
+		vertexInputInfo.vertexBindingDescriptionCount = 1;
+		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription; // Optional
+		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data(); // Optional
 
 		//input assembly
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};

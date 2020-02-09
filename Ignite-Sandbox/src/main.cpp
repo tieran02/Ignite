@@ -1,9 +1,4 @@
-#include "Ignite/Application.h"
 #include <memory>
-#include "Ignite/Input.h"
-#include "Ignite/Renderer/IPipeline.h"
-#include "Ignite/Renderer/RenderCommand.h"
-#include "Ignite/Renderer/Renderer.h"
 #include "Ignite/Ignite.h"
 
 class ExampleLayer : public Ignite::Layer
@@ -13,7 +8,17 @@ public:
 
 	void OnAttach() override
 	{
-		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv");
+		Ignite::PipelineInputLayout layout = 
+		{
+			{ Ignite::PipelineDataType::eFloat2, "a_Position" },
+			{ Ignite::PipelineDataType::eFloat3, "a_Color" }
+		};
+		
+		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
+
+
+		void* test = vertices.data();		
+		buffer = Ignite::IVertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size());
 	}
 
 	void OnDetach() override
@@ -27,7 +32,7 @@ public:
 
         Ignite::Renderer::BeginScene();
 
-        Ignite::Renderer::Submit(pipeline.get());
+        Ignite::Renderer::Submit(pipeline.get(), buffer.get());
 
         Ignite::Renderer::EndScene();
 
@@ -47,6 +52,14 @@ public:
 
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
+
+	//two floats pos, three floats color
+	std::vector<float> vertices =
+	{	0.0f, -0.5f, 1.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
+	};
+	std::shared_ptr<Ignite::IVertexBuffer> buffer;
 };
 
 int main()

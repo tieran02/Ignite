@@ -11,7 +11,7 @@ namespace  Ignite
 	{
 		friend class IPipeline;
 	protected:
-		VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
+		VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
 	public:
 		~VulkanPipeline() override;
 	protected:
@@ -25,9 +25,10 @@ namespace  Ignite
 	private:
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_pipeline;
-		bool m_deleted;
 		
 		VkShaderModule createShaderModule(const VulkanDevice& device, const std::vector<char>& code);
+		VkVertexInputBindingDescription  getBindingDescription();
+		std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 		void createPipeline();
 	};
 }

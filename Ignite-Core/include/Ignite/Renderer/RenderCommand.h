@@ -14,7 +14,7 @@ namespace Ignite {
 
 		static void Clear();
 
-		static void DrawIndexed();
+		static void DrawIndexed(const IVertexBuffer* buffer);
 	private:
 		static std::unique_ptr<IRendererAPI> s_renderer;
 	};

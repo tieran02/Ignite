@@ -32,6 +32,12 @@ namespace Ignite
 	void VulkanContext::Cleanup()
 	{
 		vkDeviceWaitIdle(m_vulkanDevice->LogicalDevice());
+
+		//clean buffers
+		for (auto& buffer : m_buffers)
+		{
+			buffer->Free();
+		}
 		
 		LOG_CORE_INFO("Cleaning up vulkan semaphores");
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -44,7 +50,7 @@ namespace Ignite
 		vkDestroyCommandPool(m_vulkanDevice->LogicalDevice(), m_commandPool, nullptr);
 
 		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		for (auto& pipeline : m_pipelines)
 		{
 			pipeline.second->Free();
 		}

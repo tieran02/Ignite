@@ -2,6 +2,7 @@
 #include "NonCopyable.h"
 #include <string>
 #include <memory>
+#include "PipelineInputLayout.h"
 
 namespace Ignite
 {
@@ -10,7 +11,7 @@ namespace Ignite
 	class IPipeline : NonCopyable
 	{
 	protected:
-		IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
+		IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -24,10 +25,13 @@ namespace Ignite
 		
 		const std::string& Name() const { return m_name; }
 		
-		static std::shared_ptr<IPipeline> Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
+		static std::shared_ptr<IPipeline> Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
 	protected:
 		std::string m_name;
 		std::string m_vertexShader;
 		std::string m_fragmentShader;
+		PipelineInputLayout m_inputLayout;
+
+		bool m_deleted;
 	};
 }
