@@ -136,7 +136,7 @@ namespace Ignite
 	void VulkanBuffer::Cleanup()
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind pipeline, vulkan context is null");
+		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanBuffer, vulkan context is null");
 		
 		if(!m_deleted)
 		{
@@ -181,7 +181,7 @@ namespace Ignite
 	void VulkanVertexBuffer::Cleanup()
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind pipeline, vulkan context is null");
+		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanVertexBuffer, vulkan context is null");
 
 		if (!m_deleted)
 		{
@@ -197,19 +197,69 @@ namespace Ignite
 
 	void VulkanVertexBuffer::Bind() const
 	{
-		//TODO when binding a pipeline we need to create a new command to start the render pass
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind pipeline, vulkan context is null");
-		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind pipeline, vulkan command buffers are empty");
+		CORE_ASSERT(vulkanContext, "Failed to bind VulkanVertexBuffer, vulkan context is null");
+		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind VulkanVertexBuffer, vulkan command buffers are empty");
 
 		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 		{
+			VkBuffer vertexBuffers[] = { m_baseBuffer.Buffer() };
 			VkDeviceSize offsets[] = { 0 }; //offset can be used to interleave vertex data
-			vkCmdBindVertexBuffers(vulkanContext->CommandBuffers()[i], 0, 1, &m_baseBuffer.Buffer(), offsets);
+			vkCmdBindVertexBuffers(vulkanContext->CommandBuffers()[i], 0, 1, vertexBuffers, offsets);
 		}
 	}
 
 	void VulkanVertexBuffer::Unbind() const
+	{
+	}
+
+	VulkanIndexBuffer::VulkanIndexBuffer(uint16_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	{
+		Init(data, size);
+	}
+
+	VulkanIndexBuffer::~VulkanIndexBuffer()
+	{
+		Cleanup();
+	}
+
+	void VulkanIndexBuffer::Init(void* data, size_t size)
+	{
+		m_baseBuffer.Create(data, size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		m_deleted = false;
+	}
+
+	void VulkanIndexBuffer::Cleanup()
+	{
+		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
+		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanIndexBuffer, vulkan context is null");
+
+		if (!m_deleted)
+		{
+			m_baseBuffer.Free();
+			m_deleted = true;
+		}
+	}
+
+	void VulkanIndexBuffer::Free()
+	{
+		Cleanup();
+	}
+
+	void VulkanIndexBuffer::Bind() const
+	{
+		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
+		CORE_ASSERT(vulkanContext, "Failed to bind VulkanVertexBuffer, vulkan context is null");
+		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind VulkanVertexBuffer, vulkan command buffers are empty");
+
+		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
+		{
+			VkDeviceSize offsets[] = { 0 }; //offset can be used to interleave vertex data
+			vkCmdBindIndexBuffer(vulkanContext->CommandBuffers()[i], m_baseBuffer.Buffer(), 0, VK_INDEX_TYPE_UINT16);
+		}
+	}
+
+	void VulkanIndexBuffer::Unbind() const
 	{
 	}
 }

@@ -94,18 +94,18 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
-void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* buffer)
+void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount)
 {
 	//TODO when binding a pipeline we need to create a new command to start the render pass
 	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
-	CORE_ASSERT(vulkanContext, "Failed to bind pipeline, vulkan context is null");
-	CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind pipeline, vulkan command buffers are empty");
+	CORE_ASSERT(vulkanContext, "Failed to draw index, vulkan context is null");
+	CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to draw index, vulkan command buffers are empty");
 
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++) {
 
 		//draw test
-		//TODO add index buffer
-		vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
+		//TODO add index vertexBuffer
+		vkCmdDrawIndexed(vulkanContext->CommandBuffers()[i], static_cast<uint32_t>(indexCount), 1, 0, 0, 0);
 	}
 	
 }

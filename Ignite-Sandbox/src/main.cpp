@@ -16,9 +16,9 @@ public:
 		
 		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
 
-
-		void* test = vertices.data();		
-		buffer = Ignite::IVertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size());
+		
+		vertexBuffer = Ignite::IVertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size());
+		indexBuffer = Ignite::IIndexBuffer::Create(indices.data(), sizeof(uint16_t) * indices.size());
 	}
 
 	void OnDetach() override
@@ -32,7 +32,7 @@ public:
 
         Ignite::Renderer::BeginScene();
 
-        Ignite::Renderer::Submit(pipeline.get(), buffer.get());
+        Ignite::Renderer::Submit(pipeline.get(), vertexBuffer.get(), indexBuffer.get(), indices.size());
 
         Ignite::Renderer::EndScene();
 
@@ -54,12 +54,22 @@ private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
 
 	//two floats pos, three floats color
-	std::vector<float> vertices =
-	{	0.0f, -0.5f, 1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f
+    std::vector<float> vertices = 
+	{
+	-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+	0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+	0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+	-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
 	};
-	std::shared_ptr<Ignite::IVertexBuffer> buffer;
+
+	std::vector<uint16_t> indices = 
+	{
+		0, 1, 2,
+		2, 3, 0
+	};
+	
+	std::shared_ptr<Ignite::IVertexBuffer> vertexBuffer;
+	std::shared_ptr<Ignite::IIndexBuffer> indexBuffer;
 };
 
 int main()

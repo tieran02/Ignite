@@ -59,4 +59,22 @@ namespace Ignite
 	private:
 		VulkanBaseBuffer m_baseBuffer;
 	};
+
+	class VulkanIndexBuffer : public IIndexBuffer
+	{
+		friend class IIndexBuffer;
+	protected:
+		VulkanIndexBuffer(uint16_t* data, size_t size);
+	public:
+		~VulkanIndexBuffer() override;
+	protected:
+		void Init(void* data, size_t size) override;
+		void Cleanup() override;
+	public:
+		void Free() override;
+		void Bind() const override;
+		void Unbind() const override;
+	private:
+		VulkanBaseBuffer m_baseBuffer;
+	};
 }

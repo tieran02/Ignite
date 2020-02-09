@@ -26,8 +26,8 @@ namespace Ignite
 	{
 	}
 
-	void RenderCommand::DrawIndexed(const IVertexBuffer* buffer)
+	void RenderCommand::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount)
 	{
-		s_renderer->DrawIndexed(buffer);
+		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount);
 	}
 }

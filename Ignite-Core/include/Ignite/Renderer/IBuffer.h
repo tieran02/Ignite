@@ -36,4 +36,18 @@ namespace Ignite
 
 		static std::shared_ptr<IVertexBuffer> Create(float* data, size_t size);
 	};
+
+	class IIndexBuffer :public IBuffer
+	{
+	protected:
+		IIndexBuffer();
+		void Init(void* data, size_t size) override = 0;
+		void Cleanup() override = 0;
+	public:
+		virtual ~IIndexBuffer() = default;
+		void Bind() const override = 0;
+		void Unbind() const override = 0;
+
+		static std::shared_ptr<IIndexBuffer> Create(uint16_t* data, size_t size);
+	};
 }

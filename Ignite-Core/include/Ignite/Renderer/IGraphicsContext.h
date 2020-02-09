@@ -12,6 +12,7 @@ namespace Ignite
 		friend class IPipeline;
 		friend class IBuffer;
 		friend class IVertexBuffer;
+		friend class IIndexBuffer;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;

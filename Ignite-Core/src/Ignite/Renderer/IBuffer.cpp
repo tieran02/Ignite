@@ -46,3 +46,23 @@ std::shared_ptr<Ignite::IVertexBuffer> Ignite::IVertexBuffer::Create(float* data
 
 	return nullptr;
 }
+
+Ignite::IIndexBuffer::IIndexBuffer() : IBuffer()
+{
+}
+
+std::shared_ptr<Ignite::IIndexBuffer> Ignite::IIndexBuffer::Create(uint16_t* data, size_t size)
+{
+	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create vertex buffer, Renderer is null")
+
+		switch (IRendererAPI::GetAPI())
+		{
+		case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
+		case IRendererAPI::API::VULKAN:
+			std::shared_ptr<IIndexBuffer> buffer = std::shared_ptr<IIndexBuffer>(new VulkanIndexBuffer(data, size));
+			Renderer::GraphicsContext()->m_buffers.push_back(std::static_pointer_cast<IBuffer>(buffer));
+			return buffer;
+		}
+
+	return nullptr;
+}

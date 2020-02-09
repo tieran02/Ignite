@@ -28,7 +28,7 @@ namespace Ignite {
 
         virtual void Clear() = 0;
 
-        virtual void DrawIndexed(const IVertexBuffer* buffer) = 0;
+        virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount) = 0;
 
         static API GetAPI() { return s_API; }
 

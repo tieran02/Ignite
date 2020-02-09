@@ -19,7 +19,7 @@ namespace Ignite {
 		static void EndScene();
 
 		//static void Submit(const IPipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline* pipeline, const IVertexBuffer* vertexBuffer, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const IPipeline* pipeline, const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount, const glm::mat4& transform = glm::mat4(1.0f));
 
 		static void SwapBuffers();
 
