@@ -11,9 +11,11 @@ namespace Ignite
 	{
 	public:
 		VulkanBaseBuffer(const VulkanContext* context);
-		void Create(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void CreateStaged(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void CreateHostVisable(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
 		void Free();
 		const VkBuffer& Buffer() const { return m_vkBuffer; }
+		const VkDeviceMemory& DeviceMemory() const { return m_vkBufferMemory; }
 	private:
 		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);

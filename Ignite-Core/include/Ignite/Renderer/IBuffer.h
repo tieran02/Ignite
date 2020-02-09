@@ -1,8 +1,16 @@
 #pragma once
 #include "NonCopyable.h"
+#include "glm/mat4x4.hpp"
 
 namespace Ignite
 {
+	struct UniformBufferObject
+	{
+		glm::mat4 model;
+		glm::mat4 view;
+		glm::mat4 proj;
+	};
+	
 	class IGraphicsContext;
 	class IBuffer : NonCopyable
 	{		

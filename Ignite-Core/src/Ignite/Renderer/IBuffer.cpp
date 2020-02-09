@@ -66,3 +66,4 @@ std::shared_ptr<Ignite::IIndexBuffer> Ignite::IIndexBuffer::Create(uint16_t* dat
 
 	return nullptr;
 }
+

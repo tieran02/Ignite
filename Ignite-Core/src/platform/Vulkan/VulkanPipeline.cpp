@@ -60,6 +60,9 @@ namespace  Ignite
 
 			//bind pipeline
 			vkCmdBindPipeline(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
+
+			vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1,
+				&vulkanContext->DescriptorSets()[i], 0, nullptr);
 			////draw test
 			//vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
 		}
@@ -239,7 +242,7 @@ namespace  Ignite
 		rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizer.lineWidth = 1.0f;
 		rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
-		rasterizer.frontFace = VK_FRONT_FACE_CLOCKWISE;
+		rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizer.depthBiasEnable = VK_FALSE;
 		rasterizer.depthBiasConstantFactor = 0.0f; // Optional
 		rasterizer.depthBiasClamp = 0.0f; // Optional
@@ -306,8 +309,8 @@ namespace  Ignite
 		///
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 0; // Optional
-		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount = 1; // Optional
+		pipelineLayoutInfo.pSetLayouts = &vulkanContext->DescriptorSetLayout(); // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 

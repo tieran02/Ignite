@@ -4,6 +4,7 @@
 #include <platform\Vulkan\VulkanDevice.h>
 #include "VulkanSwapChain.h"
 #include "VulkenRenderpass.h"
+#include "VulkanBuffer.h"
 
 #define VK_CHECK_RESULT(f)																				\
 {																										\
@@ -27,6 +28,9 @@ namespace Ignite
 		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
+		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& UniformBuffers() const { return m_uniformBuffers; }
+		const VkDescriptorSetLayout& DescriptorSetLayout() const { return m_descriptorSetLayout; }
+		const std::vector<VkDescriptorSet>& DescriptorSets() const { return m_descriptorSets; }
 
 		~VulkanContext();
 
@@ -40,6 +44,12 @@ namespace Ignite
 		std::unique_ptr<VulkanSwapChain> m_vulkanSwapchain;
 		std::unique_ptr<VulkenRenderpass> m_renderpass;
 
+    	//uniform buffers
+		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_uniformBuffers;
+    	//descriptor pool/sets
+		VkDescriptorPool descriptorPool;
+		VkDescriptorSetLayout m_descriptorSetLayout;
+		std::vector<VkDescriptorSet> m_descriptorSets;
     	//comands
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
@@ -51,9 +61,15 @@ namespace Ignite
 		std::vector<VkFence> imagesInFlight;
 		size_t currentFrame = 0;
 
+		void createUniformBuffers();
+		void createDescriptorPool();
+		void createDescriptorSetLayout();
+		void createDescriptorSets();
+    	
 		void createCommandPool();
 		void createCommandBuffers();
 		void createSyncObjects();
+    	
 		void cleanupSwapchain();
     };
 }

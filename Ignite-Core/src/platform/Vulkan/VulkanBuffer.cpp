@@ -9,7 +9,7 @@ namespace Ignite
 	VulkanBaseBuffer::VulkanBaseBuffer(const VulkanContext* context) : m_context(context)
 	{}
 
-	void VulkanBaseBuffer::Create(void* data, VkDeviceSize size, VkBufferUsageFlags usage)
+	void VulkanBaseBuffer::CreateStaged(void* data, VkDeviceSize size, VkBufferUsageFlags usage)
 	{
 		//staging buffer
 		VkBuffer stagingBuffer;
@@ -30,9 +30,14 @@ namespace Ignite
 		vkFreeMemory(m_context->Device().LogicalDevice(), stagingBufferMemory, nullptr);
 	}
 
+	void VulkanBaseBuffer::CreateHostVisable(void* data, VkDeviceSize size, VkBufferUsageFlags usage)
+	{
+		createBuffer(size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vkBuffer, m_vkBufferMemory);
+	}
+
 	void VulkanBaseBuffer::Free()
 	{
-		if (m_vkBuffer != nullptr) 
+		if (m_vkBuffer != nullptr)
 		{
 			vkDestroyBuffer(m_context->Device().LogicalDevice(), m_vkBuffer, nullptr);
 			m_vkBuffer = nullptr;
@@ -46,7 +51,7 @@ namespace Ignite
 
 	void VulkanBaseBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
 		VkBuffer& buffer, VkDeviceMemory& bufferMemory)
-	{		
+	{
 		VkBufferCreateInfo bufferInfo = {};
 		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 		bufferInfo.size = size;
@@ -119,7 +124,7 @@ namespace Ignite
 
 	VulkanBuffer::VulkanBuffer(void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
-		Init(data,size);
+		Init(data, size);
 	}
 
 	VulkanBuffer::~VulkanBuffer()
@@ -129,7 +134,7 @@ namespace Ignite
 
 	void VulkanBuffer::Init(void* data, size_t size)
 	{
-		m_baseBuffer.Create(data, size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		m_deleted = false;
 	}
 
@@ -137,8 +142,8 @@ namespace Ignite
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanBuffer, vulkan context is null");
-		
-		if(!m_deleted)
+
+		if (!m_deleted)
 		{
 			m_baseBuffer.Free();
 			m_deleted = true;
@@ -161,7 +166,7 @@ namespace Ignite
 	}
 
 
-	
+
 	VulkanVertexBuffer::VulkanVertexBuffer(float* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
@@ -174,7 +179,7 @@ namespace Ignite
 
 	void VulkanVertexBuffer::Init(void* data, size_t size)
 	{
-		m_baseBuffer.Create(data, size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 		m_deleted = false;
 	}
 
@@ -225,7 +230,7 @@ namespace Ignite
 
 	void VulkanIndexBuffer::Init(void* data, size_t size)
 	{
-		m_baseBuffer.Create(data, size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 		m_deleted = false;
 	}
 
@@ -249,8 +254,8 @@ namespace Ignite
 	void VulkanIndexBuffer::Bind() const
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind VulkanVertexBuffer, vulkan context is null");
-		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind VulkanVertexBuffer, vulkan command buffers are empty");
+		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
+		CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to bind VulkanIndexBuffer, vulkan command buffers are empty");
 
 		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 		{

@@ -30,4 +30,9 @@ namespace Ignite
 	{
 		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount);
 	}
+
+	void RenderCommand::SetUniformBufferObject(const UniformBufferObject& ubo)
+	{
+		s_renderer->SetUniformBufferObject(ubo);
+	}
 }

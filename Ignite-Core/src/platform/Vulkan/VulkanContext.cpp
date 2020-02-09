@@ -23,7 +23,11 @@ namespace Ignite
 		m_vulkanDevice = std::make_unique<VulkanDevice>();
 		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, Application::Instance().Window()->Width(), Application::Instance().Window()->Height());
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
-
+		createDescriptorSetLayout();
+		
+		createUniformBuffers();
+		createDescriptorPool();
+		createDescriptorSets();
 		createCommandPool();
 		createCommandBuffers();
 		createSyncObjects();
@@ -39,6 +43,10 @@ namespace Ignite
 			buffer->Free();
 		}
 		
+		cleanupSwapchain();
+
+		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_descriptorSetLayout, nullptr);
+		
 		LOG_CORE_INFO("Cleaning up vulkan semaphores");
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(m_vulkanDevice->LogicalDevice(), renderFinishedSemaphores[i], nullptr);
@@ -48,15 +56,7 @@ namespace Ignite
 		
 		LOG_CORE_INFO("Cleaning Vulkan Command pool");
 		vkDestroyCommandPool(m_vulkanDevice->LogicalDevice(), m_commandPool, nullptr);
-
-		//clean pipeline
-		for (auto& pipeline : m_pipelines)
-		{
-			pipeline.second->Free();
-		}
 		
-		m_renderpass.reset();
-		m_vulkanSwapchain.reset();
 		m_vulkanDevice.reset();
 		LOG_CORE_INFO("Cleaning VulkanContext");
 	}
@@ -129,12 +129,6 @@ namespace Ignite
 	void VulkanContext::RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		vkDeviceWaitIdle(m_vulkanDevice->LogicalDevice());
-
-		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
-		{
-			pipeline.second->Free();
-		}
 		
 		cleanupSwapchain();
 		//TODO pass width as paramters along with viewport x,y
@@ -147,7 +141,94 @@ namespace Ignite
 			pipeline.second->Recreate();
 		}
 
+		createUniformBuffers();
+		createDescriptorPool();
+		createDescriptorSets();
 		createCommandBuffers();
+	}
+
+	void VulkanContext::createUniformBuffers()
+	{
+		m_uniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());
+		
+		//create a ubo for each swapcahin image
+		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++) 
+		{
+			m_uniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
+			UniformBufferObject ubo{};
+			m_uniformBuffers[i]->CreateHostVisable(&ubo, sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			
+		}
+	}
+
+	void VulkanContext::createDescriptorPool()
+	{
+		LOG_CORE_INFO("Creating Descriptor Pool");
+		VkDescriptorPoolSize poolSize = {};
+		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSize.descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+
+		VkDescriptorPoolCreateInfo poolInfo = {};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.poolSizeCount = 1;
+		poolInfo.pPoolSizes = &poolSize;
+
+		poolInfo.maxSets = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+
+		VK_CHECK_RESULT(vkCreateDescriptorPool(m_vulkanDevice->LogicalDevice(), &poolInfo, nullptr, &descriptorPool));
+	}
+
+	void VulkanContext::createDescriptorSetLayout()
+	{
+		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+		uboLayoutBinding.binding = 0;
+		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		uboLayoutBinding.descriptorCount = 1;
+		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+
+		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.pBindings = &uboLayoutBinding;
+
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &layoutInfo, nullptr, &m_descriptorSetLayout));
+	}
+
+	void VulkanContext::createDescriptorSets()
+	{
+		std::vector<VkDescriptorSetLayout> layouts(m_vulkanSwapchain->ImageViews().size(), m_descriptorSetLayout);
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = descriptorPool;
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		m_descriptorSets.resize(m_vulkanSwapchain->ImageViews().size());
+		VK_CHECK_RESULT(vkAllocateDescriptorSets(m_vulkanDevice->LogicalDevice(), &allocInfo, m_descriptorSets.data()));
+
+		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++)
+		{
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = m_uniformBuffers[i]->Buffer();
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(UniformBufferObject);
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+
+			descriptorWrite.pBufferInfo = &bufferInfo;
+			descriptorWrite.pImageInfo = nullptr; // Optional
+			descriptorWrite.pTexelBufferView = nullptr; // Optional
+
+			vkUpdateDescriptorSets(m_vulkanDevice->LogicalDevice(), 1, &descriptorWrite, 0, nullptr);
+		}
 	}
 
 	void VulkanContext::createCommandPool()
@@ -213,9 +294,25 @@ namespace Ignite
 	{
 
 		LOG_CORE_INFO("Cleaning up vulkan swapchain for recreation");
+		
+		//clean pipeline
+		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		{
+			pipeline.second->Free();
+		}
+		
 		//free command buffers
 		vkFreeCommandBuffers(m_vulkanDevice->LogicalDevice(), m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
 		m_renderpass.reset();
 		m_vulkanSwapchain.reset();
+
+		LOG_CORE_INFO("Cleaning up vulkan uniform buffers");
+		for (size_t i = 0; i < m_uniformBuffers.size(); i++)
+		{
+			m_uniformBuffers[i]->Free();
+		}
+		
+		LOG_CORE_INFO("Cleaning up vulkan Descriptor Pool");
+		vkDestroyDescriptorPool(m_vulkanDevice->LogicalDevice(), descriptorPool, nullptr);
 	}
 }

@@ -1,6 +1,12 @@
 #include <memory>
 #include "Ignite/Ignite.h"
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include <chrono>
+
 class ExampleLayer : public Ignite::Layer
 {
 public:
@@ -19,6 +25,10 @@ public:
 		
 		vertexBuffer = Ignite::IVertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size());
 		indexBuffer = Ignite::IIndexBuffer::Create(indices.data(), sizeof(uint16_t) * indices.size());
+
+		m_ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
+		m_ubo.proj[1][1] *= -1;
 	}
 
 	void OnDetach() override
@@ -27,9 +37,18 @@ public:
 
 	void OnUpdate() override
 	{
+		//rotate
+		static auto startTime = std::chrono::high_resolution_clock::now();
+
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		
         //start scene
         Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
 
+		Ignite::RenderCommand::SetUniformBufferObject(m_ubo);
+		
         Ignite::Renderer::BeginScene();
 
         Ignite::Renderer::Submit(pipeline.get(), vertexBuffer.get(), indexBuffer.get(), indices.size());
@@ -56,10 +75,10 @@ private:
 	//two floats pos, three floats color
     std::vector<float> vertices = 
 	{
-	-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-	0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-	0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-	-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+		-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
 	};
 
 	std::vector<uint16_t> indices = 
@@ -70,6 +89,7 @@ private:
 	
 	std::shared_ptr<Ignite::IVertexBuffer> vertexBuffer;
 	std::shared_ptr<Ignite::IIndexBuffer> indexBuffer;
+	Ignite::UniformBufferObject m_ubo;
 };
 
 int main()

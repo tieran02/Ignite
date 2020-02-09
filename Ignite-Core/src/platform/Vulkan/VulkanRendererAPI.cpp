@@ -63,7 +63,6 @@ void Ignite::VulkanRendererAPI::BeginScene()
 
 		//begin render pass
 		vkCmdBeginRenderPass(vulkanContext->CommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
 		//LOG_CORE_INFO("Scene Recording Started");
 	}
 }	
@@ -108,6 +107,21 @@ void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, c
 		vkCmdDrawIndexed(vulkanContext->CommandBuffers()[i], static_cast<uint32_t>(indexCount), 1, 0, 0, 0);
 	}
 	
+}
+
+void Ignite::VulkanRendererAPI::SetUniformBufferObject(const UniformBufferObject& ubo)
+{
+	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
+	CORE_ASSERT(vulkanContext, "Failed to set uniform buffer object, vulkan context is null");
+	CORE_ASSERT(!vulkanContext->UniformBuffers().empty(), "Failed to set uniform buffer object, no uniform buffers");
+
+	for (size_t i = 0; i < vulkanContext->UniformBuffers().size(); i++)
+	{
+		void* data;
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->UniformBuffers()[i]->DeviceMemory(), 0, sizeof(ubo), 0, &data);
+		memcpy(data, &ubo, sizeof(ubo));
+		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->UniformBuffers()[i]->DeviceMemory());
+	}
 }
 
 void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color)
