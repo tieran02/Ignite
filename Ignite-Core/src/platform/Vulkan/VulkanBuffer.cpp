@@ -9,7 +9,7 @@ namespace Ignite
 	VulkanBaseBuffer::VulkanBaseBuffer(const VulkanContext* context) : m_context(context)
 	{}
 
-	void VulkanBaseBuffer::CreateStaged(void* data, VkDeviceSize size, VkBufferUsageFlags usage)
+	void VulkanBaseBuffer::CreateStaged(const void* data, VkDeviceSize size, VkBufferUsageFlags usage)
 	{
 		//staging buffer
 		VkBuffer stagingBuffer;
@@ -30,7 +30,7 @@ namespace Ignite
 		vkFreeMemory(m_context->Device().LogicalDevice(), stagingBufferMemory, nullptr);
 	}
 
-	void VulkanBaseBuffer::CreateHostVisable(void* data, VkDeviceSize size, VkBufferUsageFlags usage)
+	void VulkanBaseBuffer::CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage)
 	{
 		createBuffer(size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vkBuffer, m_vkBufferMemory);
 	}
@@ -66,7 +66,7 @@ namespace Ignite
 		VkMemoryAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = m_context->Device().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
 		VK_CHECK_RESULT(vkAllocateMemory(m_context->Device().LogicalDevice(), &allocInfo, nullptr, &bufferMemory));
 
@@ -75,54 +75,16 @@ namespace Ignite
 
 	void VulkanBaseBuffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
 	{
-		VkCommandBufferAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = m_context->CommandPool();
-		allocInfo.commandBufferCount = 1;
-
-		VkCommandBuffer commandBuffer;
-		vkAllocateCommandBuffers(m_context->Device().LogicalDevice(), &allocInfo, &commandBuffer);
-
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+		VkCommandBuffer commandBuffer = m_context->BeginSingleTimeCommands();
 
 		VkBufferCopy copyRegion = {};
 		copyRegion.size = size;
 		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
 
-		vkEndCommandBuffer(commandBuffer);
-
-		VkSubmitInfo submitInfo = {};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer;
-
-		vkQueueSubmit(m_context->Device().GraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(m_context->Device().GraphicsQueue());
-
-		vkFreeCommandBuffers(m_context->Device().LogicalDevice(), m_context->CommandPool(), 1, &commandBuffer);
+		m_context->EndSingleTimeCommands(commandBuffer);
 	}
 
-	uint32_t VulkanBaseBuffer::findMemoryType(uint32_t typeFilter,
-		VkMemoryPropertyFlags properties)
-	{
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(m_context->Device().PhysicalDevice(), &memProperties);
-
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-			if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-				return i;
-			}
-		}
-
-		LOG_CORE_FATAL("failed to find suitable memory type!");
-	}
-
-	VulkanBuffer::VulkanBuffer(void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanBuffer::VulkanBuffer(const void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
 	}
@@ -132,7 +94,7 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanBuffer::Init(void* data, size_t size)
+	void VulkanBuffer::Init(const void* data, size_t size)
 	{
 		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		m_deleted = false;
@@ -167,7 +129,7 @@ namespace Ignite
 
 
 
-	VulkanVertexBuffer::VulkanVertexBuffer(float* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanVertexBuffer::VulkanVertexBuffer(const float* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
 	}
@@ -177,7 +139,7 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanVertexBuffer::Init(void* data, size_t size)
+	void VulkanVertexBuffer::Init(const void* data, size_t size)
 	{
 		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 		m_deleted = false;
@@ -218,7 +180,7 @@ namespace Ignite
 	{
 	}
 
-	VulkanIndexBuffer::VulkanIndexBuffer(uint16_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanIndexBuffer::VulkanIndexBuffer(const uint16_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
 	}
@@ -228,7 +190,7 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanIndexBuffer::Init(void* data, size_t size)
+	void VulkanIndexBuffer::Init(const void* data, size_t size)
 	{
 		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 		m_deleted = false;

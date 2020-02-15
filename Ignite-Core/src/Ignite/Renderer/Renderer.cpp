@@ -3,6 +3,8 @@
 #include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Renderer/IPipeline.h"
 #include "Ignite/Application.h"
+#include "Ignite/Renderer/IModel.h"
+#include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -40,7 +42,7 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IModel* model, const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
@@ -50,10 +52,11 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IVertexBuffer* ve
 	//bind pipeline
 	pipeline->Bind();
 	//TODO draw stuff here
-	vertexBuffer->Bind();
-	indexBuffer->Bind();
+	model->VertexBuffer()->Bind();
+	model->IndexBuffer()->Bind();
+	model->BindDescriptors();
 	
-	RenderCommand::DrawIndexed(vertexBuffer,indexBuffer,indexCount);
+	RenderCommand::DrawIndexed(model->VertexBuffer(), model->IndexBuffer(),model->IndexCount());
 	
 	pipeline->Unbind();
 	

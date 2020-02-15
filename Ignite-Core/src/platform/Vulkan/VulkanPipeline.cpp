@@ -61,11 +61,11 @@ namespace  Ignite
 			//bind pipeline
 			vkCmdBindPipeline(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline);
 
-			vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1,
-				&vulkanContext->DescriptorSets()[i], 0, nullptr);
 			////draw test
 			//vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
 		}
+
+		s_currentBoundPipeline = (IPipeline*)this;
 	}
 
 	void VulkanPipeline::Unbind() const

@@ -32,7 +32,8 @@ project "Ignite-Core"
 		"$(VULKAN_SDK)/include",
 		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.GLM}"
+		"%{IncludeDir.GLM}",
+		"vendor/stb/include"
 	}
 
 	links 

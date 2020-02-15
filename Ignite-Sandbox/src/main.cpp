@@ -1,11 +1,10 @@
 #include <memory>
 #include "Ignite/Ignite.h"
 
-#define GLM_FORCE_RADIANS
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 #include <chrono>
+#include "Ignite/Renderer/IModel.h"
+
 
 class ExampleLayer : public Ignite::Layer
 {
@@ -17,18 +16,36 @@ public:
 		Ignite::PipelineInputLayout layout = 
 		{
 			{ Ignite::PipelineDataType::eFloat2, "a_Position" },
-			{ Ignite::PipelineDataType::eFloat3, "a_Color" }
+			{ Ignite::PipelineDataType::eFloat3, "a_Color" },
+			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
 		
 		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
 
-		
-		vertexBuffer = Ignite::IVertexBuffer::Create(vertices.data(), sizeof(float) * vertices.size());
-		indexBuffer = Ignite::IIndexBuffer::Create(indices.data(), sizeof(uint16_t) * indices.size());
+		//create texture
+		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg");
 
-		m_ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//two floats pos, three floats color
+		std::vector<float> vertices =
+		{
+			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+			0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+			0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f
+		};
+
+		std::vector<uint16_t> indices =
+		{
+			0, 1, 2,
+			2, 3, 0
+		};
+
+		model = Ignite::IModel::Create(vertices, indices, "texture");
+
+		m_ubo.view = glm::lookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
 		m_ubo.proj[1][1] *= -1;
+		m_ubo.model = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
 	void OnDetach() override
@@ -51,7 +68,7 @@ public:
 		
         Ignite::Renderer::BeginScene();
 
-        Ignite::Renderer::Submit(pipeline.get(), vertexBuffer.get(), indexBuffer.get(), indices.size());
+        Ignite::Renderer::Submit(pipeline.get(), model.get());
 
         Ignite::Renderer::EndScene();
 
@@ -71,24 +88,8 @@ public:
 
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
-
-	//two floats pos, three floats color
-    std::vector<float> vertices = 
-	{
-		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f, 0.5f, 1.0f, 1.0f, 1.0f
-	};
-
-	std::vector<uint16_t> indices = 
-	{
-		0, 1, 2,
-		2, 3, 0
-	};
 	
-	std::shared_ptr<Ignite::IVertexBuffer> vertexBuffer;
-	std::shared_ptr<Ignite::IIndexBuffer> indexBuffer;
+	std::shared_ptr<Ignite::IModel> model;
 	Ignite::UniformBufferObject m_ubo;
 };
 

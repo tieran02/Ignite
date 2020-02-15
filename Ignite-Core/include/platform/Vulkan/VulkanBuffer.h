@@ -11,15 +11,14 @@ namespace Ignite
 	{
 	public:
 		VulkanBaseBuffer(const VulkanContext* context);
-		void CreateStaged(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
-		void CreateHostVisable(void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void CreateStaged(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
 		void Free();
 		const VkBuffer& Buffer() const { return m_vkBuffer; }
 		const VkDeviceMemory& DeviceMemory() const { return m_vkBufferMemory; }
 	private:
 		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-		uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		const VulkanContext* m_context;
 		VkBuffer m_vkBuffer = nullptr;
@@ -30,11 +29,11 @@ namespace Ignite
 	{
 		friend class IBuffer;
 	protected:
-		VulkanBuffer(void* data, size_t size);
+		VulkanBuffer(const void* data, size_t size);
 	public:
 		~VulkanBuffer() override;
 	protected:
-		void Init(void* data, size_t size) override;
+		void Init(const void* data, size_t size) override;
 		void Cleanup() override;
 	public:
 		void Free() override;
@@ -48,11 +47,11 @@ namespace Ignite
 	{
 		friend class IVertexBuffer;
 	protected:
-		VulkanVertexBuffer(float* data, size_t size);
+		VulkanVertexBuffer(const float* data, size_t size);
 	public:
 		~VulkanVertexBuffer() override;
 	protected:
-		void Init(void* data, size_t size) override;
+		void Init(const void* data, size_t size) override;
 		void Cleanup() override;
 	public:
 		void Free() override;
@@ -66,11 +65,11 @@ namespace Ignite
 	{
 		friend class IIndexBuffer;
 	protected:
-		VulkanIndexBuffer(uint16_t* data, size_t size);
+		VulkanIndexBuffer(const uint16_t* data, size_t size);
 	public:
 		~VulkanIndexBuffer() override;
 	protected:
-		void Init(void* data, size_t size) override;
+		void Init(const void* data, size_t size) override;
 		void Cleanup() override;
 	public:
 		void Free() override;

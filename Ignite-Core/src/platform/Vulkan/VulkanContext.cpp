@@ -4,6 +4,9 @@
 #include <Ignite/IWindow.h>
 #include "Ignite/Application.h"
 #include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Renderer/ITexture2D.h"
+#include "platform/Vulkan/VulkanTexture2D.h"
+#include "platform/Vulkan/VulkanModel.h"
 
 namespace Ignite
 {
@@ -27,7 +30,7 @@ namespace Ignite
 		
 		createUniformBuffers();
 		createDescriptorPool();
-		createDescriptorSets();
+		//createDescriptorSets();
 		createCommandPool();
 		createCommandBuffers();
 		createSyncObjects();
@@ -37,6 +40,12 @@ namespace Ignite
 	{
 		vkDeviceWaitIdle(m_vulkanDevice->LogicalDevice());
 
+		//clean images
+		for (auto& image : m_texture2Ds)
+		{
+			image.second->Free();
+		}
+		
 		//clean buffers
 		for (auto& buffer : m_buffers)
 		{
@@ -143,8 +152,50 @@ namespace Ignite
 
 		createUniformBuffers();
 		createDescriptorPool();
-		createDescriptorSets();
+
+		//recreate model descriptor sets
+		for (size_t i = 0; i < m_models.size(); i++)
+		{
+			VulkanModel* vulkanModel = static_cast<VulkanModel*>(m_models[i].get());
+			vulkanModel->CreateDescriptorSet();
+		}
+		
 		createCommandBuffers();
+	}
+
+	VkCommandBuffer VulkanContext::BeginSingleTimeCommands() const
+	{
+		VkCommandBufferAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		allocInfo.commandPool = m_commandPool;
+		allocInfo.commandBufferCount = 1;
+
+		VkCommandBuffer commandBuffer;
+		vkAllocateCommandBuffers(m_vulkanDevice->LogicalDevice(), &allocInfo, &commandBuffer);
+
+		VkCommandBufferBeginInfo beginInfo = {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+		return commandBuffer;
+	}
+
+	void VulkanContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
+	{
+		vkEndCommandBuffer(commandBuffer);
+
+		VkSubmitInfo submitInfo = {};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &commandBuffer;
+
+		vkQueueSubmit(m_vulkanDevice->GraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+		vkQueueWaitIdle(m_vulkanDevice->GraphicsQueue());
+
+		vkFreeCommandBuffers(m_vulkanDevice->LogicalDevice(), m_commandPool, 1, &commandBuffer);
 	}
 
 	void VulkanContext::createUniformBuffers()
@@ -164,15 +215,16 @@ namespace Ignite
 	void VulkanContext::createDescriptorPool()
 	{
 		LOG_CORE_INFO("Creating Descriptor Pool");
-		VkDescriptorPoolSize poolSize = {};
-		poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		poolSize.descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		std::array<VkDescriptorPoolSize, 2> poolSizes = {};
+		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[0].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.poolSizeCount = 1;
-		poolInfo.pPoolSizes = &poolSize;
-
+		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+		poolInfo.pPoolSizes = poolSizes.data();
 		poolInfo.maxSets = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 
 		VK_CHECK_RESULT(vkCreateDescriptorPool(m_vulkanDevice->LogicalDevice(), &poolInfo, nullptr, &descriptorPool));
@@ -187,48 +239,21 @@ namespace Ignite
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
 
+		//texture sampler
+		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
+		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.descriptorCount = 1;
+		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		samplerLayoutBinding.pImmutableSamplers = nullptr;
+		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
 		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = 1;
-		layoutInfo.pBindings = &uboLayoutBinding;
+		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+		layoutInfo.pBindings = bindings.data();
 
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &layoutInfo, nullptr, &m_descriptorSetLayout));
-	}
-
-	void VulkanContext::createDescriptorSets()
-	{
-		std::vector<VkDescriptorSetLayout> layouts(m_vulkanSwapchain->ImageViews().size(), m_descriptorSetLayout);
-		VkDescriptorSetAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = descriptorPool;
-		allocInfo.descriptorSetCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
-		allocInfo.pSetLayouts = layouts.data();
-
-		m_descriptorSets.resize(m_vulkanSwapchain->ImageViews().size());
-		VK_CHECK_RESULT(vkAllocateDescriptorSets(m_vulkanDevice->LogicalDevice(), &allocInfo, m_descriptorSets.data()));
-
-		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++)
-		{
-			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = m_uniformBuffers[i]->Buffer();
-			bufferInfo.offset = 0;
-			bufferInfo.range = sizeof(UniformBufferObject);
-
-			VkWriteDescriptorSet descriptorWrite = {};
-			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrite.dstSet = m_descriptorSets[i];
-			descriptorWrite.dstBinding = 0;
-			descriptorWrite.dstArrayElement = 0;
-			
-			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			descriptorWrite.descriptorCount = 1;
-
-			descriptorWrite.pBufferInfo = &bufferInfo;
-			descriptorWrite.pImageInfo = nullptr; // Optional
-			descriptorWrite.pTexelBufferView = nullptr; // Optional
-
-			vkUpdateDescriptorSets(m_vulkanDevice->LogicalDevice(), 1, &descriptorWrite, 0, nullptr);
-		}
 	}
 
 	void VulkanContext::createCommandPool()

@@ -26,6 +26,7 @@ namespace Ignite
 		const std::string& Name() const { return m_name; }
 		
 		static std::shared_ptr<IPipeline> Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
+		static const IPipeline* CurrentBoundPipeline() { return s_currentBoundPipeline; }
 	protected:
 		std::string m_name;
 		std::string m_vertexShader;
@@ -33,5 +34,6 @@ namespace Ignite
 		PipelineInputLayout m_inputLayout;
 
 		bool m_deleted;
+		static IPipeline* s_currentBoundPipeline;
 	};
 }

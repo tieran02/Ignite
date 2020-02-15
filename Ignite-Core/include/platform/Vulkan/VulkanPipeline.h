@@ -21,7 +21,9 @@ namespace  Ignite
 		void Free() override;
 		void Recreate() override;
 		void Bind() const override;
-		void Unbind() const override;	
+		void Unbind() const override;
+
+		const VkPipelineLayout& PipelineLayout() const { return m_pipelineLayout; };
 	private:
 		VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_pipeline;

@@ -7,6 +7,8 @@
 
 namespace Ignite
 {
+	IPipeline* IPipeline::s_currentBoundPipeline = nullptr;
+	
 	IPipeline::IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout) :
 		m_context(Renderer::GraphicsContext()),
 		m_inputLayout(inputLayout),

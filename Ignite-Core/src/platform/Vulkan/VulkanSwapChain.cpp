@@ -21,6 +21,25 @@ namespace Ignite
 		
 	}
 
+	VkImageView VulkanSwapChain::CreateImageView(VkImage image, VkFormat format) const
+	{
+		VkImageViewCreateInfo viewInfo = {};
+		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		viewInfo.image = image;
+		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		viewInfo.format = format;
+		viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		viewInfo.subresourceRange.baseMipLevel = 0;
+		viewInfo.subresourceRange.levelCount = 1;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
+		viewInfo.subresourceRange.layerCount = 1;
+
+		VkImageView imageView;
+		VK_CHECK_RESULT(vkCreateImageView(m_device.LogicalDevice(), &viewInfo, nullptr, &imageView));
+
+		return imageView;
+	}
+
 
 	void VulkanSwapChain::create()
 	{
@@ -140,21 +159,7 @@ namespace Ignite
 
 		for (size_t i = 0; i < m_swapChainImages.size(); i++)
 		{
-			VkImageViewCreateInfo createInfo = {};
-			createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-			createInfo.image = m_swapChainImages[i];
-			createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-			createInfo.format = m_selectedFormat.format;
-			createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-			createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-			createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-			createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-			createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			createInfo.subresourceRange.baseMipLevel = 0;
-			createInfo.subresourceRange.levelCount = 1;
-			createInfo.subresourceRange.baseArrayLayer = 0;
-			createInfo.subresourceRange.layerCount = 1;
-			VK_CHECK_RESULT(vkCreateImageView(m_device.LogicalDevice(), &createInfo, nullptr, &m_swapChainImageViews[i]));
+			m_swapChainImageViews[i] = CreateImageView(m_swapChainImages[i], m_selectedFormat.format);
 		}
 	}
 }

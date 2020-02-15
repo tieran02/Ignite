@@ -18,6 +18,8 @@ namespace Ignite
 		const std::vector<VkImage>& Images() const { return m_swapChainImages; }
 		const std::vector<VkImageView>& ImageViews() const { return m_swapChainImageViews; }
 		const VkSwapchainKHR& Swapchain() const { return m_swapchain; }
+
+		VkImageView CreateImageView(VkImage image, VkFormat format) const;
 	private:
 		uint32_t m_width, m_height;
 		const VulkanDevice& m_device;

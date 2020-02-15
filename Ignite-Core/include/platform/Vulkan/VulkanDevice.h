@@ -27,7 +27,8 @@ namespace Ignite
 		const QueueFamilyIndices& QueueFamilies() const { return m_queueFamilies; }
 		const VkQueue& GraphicsQueue() const { return m_graphicsQueue; }
 		const VkQueue& PresentQueue() const { return m_presentQueue; }
-
+		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+		
 	private:
 		void create();
 		void cleanup();
@@ -64,7 +65,7 @@ namespace Ignite
 		bool checkValidationLayerSupport() const;
 		int rateDeviceSuitability(VkPhysicalDevice device);
 		QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice);
-		
+
 		void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 		void setupDebugMessenger();
 		VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);

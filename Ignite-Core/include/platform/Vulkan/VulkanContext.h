@@ -29,14 +29,17 @@ namespace Ignite
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
 		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& UniformBuffers() const { return m_uniformBuffers; }
+		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
 		const VkDescriptorSetLayout& DescriptorSetLayout() const { return m_descriptorSetLayout; }
-		const std::vector<VkDescriptorSet>& DescriptorSets() const { return m_descriptorSets; }
 
 		~VulkanContext();
 
 		void SwapBuffers() override;
 		void WaitTillFree() const;
 		void RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+		VkCommandBuffer BeginSingleTimeCommands() const;
+		void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
 	private:
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -49,7 +52,6 @@ namespace Ignite
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
 		VkDescriptorSetLayout m_descriptorSetLayout;
-		std::vector<VkDescriptorSet> m_descriptorSets;
     	//comands
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
@@ -64,12 +66,13 @@ namespace Ignite
 		void createUniformBuffers();
 		void createDescriptorPool();
 		void createDescriptorSetLayout();
-		void createDescriptorSets();
+		//void createDescriptorSets();
     	
 		void createCommandPool();
 		void createCommandBuffers();
 		void createSyncObjects();
-    	
+		static uint32_t FindMemoryType(const VulkanContext& context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 		void cleanupSwapchain();
     };
 }

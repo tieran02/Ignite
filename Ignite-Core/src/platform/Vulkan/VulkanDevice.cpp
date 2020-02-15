@@ -159,6 +159,7 @@ void Ignite::VulkanDevice::createLogicalDevice()
 	}
 
 	VkPhysicalDeviceFeatures deviceFeatures = {};
+	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
 	VkDeviceCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -276,7 +277,7 @@ int Ignite::VulkanDevice::rateDeviceSuitability(VkPhysicalDevice device)
 
 	// Application can't function without geometry shaders and has queue families
 	QueueFamilyIndices indices = findQueueFamilies(device);
-	if (!deviceFeatures.geometryShader || !indices.isComplete()) {
+	if (!deviceFeatures.geometryShader || !indices.isComplete() || !deviceFeatures.samplerAnisotropy) {
 		return 0;
 	}
 
@@ -314,6 +315,21 @@ Ignite::QueueFamilyIndices Ignite::VulkanDevice::findQueueFamilies(VkPhysicalDev
 	}
 
 	return indices;
+}
+
+uint32_t Ignite::VulkanDevice::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
+{
+	VkPhysicalDeviceMemoryProperties memProperties;
+	vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+		if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+			return i;
+		}
+	}
+
+	LOG_CORE_FATAL("failed to find suitable memory type!");
+	return 0;
 }
 
 void Ignite::VulkanDevice::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
