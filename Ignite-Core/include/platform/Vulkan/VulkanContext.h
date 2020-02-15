@@ -31,12 +31,15 @@ namespace Ignite
 		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& UniformBuffers() const { return m_uniformBuffers; }
 		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
 		const VkDescriptorSetLayout& DescriptorSetLayout() const { return m_descriptorSetLayout; }
+    	
 
 		~VulkanContext();
 
 		void SwapBuffers() override;
 		void WaitTillFree() const;
 		void RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+
+		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 
 		VkCommandBuffer BeginSingleTimeCommands() const;
 		void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;

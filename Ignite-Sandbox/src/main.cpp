@@ -1,10 +1,6 @@
 #include <memory>
 #include "Ignite/Ignite.h"
-
-
 #include <chrono>
-#include "Ignite/Renderer/IModel.h"
-
 
 class ExampleLayer : public Ignite::Layer
 {
@@ -15,7 +11,7 @@ public:
 	{
 		Ignite::PipelineInputLayout layout = 
 		{
-			{ Ignite::PipelineDataType::eFloat2, "a_Position" },
+			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Color" },
 			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
@@ -28,21 +24,26 @@ public:
 		//two floats pos, three floats color
 		std::vector<float> vertices =
 		{
-			-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-			0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			-0.5f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f
+			-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
+
+			-0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
+			 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
+			 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
+			-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f
 		};
 
 		std::vector<uint16_t> indices =
 		{
-			0, 1, 2,
-			2, 3, 0
+			0, 1, 2, 2, 3, 0,
+			4, 5, 6, 6, 7, 4
 		};
 
 		model = Ignite::IModel::Create(vertices, indices, "texture");
 
-		m_ubo.view = glm::lookAt(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		m_ubo.view = glm::lookAt(glm::vec3(1.5f, 1.5f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
 		m_ubo.proj[1][1] *= -1;
 		m_ubo.model = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));

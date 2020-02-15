@@ -1,6 +1,7 @@
 #pragma once
 
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "Ignite/Input.h"
 #include "Ignite/Renderer/IPipeline.h"
 #include "Ignite/Renderer/RenderCommand.h"
@@ -11,6 +12,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Ignite/Renderer/ITexture2D.h"
+#include "Ignite/Renderer/IModel.h"
 
 namespace Ignite
 {

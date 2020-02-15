@@ -163,6 +163,24 @@ namespace Ignite
 		createCommandBuffers();
 	}
 
+	VkFormat VulkanContext::FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling,
+		VkFormatFeatureFlags features) const
+	{
+		for(VkFormat format : candidates) {
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(m_vulkanDevice->PhysicalDevice(), format, &props);
+
+			if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+				return format;
+			}
+			else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+				return format;
+			}
+		}
+
+		LOG_CORE_FATAL("failed to find supported format!");
+	}
+
 	VkCommandBuffer VulkanContext::BeginSingleTimeCommands() const
 	{
 		VkCommandBufferAllocateInfo allocInfo = {};

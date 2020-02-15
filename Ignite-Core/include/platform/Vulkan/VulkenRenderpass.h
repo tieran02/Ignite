@@ -18,9 +18,17 @@ namespace Ignite
 		VkRenderPass m_renderpass;
 		std::vector<VkFramebuffer> m_swapChainFramebuffers;
 
+		VkImage depthImage;
+		VkDeviceMemory depthImageMemory;
+		VkImageView depthImageView;
+
 		void create();
 		void cleanup();
 		void createFrameBuffers();
+
+		VkFormat findDepthFormat() const;
+		bool hasStencilComponent(VkFormat format);
+		void createDepthResources();
 	};
 }
 

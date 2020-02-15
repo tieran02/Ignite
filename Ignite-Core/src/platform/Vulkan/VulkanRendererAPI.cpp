@@ -57,9 +57,12 @@ void Ignite::VulkanRendererAPI::BeginScene()
 		renderPassInfo.renderArea.extent = VkExtent2D{ vulkanContext->Swapchain().Width() ,vulkanContext->Swapchain().Height() };
 
 		//clear colour as a test
-		VkClearValue clearColor = { m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
+		std::array<VkClearValue, 2> clearValues = {};
+		clearValues[0].color = { m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a };;
+		clearValues[1].depthStencil = { 1.0f, 0 };
+		
+		renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+		renderPassInfo.pClearValues = clearValues.data();
 
 		//begin render pass
 		vkCmdBeginRenderPass(vulkanContext->CommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);

@@ -23,6 +23,7 @@ namespace Ignite
 		Cleanup();
 	}
 
+
 	void VulkanTexture2D::Init(const std::string& path)
 	{
 		createImage(path);
@@ -41,18 +42,17 @@ namespace Ignite
 
 		vkDestroySampler(vulkanContext->Device().LogicalDevice(), textureSampler, nullptr);
 		vkDestroyImageView(vulkanContext->Device().LogicalDevice(), textureImageView, nullptr);
-		
+
 		vkDestroyImage(vulkanContext->Device().LogicalDevice(), m_textureImage, nullptr);
 		vkFreeMemory(vulkanContext->Device().LogicalDevice(), m_textureImageMemory, nullptr);
 
 		m_deleted = true;
 	}
 
-	void VulkanTexture2D::createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory)
+	void VulkanTexture2D::CreateImage(const VulkanContext& context, uint32_t width, uint32_t height, VkFormat format,
+		VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image,
+		VkDeviceMemory& imageMemory)
 	{
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
-
 		VkImageCreateInfo imageInfo = {};
 		imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -68,31 +68,28 @@ namespace Ignite
 		imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
 		imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-		if (vkCreateImage(vulkanContext->Device().LogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
+		if (vkCreateImage(context.Device().LogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create image!");
 		}
 
 		VkMemoryRequirements memRequirements;
-		vkGetImageMemoryRequirements(vulkanContext->Device().LogicalDevice(), image, &memRequirements);
+		vkGetImageMemoryRequirements(context.Device().LogicalDevice(), image, &memRequirements);
 
 		VkMemoryAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = vulkanContext->Device().FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = context.Device().FindMemoryType(memRequirements.memoryTypeBits, properties);
 
-		if (vkAllocateMemory(vulkanContext->Device().LogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+		if (vkAllocateMemory(context.Device().LogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate image memory!");
 		}
 
-		vkBindImageMemory(vulkanContext->Device().LogicalDevice(), image, imageMemory, 0);
+		vkBindImageMemory(context.Device().LogicalDevice(), image, imageMemory, 0);
 	}
 
-	void VulkanTexture2D::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
-	{
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
-		
-		VkCommandBuffer commandBuffer = vulkanContext->BeginSingleTimeCommands();
+	void VulkanTexture2D::TransitionImageLayout(const VulkanContext& context, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
+	{		
+		VkCommandBuffer commandBuffer = context.BeginSingleTimeCommands();
 
 		VkImageMemoryBarrier barrier = {};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -110,6 +107,18 @@ namespace Ignite
 		VkPipelineStageFlags sourceStage;
 		VkPipelineStageFlags destinationStage;
 
+		if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+
+			if (format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT) //has stencil component
+			{
+				barrier.subresourceRange.aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+			}
+		}
+		else {
+			barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		}
+		
 		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
 			barrier.srcAccessMask = 0;
 			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -124,6 +133,13 @@ namespace Ignite
 			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL) {
+			barrier.srcAccessMask = 0;
+			barrier.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		}
 		else {
 			LOG_CORE_FATAL("unsupported layout transition!");
 		}
@@ -137,7 +153,7 @@ namespace Ignite
 			1, &barrier
 		);
 		
-		vulkanContext->EndSingleTimeCommands(commandBuffer);
+		context.EndSingleTimeCommands(commandBuffer);
 	}
 
 	void VulkanTexture2D::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
@@ -189,7 +205,7 @@ namespace Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 		
-		textureImageView = vulkanContext->Swapchain().CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB);
+		textureImageView = vulkanContext->Swapchain().CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
 		return textureImageView;
 	}
@@ -248,12 +264,12 @@ namespace Ignite
 		//TODO abstract to image class
 		stbi_image_free(pixels);
 
-		createImage(m_width, m_height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			m_textureImage, m_textureImageMemory);
+		CreateImage(*vulkanContext, m_width, m_height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		              VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
-		transitionImageLayout(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		TransitionImageLayout(*vulkanContext, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_width), static_cast<uint32_t>(m_height));
-		transitionImageLayout(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		TransitionImageLayout(*vulkanContext, m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		imageBuffer.Free();
 

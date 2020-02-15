@@ -290,6 +290,19 @@ namespace  Ignite
 		colorBlending.blendConstants[2] = 0.0f; // Optional
 		colorBlending.blendConstants[3] = 0.0f; // Optional
 
+		//depth testing
+		VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.minDepthBounds = 0.0f; // Optional
+		depthStencil.maxDepthBounds = 1.0f; // Optional
+		depthStencil.stencilTestEnable = VK_FALSE;
+		depthStencil.front = {}; // Optional
+		depthStencil.back = {}; // Optional
+
 		///
 		///Dynamic states
 		///
@@ -329,6 +342,7 @@ namespace  Ignite
 		pipelineInfo.pMultisampleState = &multisampling;
 		pipelineInfo.pDepthStencilState = nullptr; // Optional
 		pipelineInfo.pColorBlendState = &colorBlending;
+		pipelineInfo.pDepthStencilState = &depthStencil;
 		pipelineInfo.pDynamicState = nullptr; // Optional
 		pipelineInfo.layout = m_pipelineLayout;
 
