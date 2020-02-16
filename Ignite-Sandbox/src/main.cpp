@@ -43,15 +43,12 @@ public:
 			4, 5, 6, 6, 7, 4
 		};
 
-		//load model
-		const std::unique_ptr<Ignite::ModelLoader> modelLoader = Ignite::ModelLoader::Load("resources/models/chalet.obj");
-		mesh = Ignite::IMesh::Create(modelLoader->Vertices(), modelLoader->Indices(), std::vector<std::shared_ptr<Ignite::ITexture2D>>{chalet});
-		//model = Ignite::IMesh::Create(vertices, indices, "chalet");
+		//load model with default texture
+		model = Ignite::Model::Load("resources/models/dragon.obj", default);
 
-		m_ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		m_ubo.view = glm::lookAt(glm::vec3(.75f, .75f, .75f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
 		m_ubo.proj[1][1] *= -1;
-		m_ubo.model = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
 	}
 
 	void OnDetach() override
@@ -74,7 +71,10 @@ public:
 		
         Ignite::Renderer::BeginScene();
 
-        Ignite::Renderer::Submit(pipeline.get(), mesh.get());
+		//submit mesh
+        //Ignite::Renderer::Submit(pipeline.get(), mesh.get());
+        //submit model
+		Ignite::Renderer::Submit(pipeline.get(), model.get());
 
         Ignite::Renderer::EndScene();
 
@@ -94,7 +94,8 @@ public:
 
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
-	
+
+	std::shared_ptr<Ignite::Model> model;
 	std::shared_ptr<Ignite::IMesh> mesh;
 	Ignite::UniformBufferObject m_ubo;
 };

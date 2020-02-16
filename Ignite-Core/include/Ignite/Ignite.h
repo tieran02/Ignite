@@ -13,7 +13,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Ignite/Renderer/ITexture2D.h"
 #include "Ignite/Renderer/IMesh.h"
-#include "Ignite/Renderer/ModelLoader.h"
+#include "Ignite/Renderer/Model.h"
 
 namespace Ignite
 {

@@ -4,6 +4,7 @@
 #include "Ignite/Renderer/IPipeline.h"
 #include "Ignite/Application.h"
 #include "Ignite/Renderer/IMesh.h"
+#include "Ignite/Renderer/Model.h"
 #include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
@@ -42,27 +43,32 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* model, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
 	
-	//TODO sumbit vertex buffer aswell
-
 	//bind pipeline
 	pipeline->Bind();
 	//TODO draw stuff here
-	if(model != nullptr)
-	{
-		model->VertexBuffer()->Bind();
-		model->IndexBuffer()->Bind();
-		model->BindDescriptors();
-		
-		RenderCommand::DrawIndexed(model->VertexBuffer(), model->IndexBuffer(),model->IndexCount());
-	}
-	
+	submitMesh(mesh);
 	pipeline->Unbind();
+}
+
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform)
+{
+	if(!model)
+		return;
 	
+	//bind pipeline
+	pipeline->Bind();
+	//TODO draw stuff here
+
+	for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
+	{
+		submitMesh(mesh.get());
+	}	
+	pipeline->Unbind();
 }
 
 void Ignite::Renderer::SwapBuffers()
@@ -77,4 +83,16 @@ void Ignite::Renderer::SwapBuffers()
 Ignite::IGraphicsContext* Ignite::Renderer::GraphicsContext()
 {
 	return RenderCommand::s_renderer->GetGraphicsContext();
+}
+
+void Ignite::Renderer::submitMesh(const IMesh* mesh, const glm::mat4& transform)
+{
+	if (mesh != nullptr)
+	{
+		mesh->VertexBuffer()->Bind();
+		mesh->IndexBuffer()->Bind();
+		mesh->BindDescriptors();
+
+		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount());
+	}
 }
