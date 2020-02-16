@@ -6,7 +6,7 @@
 #include "Ignite/Renderer/IPipeline.h"
 #include "Ignite/Renderer/ITexture2D.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
-#include "platform/Vulkan/VulkanModel.h"
+#include "platform/Vulkan/VulkanMesh.h"
 
 namespace Ignite
 {
@@ -156,7 +156,7 @@ namespace Ignite
 		//recreate model descriptor sets
 		for (size_t i = 0; i < m_models.size(); i++)
 		{
-			VulkanModel* vulkanModel = static_cast<VulkanModel*>(m_models[i].get());
+			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(m_models[i].get());
 			vulkanModel->CreateDescriptorSet();
 		}
 		

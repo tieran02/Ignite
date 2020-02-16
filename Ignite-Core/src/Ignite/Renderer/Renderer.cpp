@@ -3,7 +3,7 @@
 #include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Renderer/IPipeline.h"
 #include "Ignite/Application.h"
-#include "Ignite/Renderer/IModel.h"
+#include "Ignite/Renderer/IMesh.h"
 #include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
@@ -42,7 +42,7 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IModel* model, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* model, const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;

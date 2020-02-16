@@ -1,6 +1,6 @@
 #include "igpch.h"
 #include "Ignite/Renderer/IGraphicsContext.h"
-#include "platform/Vulkan/VulkanModel.h"
+#include "platform/Vulkan/VulkanMesh.h"
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
@@ -8,54 +8,45 @@
 
 namespace Ignite
 {
-	VulkanModel::VulkanModel(const std::vector<Vertex>& verts,const std::vector<uint32_t>& indices, const std::string& textureName)
+	VulkanMesh::VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures)
 	{
 		m_indexCount = indices.size();
-		Init(verts, indices, textureName);
+		Init(verts, indices, textures);
 	}
 
-	void VulkanModel::Init(const std::vector<Vertex>& verts,const std::vector<uint32_t>& indices, const std::string& textureName)
+	void VulkanMesh::Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures)
 	{
 		createVBO(verts);
 		createIndices(indices);
-		createTexture2D(textureName);
+		createTextures(textures);
 		CreateDescriptorSet();
 	}
 
-	void VulkanModel::Cleanup()
+	void VulkanMesh::Cleanup()
 	{
 	}
 
-	VulkanModel::~VulkanModel()
+	VulkanMesh::~VulkanMesh()
 	{
 		Cleanup();
 	}
 
-	void VulkanModel::createVBO(const std::vector<Vertex>& verts)
+	void VulkanMesh::createVBO(const std::vector<Vertex>& verts)
 	{
 		m_vertexBuffer = IVertexBuffer::Create(verts.data(), sizeof(verts[0]) * verts.size());
 	}
 
-	void VulkanModel::createIndices(const std::vector<uint32_t>& indices)
+	void VulkanMesh::createIndices(const std::vector<uint32_t>& indices)
 	{
 		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(indices[0]) * indices.size());
 	}
 
-	void VulkanModel::createTexture2D(const std::string& textureName)
+	void VulkanMesh::createTextures(const std::vector<std::shared_ptr<ITexture2D>>& textures)
 	{
-		if(textureName == "")
-		{
-			CORE_ASSERT(m_context->Texture2Ds().find("default") != m_context->Texture2Ds().end(), "Failed to find default texture, please add a texture with name 'default'");
-			m_image = m_context->Texture2Ds().at("default");
-		}
-		else
-		{
-			CORE_ASSERT(m_context->Texture2Ds().find(textureName) != m_context->Texture2Ds().end(), "Failed to find texture with name");
-			m_image = m_context->Texture2Ds().at(textureName);
-		}
+		m_textures = textures;
 	}
 
-	void VulkanModel::CreateDescriptorSet()
+	void VulkanMesh::CreateDescriptorSet()
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanBuffer, vulkan context is null");
@@ -80,35 +71,45 @@ namespace Ignite
 
 			//TODO have a model class with the descriptor set inside it, when we creae a model we create the descriptor set for it
 			//todo get bound image
-			VkDescriptorImageInfo imageInfo = {};
-			imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-			const VulkanTexture2D& vulkanimage = *(VulkanTexture2D*)m_image.get();
-			imageInfo.imageView = vulkanimage.ImageView();
-			imageInfo.sampler = vulkanimage.Sampler();
+			std::vector<VkDescriptorImageInfo> imageInfos{ m_textures.size() };
+			for (size_t i = 0; i < m_textures.size(); i++)
+			{
+				imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				const VulkanTexture2D& vulkanimage = *(VulkanTexture2D*)m_textures[i].get();
+				imageInfos[i].imageView = vulkanimage.ImageView();
+				imageInfos[i].sampler = vulkanimage.Sampler();
+			}
 
-			std::array<VkWriteDescriptorSet, 2> descriptorWrites = {};
+			std::vector<VkWriteDescriptorSet> descriptorWrites;
 
-			descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[0].dstSet = m_descriptorSets[i];
-			descriptorWrites[0].dstBinding = 0;
-			descriptorWrites[0].dstArrayElement = 0;
-			descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			descriptorWrites[0].descriptorCount = 1;
-			descriptorWrites[0].pBufferInfo = &bufferInfo;
+			VkWriteDescriptorSet descriptorWrite{};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_descriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+			descriptorWrites.push_back(descriptorWrite);
 
-			descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-			descriptorWrites[1].dstSet = m_descriptorSets[i];
-			descriptorWrites[1].dstBinding = 1;
-			descriptorWrites[1].dstArrayElement = 0;
-			descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			descriptorWrites[1].descriptorCount = 1;
-			descriptorWrites[1].pImageInfo = &imageInfo;
+			if (!m_textures.empty())
+			{
+				VkWriteDescriptorSet imageDescriptorWrite{};
+				imageDescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				imageDescriptorWrite.dstSet = m_descriptorSets[i];
+				imageDescriptorWrite.dstBinding = 1;
+				imageDescriptorWrite.dstArrayElement = 0;
+				imageDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				imageDescriptorWrite.descriptorCount = imageInfos.size();
+				imageDescriptorWrite.pImageInfo = imageInfos.data();
+				descriptorWrites.push_back(imageDescriptorWrite);
+			}
 
 			vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
 		}
 	}
 
-	void VulkanModel::BindDescriptors() const
+	void VulkanMesh::BindDescriptors() const
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");

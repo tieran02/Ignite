@@ -49,13 +49,20 @@ void Ignite::ModelLoader::LoadModel(const std::string& path)
                     mesh->mVertices[i].z
             };
 
-            vertex.Normal = {
-                    mesh->mNormals[i].x,
-                    mesh->mNormals[i].y,
-                    mesh->mNormals[i].z
-            };
+            if (mesh->HasNormals()) // does the mesh contain texture coordinates?
+            {
+                vertex.Normal = {
+                        mesh->mNormals[i].x,
+                        mesh->mNormals[i].y,
+                        mesh->mNormals[i].z
+                };
+            }
+            else
+            {
+                vertex.Normal = { 0.0f,0.0f,0.0f };
+            }
 
-            if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            if (mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
             {
                 vertex.TexCoord =
                 {

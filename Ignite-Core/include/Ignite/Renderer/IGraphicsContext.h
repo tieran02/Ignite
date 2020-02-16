@@ -14,7 +14,7 @@ namespace Ignite
 		friend class IVertexBuffer;
 		friend class IIndexBuffer;
 		friend class ITexture2D;
-		friend class IModel;
+		friend class IMesh;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
@@ -28,11 +28,11 @@ namespace Ignite
 		const std::unordered_map<std::string, std::shared_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
 		const std::vector<std::shared_ptr<IBuffer>>& Buffers() const { return m_buffers; }
 		const std::unordered_map<std::string, std::shared_ptr<ITexture2D>>& Texture2Ds() const { return m_texture2Ds; }
-		const std::vector<std::shared_ptr<IModel>>& Models() const { return m_models; }
+		const std::vector<std::shared_ptr<IMesh>>& Models() const { return m_models; }
 	protected:
 		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
 		std::vector<std::shared_ptr<IBuffer>> m_buffers;
 		std::unordered_map<std::string, std::shared_ptr<ITexture2D>> m_texture2Ds;
-		std::vector<std::shared_ptr<IModel>> m_models;
+		std::vector<std::shared_ptr<IMesh>> m_models;
     };
 }
