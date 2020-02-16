@@ -8,13 +8,13 @@
 
 namespace Ignite
 {
-	VulkanModel::VulkanModel(const std::vector<float>& verts,const std::vector<uint16_t>& indices, const std::string& textureName)
+	VulkanModel::VulkanModel(const std::vector<Vertex>& verts,const std::vector<uint32_t>& indices, const std::string& textureName)
 	{
 		m_indexCount = indices.size();
 		Init(verts, indices, textureName);
 	}
 
-	void VulkanModel::Init(const std::vector<float>& verts,const std::vector<uint16_t>& indices, const std::string& textureName)
+	void VulkanModel::Init(const std::vector<Vertex>& verts,const std::vector<uint32_t>& indices, const std::string& textureName)
 	{
 		createVBO(verts);
 		createIndices(indices);
@@ -31,21 +31,28 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanModel::createVBO(const std::vector<float>& verts)
+	void VulkanModel::createVBO(const std::vector<Vertex>& verts)
 	{
-		m_vertexBuffer = IVertexBuffer::Create(verts.data(), sizeof(float) * verts.size());
+		m_vertexBuffer = IVertexBuffer::Create(verts.data(), sizeof(verts[0]) * verts.size());
 	}
 
-	void VulkanModel::createIndices(const std::vector<uint16_t>& indices)
+	void VulkanModel::createIndices(const std::vector<uint32_t>& indices)
 	{
-		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(int) * indices.size());
+		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(indices[0]) * indices.size());
 	}
 
 	void VulkanModel::createTexture2D(const std::string& textureName)
 	{
-		CORE_ASSERT(m_context->Texture2Ds().find(textureName) != m_context->Texture2Ds().end(), "Failed to find texture with name");
-		
-		m_image = m_context->Texture2Ds().at(textureName);
+		if(textureName == "")
+		{
+			CORE_ASSERT(m_context->Texture2Ds().find("default") != m_context->Texture2Ds().end(), "Failed to find default texture, please add a texture with name 'default'");
+			m_image = m_context->Texture2Ds().at("default");
+		}
+		else
+		{
+			CORE_ASSERT(m_context->Texture2Ds().find(textureName) != m_context->Texture2Ds().end(), "Failed to find texture with name");
+			m_image = m_context->Texture2Ds().at(textureName);
+		}
 	}
 
 	void VulkanModel::CreateDescriptorSet()

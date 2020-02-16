@@ -4,6 +4,7 @@
 #include "Ignite/Renderer/Renderer.h"
 #include "Ignite/Renderer/IRendererAPI.h"
 #include "platform/Vulkan/VulkanModel.h"
+#include "Ignite/Renderer/Vertex.h"
 
 namespace Ignite
 {
@@ -11,9 +12,11 @@ namespace Ignite
 	{
 	}
 
-	std::shared_ptr<IModel> IModel::Create(const std::vector<float>& verts, const std::vector<uint16_t>& indices, const std::string& textureName)
+	std::shared_ptr<IModel> IModel::Create(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::string& textureName)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
+			if (verts.size() == 0 || indices.size() == 0)
+				return nullptr;
 
 			switch (IRendererAPI::GetAPI())
 			{

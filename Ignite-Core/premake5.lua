@@ -32,6 +32,7 @@ project "Ignite-Core"
 		"$(VULKAN_SDK)/include",
 		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.ASSIMP}",
 		"%{IncludeDir.GLM}",
 		"vendor/stb/include"
 	}
@@ -39,7 +40,8 @@ project "Ignite-Core"
 	links 
 	{ 
 		"$(VULKAN_SDK)/lib/vulkan-1.lib",
-		"GLFW"
+		"GLFW",
+		"assimp"
 	}
 
 	filter "system:windows"
@@ -55,8 +57,18 @@ project "Ignite-Core"
 		defines "IGCORE_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		libdirs { "vendor/assimp/debug" }
+		postbuildcommands
+		{
+		  ("{COPY} %{prj.location}/vendor/assimp/debug ../bin/" .. outputdir .. "/Ignite-Sandbox")
+		}
 
 	filter "configurations:Release"
 		defines "IGCORE_RELEASE"
 		runtime "Release"
 		optimize "on"
+		libdirs { "vendor/assimp/release" }
+		postbuildcommands
+		{
+		  ("{COPY} %{prj.location}/vendor/assimp/release ../bin/" .. outputdir .. "/Ignite-Sandbox")
+		}

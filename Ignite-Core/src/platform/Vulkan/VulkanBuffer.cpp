@@ -18,7 +18,7 @@ namespace Ignite
 
 		void* bufferData = nullptr;
 		vkMapMemory(m_context->Device().LogicalDevice(), stagingBufferMemory, 0, size, 0, &bufferData);
-		memcpy(bufferData, data, size);
+		memcpy(bufferData, data, (size_t)size);
 		vkUnmapMemory(m_context->Device().LogicalDevice(), stagingBufferMemory);
 
 		//data buffer
@@ -129,7 +129,7 @@ namespace Ignite
 
 
 
-	VulkanVertexBuffer::VulkanVertexBuffer(const float* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanVertexBuffer::VulkanVertexBuffer(const void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
 	}
@@ -180,7 +180,7 @@ namespace Ignite
 	{
 	}
 
-	VulkanIndexBuffer::VulkanIndexBuffer(const uint16_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanIndexBuffer::VulkanIndexBuffer(const uint32_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
 		Init(data, size);
 	}
@@ -222,7 +222,7 @@ namespace Ignite
 		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 		{
 			VkDeviceSize offsets[] = { 0 }; //offset can be used to interleave vertex data
-			vkCmdBindIndexBuffer(vulkanContext->CommandBuffers()[i], m_baseBuffer.Buffer(), 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindIndexBuffer(vulkanContext->CommandBuffers()[i], m_baseBuffer.Buffer(), 0, VK_INDEX_TYPE_UINT32);
 		}
 	}
 

@@ -12,14 +12,16 @@ public:
 		Ignite::PipelineInputLayout layout = 
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
-			{ Ignite::PipelineDataType::eFloat3, "a_Color" },
+			{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
 			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
 		
 		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
 
 		//create texture
+		std::shared_ptr<Ignite::ITexture2D> default = Ignite::ITexture2D::Create("default", "resources/textures/default.jpg");
 		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg");
+		std::shared_ptr<Ignite::ITexture2D> chalet = Ignite::ITexture2D::Create("chalet", "resources/textures/chalet.jpg");
 
 		//two floats pos, three floats color
 		std::vector<float> vertices =
@@ -35,15 +37,18 @@ public:
 			-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f
 		};
 
-		std::vector<uint16_t> indices =
+		std::vector<uint32_t> indices =
 		{
 			0, 1, 2, 2, 3, 0,
 			4, 5, 6, 6, 7, 4
 		};
 
-		model = Ignite::IModel::Create(vertices, indices, "texture");
+		//load model
+		const std::unique_ptr<Ignite::ModelLoader> modelLoader = Ignite::ModelLoader::Load("resources/models/dragon.obj");
+		model = Ignite::IModel::Create(modelLoader->Vertices(), modelLoader->Indices());
+		//model = Ignite::IModel::Create(vertices, indices, "chalet");
 
-		m_ubo.view = glm::lookAt(glm::vec3(1.5f, 1.5f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		m_ubo.view = glm::lookAt(glm::vec3(0.75f, 0.75f, 0.75f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
 		m_ubo.proj[1][1] *= -1;
 		m_ubo.model = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));

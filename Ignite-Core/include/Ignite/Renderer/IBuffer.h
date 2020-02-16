@@ -42,7 +42,7 @@ namespace Ignite
 		void Bind() const override = 0;
 		void Unbind() const override = 0;
 
-		static std::shared_ptr<IVertexBuffer> Create(const float* data, size_t size);
+		static std::shared_ptr<IVertexBuffer> Create(const void* data, size_t size);
 	};
 
 	class IIndexBuffer :public IBuffer
@@ -56,6 +56,6 @@ namespace Ignite
 		void Bind() const override = 0;
 		void Unbind() const override = 0;
 
-		static std::shared_ptr<IIndexBuffer> Create(const uint16_t* data, size_t size);
+		static std::shared_ptr<IIndexBuffer> Create(const uint32_t* data, size_t size);
 	};
 }

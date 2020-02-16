@@ -18,6 +18,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "vendor/GLFW/include"
+IncludeDir["ASSIMP"] = "vendor/assimp/include"
 IncludeDir["GLM"] = "vendor/glm"
 VULKAN = os.getenv("VULKAN_SDK")
 

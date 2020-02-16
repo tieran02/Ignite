@@ -47,7 +47,7 @@ namespace Ignite
 	{
 		friend class IVertexBuffer;
 	protected:
-		VulkanVertexBuffer(const float* data, size_t size);
+		VulkanVertexBuffer(const void* data, size_t size);
 	public:
 		~VulkanVertexBuffer() override;
 	protected:
@@ -65,7 +65,7 @@ namespace Ignite
 	{
 		friend class IIndexBuffer;
 	protected:
-		VulkanIndexBuffer(const uint16_t* data, size_t size);
+		VulkanIndexBuffer(const uint32_t* data, size_t size);
 	public:
 		~VulkanIndexBuffer() override;
 	protected:

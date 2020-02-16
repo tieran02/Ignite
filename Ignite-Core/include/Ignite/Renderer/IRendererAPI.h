@@ -28,7 +28,7 @@ namespace Ignite {
 
         virtual void Clear() = 0;
 
-        virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount) = 0;
+        virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount) = 0;
 
         virtual void SetUniformBufferObject(const UniformBufferObject& ubo) = 0;
 

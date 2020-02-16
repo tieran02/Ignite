@@ -544,3 +544,5 @@ bin/
 Ignite.sln
 
 *.sln
+
+Ignite-Core/vendor/assimp/include/

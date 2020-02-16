@@ -14,7 +14,7 @@ namespace Ignite {
 
 		static void Clear();
 
-		static void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint16_t indexCount);
+		static void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount);
 
 		static void SetUniformBufferObject(const UniformBufferObject& ubo);
 	private:

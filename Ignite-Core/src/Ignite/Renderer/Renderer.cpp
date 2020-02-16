@@ -52,11 +52,14 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IModel* model, co
 	//bind pipeline
 	pipeline->Bind();
 	//TODO draw stuff here
-	model->VertexBuffer()->Bind();
-	model->IndexBuffer()->Bind();
-	model->BindDescriptors();
-	
-	RenderCommand::DrawIndexed(model->VertexBuffer(), model->IndexBuffer(),model->IndexCount());
+	if(model != nullptr)
+	{
+		model->VertexBuffer()->Bind();
+		model->IndexBuffer()->Bind();
+		model->BindDescriptors();
+		
+		RenderCommand::DrawIndexed(model->VertexBuffer(), model->IndexBuffer(),model->IndexCount());
+	}
 	
 	pipeline->Unbind();
 	

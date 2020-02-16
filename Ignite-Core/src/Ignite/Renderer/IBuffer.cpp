@@ -31,7 +31,7 @@ Ignite::IVertexBuffer::IVertexBuffer() : IBuffer()
 	
 }
 
-std::shared_ptr<Ignite::IVertexBuffer> Ignite::IVertexBuffer::Create(const float* data, size_t size)
+std::shared_ptr<Ignite::IVertexBuffer> Ignite::IVertexBuffer::Create(const void* data, size_t size)
 {
 	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create vertex buffer, Renderer is null")
 
@@ -51,7 +51,7 @@ Ignite::IIndexBuffer::IIndexBuffer() : IBuffer()
 {
 }
 
-std::shared_ptr<Ignite::IIndexBuffer> Ignite::IIndexBuffer::Create(const uint16_t* data, size_t size)
+std::shared_ptr<Ignite::IIndexBuffer> Ignite::IIndexBuffer::Create(const uint32_t* data, size_t size)
 {
 	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create vertex buffer, Renderer is null")
 
