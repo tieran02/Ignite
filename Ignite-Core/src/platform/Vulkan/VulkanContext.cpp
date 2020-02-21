@@ -25,7 +25,6 @@ namespace Ignite
 		LOG_CORE_INFO("Initialising VulkanContext");
 		m_vulkanDevice = std::make_unique<VulkanDevice>();
 		m_vulkanSwapchain = std::make_unique<VulkanSwapChain>(*m_vulkanDevice, Application::Instance().Window()->Width(), Application::Instance().Window()->Height());
-		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 		createDescriptorSetLayout();
 		
 		createUniformBuffers();
@@ -34,6 +33,8 @@ namespace Ignite
 		createCommandPool();
 		createCommandBuffers();
 		createSyncObjects();
+
+		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
     }
 
 	void VulkanContext::Cleanup()
