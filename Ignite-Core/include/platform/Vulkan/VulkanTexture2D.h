@@ -27,7 +27,6 @@ namespace  Ignite
 		void createImage(const std::string& path);
 
 		void createTextureImageView();
-		VkImageView createImageView();
 
 		void createTextureSampler();
 
