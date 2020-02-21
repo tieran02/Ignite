@@ -41,8 +41,6 @@ namespace Ignite
 
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 
-		VkCommandBuffer BeginSingleTimeCommands() const;
-		void EndSingleTimeCommands(VkCommandBuffer commandBuffer) const;
 	private:
 		const int MAX_FRAMES_IN_FLIGHT = 2;
 
