@@ -17,5 +17,8 @@ namespace Ignite
 		static void CreateImage(VkDevice device,VkPhysicalDevice physicalDevice, uint32_t width, uint32_t height, VkFormat format,
 			VkImageTiling tiling,
 			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+
+		static void TransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat format, VkImageLayout
+		                                  oldLayout, VkImageLayout newLayout);
 	};
 }
