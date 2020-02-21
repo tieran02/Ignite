@@ -27,7 +27,6 @@ namespace Ignite
 		const QueueFamilyIndices& QueueFamilies() const { return m_queueFamilies; }
 		const VkQueue& GraphicsQueue() const { return m_graphicsQueue; }
 		const VkQueue& PresentQueue() const { return m_presentQueue; }
-		uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
 		
 	private:
 		void create();

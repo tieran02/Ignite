@@ -181,41 +181,6 @@ namespace Ignite
 		LOG_CORE_FATAL("failed to find supported format!");
 	}
 
-	VkCommandBuffer VulkanContext::BeginSingleTimeCommands() const
-	{
-		VkCommandBufferAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-		allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-		allocInfo.commandPool = m_commandPool;
-		allocInfo.commandBufferCount = 1;
-
-		VkCommandBuffer commandBuffer;
-		vkAllocateCommandBuffers(m_vulkanDevice->LogicalDevice(), &allocInfo, &commandBuffer);
-
-		VkCommandBufferBeginInfo beginInfo = {};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-		vkBeginCommandBuffer(commandBuffer, &beginInfo);
-
-		return commandBuffer;
-	}
-
-	void VulkanContext::EndSingleTimeCommands(VkCommandBuffer commandBuffer) const
-	{
-		vkEndCommandBuffer(commandBuffer);
-
-		VkSubmitInfo submitInfo = {};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &commandBuffer;
-
-		vkQueueSubmit(m_vulkanDevice->GraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-		vkQueueWaitIdle(m_vulkanDevice->GraphicsQueue());
-
-		vkFreeCommandBuffers(m_vulkanDevice->LogicalDevice(), m_commandPool, 1, &commandBuffer);
-	}
-
 	void VulkanContext::createUniformBuffers()
 	{
 		m_uniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());

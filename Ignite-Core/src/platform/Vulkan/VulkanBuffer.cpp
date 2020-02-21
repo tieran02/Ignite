@@ -3,6 +3,7 @@
 #include "vulkan/vulkan.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "Ignite/Log.h"
+#include "platform/Vulkan/VulkanResources.h"
 
 namespace Ignite
 {
@@ -14,7 +15,10 @@ namespace Ignite
 		//staging buffer
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
-		createBuffer(size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+		
+		VulkanResources::CreateBuffer(m_context->Device().LogicalDevice(), m_context->Device().PhysicalDevice(),size,
+			VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			stagingBuffer, stagingBufferMemory);
 
 		void* bufferData = nullptr;
 		vkMapMemory(m_context->Device().LogicalDevice(), stagingBufferMemory, 0, size, 0, &bufferData);
@@ -22,9 +26,13 @@ namespace Ignite
 		vkUnmapMemory(m_context->Device().LogicalDevice(), stagingBufferMemory);
 
 		//data buffer
-		createBuffer(size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vkBuffer, m_vkBufferMemory);
+		VulkanResources::CreateBuffer(m_context->Device().LogicalDevice(), m_context->Device().PhysicalDevice(), size,
+			VK_BUFFER_USAGE_TRANSFER_DST_BIT | usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+			m_vkBuffer, m_vkBufferMemory);
+		
 
-		copyBuffer(stagingBuffer, m_vkBuffer, size);
+		VulkanResources::CopyBuffer(m_context->Device().LogicalDevice(), m_context->CommandPool(), m_context->Device().GraphicsQueue(),
+			stagingBuffer, m_vkBuffer, size);
 
 		vkDestroyBuffer(m_context->Device().LogicalDevice(), stagingBuffer, nullptr);
 		vkFreeMemory(m_context->Device().LogicalDevice(), stagingBufferMemory, nullptr);
@@ -32,7 +40,9 @@ namespace Ignite
 
 	void VulkanBaseBuffer::CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage)
 	{
-		createBuffer(size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vkBuffer, m_vkBufferMemory);
+		VulkanResources::CreateBuffer(m_context->Device().LogicalDevice(), m_context->Device().PhysicalDevice(), size,
+			usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			m_vkBuffer, m_vkBufferMemory);
 	}
 
 	void VulkanBaseBuffer::Free()
@@ -47,41 +57,6 @@ namespace Ignite
 			vkFreeMemory(m_context->Device().LogicalDevice(), m_vkBufferMemory, nullptr);
 			m_vkBufferMemory = nullptr;
 		}
-	}
-
-	void VulkanBaseBuffer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
-		VkBuffer& buffer, VkDeviceMemory& bufferMemory)
-	{
-		VkBufferCreateInfo bufferInfo = {};
-		bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-		bufferInfo.size = size;
-		bufferInfo.usage = usage;
-		bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
-		VK_CHECK_RESULT(vkCreateBuffer(m_context->Device().LogicalDevice(), &bufferInfo, nullptr, &buffer));
-
-		VkMemoryRequirements memRequirements;
-		vkGetBufferMemoryRequirements(m_context->Device().LogicalDevice(), buffer, &memRequirements);
-
-		VkMemoryAllocateInfo allocInfo = {};
-		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = m_context->Device().FindMemoryType(memRequirements.memoryTypeBits, properties);
-
-		VK_CHECK_RESULT(vkAllocateMemory(m_context->Device().LogicalDevice(), &allocInfo, nullptr, &bufferMemory));
-
-		vkBindBufferMemory(m_context->Device().LogicalDevice(), buffer, bufferMemory, 0);
-	}
-
-	void VulkanBaseBuffer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
-	{
-		VkCommandBuffer commandBuffer = m_context->BeginSingleTimeCommands();
-
-		VkBufferCopy copyRegion = {};
-		copyRegion.size = size;
-		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
-
-		m_context->EndSingleTimeCommands(commandBuffer);
 	}
 
 	VulkanBuffer::VulkanBuffer(const void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))

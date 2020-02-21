@@ -17,9 +17,6 @@ namespace Ignite
 		const VkBuffer& Buffer() const { return m_vkBuffer; }
 		const VkDeviceMemory& DeviceMemory() const { return m_vkBufferMemory; }
 	private:
-		void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-		void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
 		const VulkanContext* m_context;
 		VkBuffer m_vkBuffer = nullptr;
 		VkDeviceMemory m_vkBufferMemory = nullptr;

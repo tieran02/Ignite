@@ -4,6 +4,7 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include "Ignite/Log.h"
 #include <stb_image.h>
+#include "platform/Vulkan/VulkanResources.h"
 
 
 namespace Ignite
@@ -78,7 +79,7 @@ namespace Ignite
 		VkMemoryAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = context.Device().FindMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = VulkanResources::FindMemoryType(context.Device().PhysicalDevice(), memRequirements.memoryTypeBits, properties);
 
 		if (vkAllocateMemory(context.Device().LogicalDevice(), &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
 			throw std::runtime_error("failed to allocate image memory!");
@@ -89,7 +90,7 @@ namespace Ignite
 
 	void VulkanTexture2D::TransitionImageLayout(const VulkanContext& context, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout)
 	{		
-		VkCommandBuffer commandBuffer = context.BeginSingleTimeCommands();
+		VkCommandBuffer commandBuffer = VulkanResources::BeginSingleTimeCommands(context.Device().LogicalDevice(), context.CommandPool());
 
 		VkImageMemoryBarrier barrier = {};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -153,14 +154,15 @@ namespace Ignite
 			1, &barrier
 		);
 		
-		context.EndSingleTimeCommands(commandBuffer);
+		VulkanResources::EndSingleTimeCommands(context.Device().LogicalDevice(), context.CommandPool(), context.Device().GraphicsQueue(), commandBuffer);
 	}
 
 	void VulkanTexture2D::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
-		VkCommandBuffer commandBuffer = vulkanContext->BeginSingleTimeCommands();
+		
+		VkCommandBuffer commandBuffer = VulkanResources::BeginSingleTimeCommands(vulkanContext->Device().LogicalDevice(), vulkanContext->CommandPool());
 
 		VkBufferImageCopy region = {};
 		region.bufferOffset = 0;
@@ -189,7 +191,7 @@ namespace Ignite
 		);
 		
 		
-		vulkanContext->EndSingleTimeCommands(commandBuffer);
+		VulkanResources::EndSingleTimeCommands(vulkanContext->Device().LogicalDevice(), vulkanContext->CommandPool(), vulkanContext->Device().GraphicsQueue(), commandBuffer);
 	}
 
 	void VulkanTexture2D::createTextureImageView()
