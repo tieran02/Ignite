@@ -22,5 +22,7 @@ namespace Ignite
 		                                  oldLayout, VkImageLayout newLayout);
 
 		static void CopyBufferToImage(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+		static VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
 	};
 }

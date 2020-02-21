@@ -20,7 +20,6 @@ namespace Ignite
 		const VkSwapchainKHR& Swapchain() const { return m_swapchain; }
 
 		//TODO Create image should go here aswell
-		VkImageView CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags) const;
 		VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) const;
 	private:
 		uint32_t m_width, m_height;

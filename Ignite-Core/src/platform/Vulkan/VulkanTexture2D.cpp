@@ -63,7 +63,7 @@ namespace Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 		
-		textureImageView = vulkanContext->Swapchain().CreateImageView(m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+		textureImageView = VulkanResources::CreateImageView(vulkanContext->Device().LogicalDevice(), m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
 		return textureImageView;
 	}

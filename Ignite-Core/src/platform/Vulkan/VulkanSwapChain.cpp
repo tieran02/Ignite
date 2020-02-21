@@ -2,6 +2,7 @@
 #include "platform/Vulkan/VulkanSwapChain.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "Ignite/Log.h"
+#include "platform/Vulkan/VulkanResources.h"
 
 namespace Ignite
 {
@@ -20,26 +21,6 @@ namespace Ignite
 	{
 		
 	}
-
-	VkImageView VulkanSwapChain::CreateImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags) const
-	{
-		VkImageViewCreateInfo viewInfo = {};
-		viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		viewInfo.image = image;
-		viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		viewInfo.format = format;
-		viewInfo.subresourceRange.aspectMask = aspectFlags;
-		viewInfo.subresourceRange.baseMipLevel = 0;
-		viewInfo.subresourceRange.levelCount = 1;
-		viewInfo.subresourceRange.baseArrayLayer = 0;
-		viewInfo.subresourceRange.layerCount = 1;
-
-		VkImageView imageView;
-		VK_CHECK_RESULT(vkCreateImageView(m_device.LogicalDevice(), &viewInfo, nullptr, &imageView));
-
-		return imageView;
-	}
-
 
 	void VulkanSwapChain::create()
 	{
@@ -159,7 +140,7 @@ namespace Ignite
 
 		for (size_t i = 0; i < m_swapChainImages.size(); i++)
 		{
-			m_swapChainImageViews[i] = CreateImageView(m_swapChainImages[i], m_selectedFormat.format, VK_IMAGE_ASPECT_COLOR_BIT);
+			m_swapChainImageViews[i] = VulkanResources::CreateImageView(m_device.LogicalDevice(), m_swapChainImages[i], m_selectedFormat.format, VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 	}
 }
