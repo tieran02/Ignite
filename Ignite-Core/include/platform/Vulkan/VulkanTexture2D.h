@@ -17,9 +17,6 @@ namespace  Ignite
 		~VulkanTexture2D() override;
 		void Free() override;
 
-		static void CreateImage(const VulkanContext& context, uint32_t width, uint32_t height, VkFormat format,
-			VkImageTiling tiling,
-			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 		static void TransitionImageLayout(const VulkanContext& context, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 		
 		const VkImageView& ImageView()const { return textureImageView; }

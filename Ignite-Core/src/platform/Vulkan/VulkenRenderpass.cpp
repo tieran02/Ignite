@@ -3,6 +3,7 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
+#include "platform/Vulkan/VulkanResources.h"
 
 namespace Ignite
 {
@@ -141,7 +142,11 @@ namespace Ignite
 	void VulkenRenderpass::createDepthResources()
 	{
 		VkFormat depthFormat = findDepthFormat();
-		VulkanTexture2D::CreateImage(m_context, m_context.Swapchain().Width(), m_context.Swapchain().Height(), depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+		
+		VulkanResources::CreateImage(m_context.Device().LogicalDevice(),m_context.Device().PhysicalDevice(),
+			m_context.Swapchain().Width(), m_context.Swapchain().Height(), depthFormat,
+			VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+		
 		depthImageView = m_context.Swapchain().CreateImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 		//VulkanTexture2D::TransitionImageLayout(m_context, depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);

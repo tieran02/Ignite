@@ -13,5 +13,9 @@ namespace Ignite
 		
 		static void CreateBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 		static void CopyBuffer(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+		static void CreateImage(VkDevice device,VkPhysicalDevice physicalDevice, uint32_t width, uint32_t height, VkFormat format,
+			VkImageTiling tiling,
+			VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	};
 }
