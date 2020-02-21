@@ -20,5 +20,7 @@ namespace Ignite
 
 		static void TransitionImageLayout(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat format, VkImageLayout
 		                                  oldLayout, VkImageLayout newLayout);
+
+		static void CopyBufferToImage(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	};
 }

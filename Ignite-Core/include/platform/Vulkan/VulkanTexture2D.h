@@ -25,8 +25,6 @@ namespace  Ignite
 
 	private:
 		void createImage(const std::string& path);
-		
-		void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 
 		void createTextureImageView();
 		VkImageView createImageView();

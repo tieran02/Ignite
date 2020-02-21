@@ -197,3 +197,43 @@ void Ignite::VulkanResources::TransitionImageLayout(VkDevice device, VkCommandPo
 
 	EndSingleTimeCommands(device, commandPool, graphicsQueue, commandBuffer);
 }
+
+void Ignite::VulkanResources::CopyBufferToImage(VkDevice device, VkCommandPool commandPool, VkQueue graphicsQueue,
+	VkBuffer buffer, VkImage image, uint32_t width, uint32_t height)
+{
+	TransitionImageLayout(device, commandPool, graphicsQueue,
+		image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+	VkCommandBuffer commandBuffer = BeginSingleTimeCommands(device, commandPool);
+
+	VkBufferImageCopy region = {};
+	region.bufferOffset = 0;
+	region.bufferRowLength = 0;
+	region.bufferImageHeight = 0;
+
+	region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	region.imageSubresource.mipLevel = 0;
+	region.imageSubresource.baseArrayLayer = 0;
+	region.imageSubresource.layerCount = 1;
+
+	region.imageOffset = { 0, 0, 0 };
+	region.imageExtent = {
+		width,
+		height,
+		1
+	};
+
+	vkCmdCopyBufferToImage(
+		commandBuffer,
+		buffer,
+		image,
+		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+		1,
+		&region
+	);
+
+	EndSingleTimeCommands(device, commandPool, graphicsQueue, commandBuffer);
+
+	TransitionImageLayout(device, commandPool,graphicsQueue,
+		image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+}
