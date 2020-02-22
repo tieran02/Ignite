@@ -21,14 +21,14 @@ layout(location = 0) out vec4 outColor;
 void main() 
 {
     // ambient
-    vec3 ambient = vec3(0.8,0.8,0.8) * texture(texSampler, TexCoords).rgb;
+    vec3 ambient = vec3(0.4,0.4,0.4) * texture(texSampler, TexCoords).rgb;
 
     // diffuse 
     vec3 norm = normalize(Normal);
     //vec3 lightDir = normalize(vec3(12,12,12) - FragPos);
     vec3 lightDir = normalize(-LightDir);  
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = vec3(10.0,10.0,10.0) * diff * texture(texSampler, TexCoords).rgb;  
+    vec3 diffuse = vec3(2.0,2.0,2.0) * diff * texture(texSampler, TexCoords).rgb;  
 
     vec3 result = ambient + diffuse;
     outColor = vec4(result, 1.0);
