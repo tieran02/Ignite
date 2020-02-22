@@ -12,6 +12,10 @@ bool Ignite::Renderer::m_recordingScene = false;
 void Ignite::Renderer::Init()
 {
 	RenderCommand::Init();
+
+
+	//add default textures
+	std::shared_ptr<ITexture2D> defaultTexture = ITexture2D::Create("default_white", "resources/textures/default_white.jpg", TextureType::eDIFFUSE);
 }
 
 void Ignite::Renderer::Shutdown()

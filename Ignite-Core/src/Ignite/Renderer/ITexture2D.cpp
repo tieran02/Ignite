@@ -10,11 +10,11 @@
 
 namespace Ignite
 {
-	ITexture2D::ITexture2D(const std::string& name, const std::string& path) : m_context(Renderer::GraphicsContext()), m_name(name)
+	ITexture2D::ITexture2D(const std::string& name, const std::string& path, TextureType textureType) : m_context(Renderer::GraphicsContext()), m_name(name), m_type(textureType)
 	{
 	}
 
-	std::shared_ptr<ITexture2D> ITexture2D::Create(const std::string& name, const std::string& path)
+	std::shared_ptr<ITexture2D> ITexture2D::Create(const std::string& name, const std::string& path, TextureType textureType)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
@@ -24,7 +24,7 @@ namespace Ignite
 			case IRendererAPI::API::VULKAN:
 				if (Renderer::GraphicsContext()->m_texture2Ds.find(name) == Renderer::GraphicsContext()->m_texture2Ds.end())
 				{
-					std::shared_ptr<VulkanTexture2D> image = std::shared_ptr<VulkanTexture2D>(new VulkanTexture2D(name, path));
+					std::shared_ptr<VulkanTexture2D> image = std::shared_ptr<VulkanTexture2D>(new VulkanTexture2D(name, path, textureType));
 					Renderer::GraphicsContext()->m_texture2Ds.insert(std::make_pair(name, image));
 					return image;
 				}

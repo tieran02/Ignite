@@ -12,7 +12,7 @@ namespace  Ignite
 	{
 		friend class ITexture2D;
 	protected:
-		VulkanTexture2D(const std::string& name, const std::string& path);
+		VulkanTexture2D(const std::string& name, const std::string& path, TextureType textureType);
 	public:
 		~VulkanTexture2D() override;
 		void Free() override;

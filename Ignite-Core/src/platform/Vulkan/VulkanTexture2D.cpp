@@ -9,7 +9,7 @@
 
 namespace Ignite
 {
-	VulkanTexture2D::VulkanTexture2D(const std::string& name, const std::string& path) : ITexture2D(name, path)
+	VulkanTexture2D::VulkanTexture2D(const std::string& name, const std::string& path, TextureType textureType) : ITexture2D(name, path, textureType)
 	{
 		Init(path);
 	}

@@ -5,13 +5,14 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "Ignite/Log.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace Ignite
 {
-	std::unique_ptr<Model> Model::Load(const std::string& path, std::shared_ptr<ITexture2D> texture)
+	std::unique_ptr<Model> Model::Load(const std::string& path)
 	{
         std::unique_ptr<Model> model = std::unique_ptr<Model>(new Model);
-        model->loadModel(path, texture);
+        model->loadModel(path);
 		if(!model->m_meshes.empty())
 			return model;
 
@@ -23,7 +24,7 @@ namespace Ignite
 		return m_meshes;
 	}
 
-	void Model::loadModel(const std::string& path, std::shared_ptr<ITexture2D> texture)
+	void Model::loadModel(const std::string& path)
 	{
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
@@ -34,25 +35,25 @@ namespace Ignite
             return;
 		}
 
-		processNode(scene->mRootNode, scene, texture);
+		processNode(scene->mRootNode, scene);
 	}
 
-	void Model::processNode(aiNode* node, const aiScene* scene, std::shared_ptr<ITexture2D> texture)
+	void Model::processNode(aiNode* node, const aiScene* scene)
 	{
 		// process all the node's meshes (if any)
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			m_meshes.push_back(processMesh(mesh, scene, texture));
+			m_meshes.push_back(processMesh(mesh, scene));
 		}
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(node->mChildren[i], scene, texture);
+			processNode(node->mChildren[i], scene);
 		}
 	}
 
-    std::shared_ptr<IMesh> Model::processMesh(aiMesh* mesh, const aiScene* scene, std::shared_ptr<ITexture2D> texture)
+    std::shared_ptr<IMesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
@@ -103,26 +104,35 @@ namespace Ignite
                 indices.push_back(face.mIndices[j]);
         }
 
-        if (texture == nullptr)
+        if (mesh->mMaterialIndex >= 0)
         {
             if (mesh->mMaterialIndex >= 0)
             {
-                if (mesh->mMaterialIndex >= 0)
-                {
-                    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-                    std::vector<std::shared_ptr<ITexture2D>> diffuseMaps = loadMaterialTextures(material,
-                        aiTextureType_DIFFUSE, "texture_diffuse");
-                    textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+                aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-                    std::vector<std::shared_ptr<ITexture2D>> specularMaps = loadMaterialTextures(material,
-                        aiTextureType_SPECULAR, "texture_specular");
-                    textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-                }
+                std::vector<std::shared_ptr<ITexture2D>> diffuseMaps = loadMaterialTextures(material,
+                    aiTextureType_DIFFUSE, TextureType::eDIFFUSE);
+                textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+
+                std::vector<std::shared_ptr<ITexture2D>> specularMaps = loadMaterialTextures(material,
+                    aiTextureType_SPECULAR, TextureType::eSPECULAR);
+                textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
             }
         }
-        else // default texture set via texture
+
+		if(textures.empty())// default texture set via texture
         {
-            textures.push_back(texture);
+			
+			if(Renderer::GraphicsContext()->Texture2Ds().find("default_white") != Renderer::GraphicsContext()->Texture2Ds().end())
+			{
+                //get default texture
+                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_white"));
+			}
+            else
+            {
+                LOG_CORE_FATAL("FAILED TO FIND DEFAULT WHITE TEXTURE (default_white)");
+            }
+
         }
 
 		//finaly create mesh
@@ -130,14 +140,14 @@ namespace Ignite
 	}
 
 	std::vector<std::shared_ptr<ITexture2D>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-		const std::string& typeName)
+        TextureType textureType)
 	{
         std::vector<std::shared_ptr<ITexture2D>> textures;
         for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
         {
             aiString str;
             mat->GetTexture(type, i, &str);
-            std::shared_ptr<ITexture2D> texture = ITexture2D::Create(str.C_Str(), str.C_Str());
+            std::shared_ptr<ITexture2D> texture = ITexture2D::Create(str.C_Str(), str.C_Str(), textureType);
             textures.push_back(texture);
         }
         return textures;

@@ -19,9 +19,8 @@ public:
 		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
 
 		//create texture
-		std::shared_ptr<Ignite::ITexture2D> default = Ignite::ITexture2D::Create("default", "resources/textures/default.jpg");
-		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg");
-		std::shared_ptr<Ignite::ITexture2D> chalet = Ignite::ITexture2D::Create("chalet", "resources/textures/chalet.jpg");
+		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg", Ignite::TextureType::eDIFFUSE);
+		std::shared_ptr<Ignite::ITexture2D> chalet = Ignite::ITexture2D::Create("chalet", "resources/textures/chalet.jpg", Ignite::TextureType::eDIFFUSE);
 
 		//two floats pos, three floats color
 		std::vector<float> vertices =
@@ -44,7 +43,7 @@ public:
 		};
 
 		//load model with default texture
-		model = Ignite::Model::Load("resources/models/dragon.obj", default);
+		model = Ignite::Model::Load("resources/models/dragon.obj");
 
 		m_ubo.view = glm::lookAt(glm::vec3(.75f, .75f, .75f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
