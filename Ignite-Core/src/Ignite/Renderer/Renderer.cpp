@@ -15,7 +15,8 @@ void Ignite::Renderer::Init()
 
 
 	//add default textures
-	std::shared_ptr<ITexture2D> defaultTexture = ITexture2D::Create("default_white", "resources/textures/default_white.jpg", TextureType::eDIFFUSE);
+	std::shared_ptr<ITexture2D> defaultDiffuseTexture = ITexture2D::Create("default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE);
+	std::shared_ptr<ITexture2D> defaultSpecularTexture = ITexture2D::Create("default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR);
 }
 
 void Ignite::Renderer::Shutdown()

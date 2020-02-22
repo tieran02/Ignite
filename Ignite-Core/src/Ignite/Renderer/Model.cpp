@@ -104,35 +104,50 @@ namespace Ignite
                 indices.push_back(face.mIndices[j]);
         }
 
+        std::vector<std::shared_ptr<ITexture2D>> diffuseMaps;
+        std::vector<std::shared_ptr<ITexture2D>> specularMaps;
+		
         if (mesh->mMaterialIndex >= 0)
         {
-            if (mesh->mMaterialIndex >= 0)
-            {
-                aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-                std::vector<std::shared_ptr<ITexture2D>> diffuseMaps = loadMaterialTextures(material,
-                    aiTextureType_DIFFUSE, TextureType::eDIFFUSE);
-                textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+            //load diffuse textures
+            std::vector<std::shared_ptr<ITexture2D>> diffuseMaps = loadMaterialTextures(material,
+                aiTextureType_DIFFUSE, TextureType::eDIFFUSE);
+            textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-                std::vector<std::shared_ptr<ITexture2D>> specularMaps = loadMaterialTextures(material,
-                    aiTextureType_SPECULAR, TextureType::eSPECULAR);
-                textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-            }
+            //load specular textures
+            std::vector<std::shared_ptr<ITexture2D>> specularMaps = loadMaterialTextures(material,
+                aiTextureType_SPECULAR, TextureType::eSPECULAR);
+            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end()); 
         }
 
-		if(textures.empty())// default texture set via texture
+		//add default diffuse texture if diffuse textures is empty
+        if (diffuseMaps.empty())
         {
-			
-			if(Renderer::GraphicsContext()->Texture2Ds().find("default_white") != Renderer::GraphicsContext()->Texture2Ds().end())
-			{
+            if (Renderer::GraphicsContext()->Texture2Ds().find("default_diffuse") != Renderer::GraphicsContext()->Texture2Ds().end())
+            {
                 //get default texture
-                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_white"));
-			}
+                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_diffuse"));
+            }
             else
             {
-                LOG_CORE_FATAL("FAILED TO FIND DEFAULT WHITE TEXTURE (default_white)");
+                LOG_CORE_FATAL("FAILED TO FIND DEFAULT DIFFUSE TEXTURE (default_diffuse)");
             }
-
+        }
+		
+        //add default specular texture if specular textures is empty
+        if (specularMaps.empty())
+        {
+            if (Renderer::GraphicsContext()->Texture2Ds().find("default_specular") != Renderer::GraphicsContext()->Texture2Ds().end())
+            {
+                //get default texture
+                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_specular"));
+            }
+            else
+            {
+                LOG_CORE_FATAL("FAILED TO FIND DEFAULT SPECULAR TEXTURE (default_specular)");
+            }
         }
 
 		//finaly create mesh

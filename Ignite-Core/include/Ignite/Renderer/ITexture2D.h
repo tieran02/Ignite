@@ -5,6 +5,7 @@ namespace Ignite
 {
 	enum class TextureType
 	{
+		eUNDEFINED,
 		eDIFFUSE,
 		eSPECULAR
 	};
