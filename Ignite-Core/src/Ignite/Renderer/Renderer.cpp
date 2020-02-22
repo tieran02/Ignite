@@ -7,6 +7,8 @@
 #include "Ignite/Renderer/Model.h"
 #include "Ignite/Renderer/IMaterial.h"
 #include "glm/gtx/associated_min_max.hpp"
+#include "glm/gtx/associated_min_max.hpp"
+#include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -49,33 +51,28 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh, const IMaterial* material, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh,const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
-	material->Bind(pipeline);
-	//TODO draw stuff here
-	submitMesh(mesh);
-	material->Unbind(pipeline);
+		submitMesh(pipeline,mesh);
 	pipeline->Unbind();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const IMaterial* material, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform)
 {
 	if(!model)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
-	material->Bind(pipeline);
-	for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
-	{
-		submitMesh(mesh.get());
-	}
-	material->Unbind(pipeline);
+		for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
+		{
+			submitMesh(pipeline,mesh.get());
+		}
 	pipeline->Unbind();
 }
 
@@ -93,14 +90,16 @@ Ignite::IGraphicsContext* Ignite::Renderer::GraphicsContext()
 	return RenderCommand::s_renderer->GetGraphicsContext();
 }
 
-void Ignite::Renderer::submitMesh(const IMesh* mesh, const glm::mat4& transform)
+void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
 {
 	if (mesh != nullptr)
 	{
+		mesh->Material()->Bind(pipeline);
 		mesh->VertexBuffer()->Bind();
 		mesh->IndexBuffer()->Bind();
 		mesh->BindDescriptors();
 
 		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount());
+		mesh->Material()->Unbind(pipeline);
 	}
 }

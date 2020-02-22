@@ -11,20 +11,25 @@ layout(push_constant) uniform Material
 	float opacity;
 } material;
 
-layout(location = 0) in vec3 normal;
-layout(location = 1) in vec2 fragTexCoord;
-layout(location = 2) in vec3 LightDir;
+layout(location = 0) in vec3 FragPos;
+layout(location = 1) in vec3 Normal;
+layout(location = 2) in vec2 TexCoords;
+layout(location = 3) in vec3 LightDir;
 
 layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-    vec3 norm = normalize(normal);
+    // ambient
+    vec3 ambient = vec3(0.8,0.8,0.8) * texture(texSampler, TexCoords).rgb;
+
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    //vec3 lightDir = normalize(vec3(12,12,12) - FragPos);
     vec3 lightDir = normalize(-LightDir);  
-
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * texture(texSampler, fragTexCoord).rgb * material.diffuse.rgb;
+    vec3 diffuse = vec3(10.0,10.0,10.0) * diff * texture(texSampler, TexCoords).rgb;  
 
-    vec4 result = vec4((material.ambient.rgb + diffuse), 1.0-material.opacity);
-    outColor = result;
+    vec3 result = ambient + diffuse;
+    outColor = vec4(result, 1.0);
 }

@@ -30,7 +30,7 @@ void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 	CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");
 
-	CORE_ASSERT(m_pipeline, "Failed to bind Descriptors, m_pipeline  is null");
+	CORE_ASSERT(pipeline, "Failed to bind Descriptors, m_pipeline  is null");
 	VkPipelineLayout layout = static_cast<const VulkanPipeline*>(pipeline)->PipelineLayout();
 
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)

@@ -21,8 +21,8 @@ namespace Ignite {
 		static void EndScene();
 
 		//static void Submit(const IPipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline* pipeline, const IMesh* mesh, const IMaterial* material, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline* pipeline, const Model* model, const IMaterial* material, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform = glm::mat4(1.0f));
 
 		static void SwapBuffers();
 
@@ -30,6 +30,7 @@ namespace Ignite {
 	private:
 		static bool m_recordingScene;
 
-		static void submitMesh(const IMesh* mesh, const glm::mat4& transform = glm::mat4(1.0f));
+		static void submitMesh(const ::Ignite::IPipeline* pipeline, const ::Ignite::IMesh* mesh, const glm::mat4&
+			                       transform = glm::mat4(1.0f));
 	};
 }

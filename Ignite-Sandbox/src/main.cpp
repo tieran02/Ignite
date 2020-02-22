@@ -25,12 +25,13 @@ public:
 		material = Ignite::IMaterial::Create("defaultMaterial");
 
 		//load model with default texture
-		model = Ignite::Model::Load("resources/models/dragon.obj");
+		model = Ignite::Model::Load("resources/models/nano", "nanosuit.obj");
 
-		m_ubo.view = glm::lookAt(glm::vec3(.75f, .75f, .75f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		m_ubo.proj = glm::perspective(glm::radians(45.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 10.0f);
+		m_ubo.view = glm::lookAt(glm::vec3(12.75f, 8.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 1000.0f);
 		m_ubo.proj[1][1] *= -1;
-		m_ubo.light_dir = glm::vec3(-0.2f, -1.0f, -0.3f);
+		
+		m_ubo.light_dir = glm::vec3(-1, 0.0f, 0);
 	}
 
 	void OnDetach() override
@@ -44,9 +45,8 @@ public:
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		material->Properties().diffuse = glm::vec4(0.0f, (1.0f * (sin(time) + 1.0f) / 2.0f),0.0f,1.0f);
+		m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//m_ubo.model = glm::rotate(m_ubo.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
 		
         //start scene
         Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
@@ -55,7 +55,7 @@ public:
 		
         Ignite::Renderer::BeginScene();
 
-		Ignite::Renderer::Submit(pipeline.get(), model.get(), material.get());
+		Ignite::Renderer::Submit(pipeline.get(), model.get());
 
         Ignite::Renderer::EndScene();
 

@@ -6,13 +6,14 @@
 #include <assimp/postprocess.h>
 #include "Ignite/Log.h"
 #include "Ignite/Renderer/Renderer.h"
+#include "glm/gtc/type_ptr.inl"
 
 namespace Ignite
 {
-	std::unique_ptr<Model> Model::Load(const std::string& path)
+	std::unique_ptr<Model> Model::Load(const std::string& path, const std::string& file)
 	{
         std::unique_ptr<Model> model = std::unique_ptr<Model>(new Model);
-        model->loadModel(path);
+        model->loadModel(path, file);
 		if(!model->m_meshes.empty())
 			return model;
 
@@ -24,10 +25,15 @@ namespace Ignite
 		return m_meshes;
 	}
 
-	void Model::loadModel(const std::string& path)
+	const std::vector<std::shared_ptr<IMaterial>>& Model::Materials() const
+	{
+        return m_materials;
+	}
+
+	void Model::loadModel(const std::string& path, const std::string& file)
 	{
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = import.ReadFile(path + "/" + file, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -35,25 +41,25 @@ namespace Ignite
             return;
 		}
 
-		processNode(scene->mRootNode, scene);
+		processNode(scene->mRootNode, scene, path);
 	}
 
-	void Model::processNode(aiNode* node, const aiScene* scene)
+	void Model::processNode(aiNode* node, const aiScene* scene, const std::string& path)
 	{
 		// process all the node's meshes (if any)
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			m_meshes.push_back(processMesh(mesh, scene));
+			m_meshes.push_back(processMesh(mesh, scene,path));
 		}
 		// then do the same for each of its children
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
-			processNode(node->mChildren[i], scene);
+			processNode(node->mChildren[i], scene,path);
 		}
 	}
 
-    std::shared_ptr<IMesh> Model::processMesh(aiMesh* mesh, const aiScene* scene)
+    std::shared_ptr<IMesh> Model::processMesh(aiMesh* mesh, const aiScene* scene, const std::string& path)
     {
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
@@ -104,37 +110,48 @@ namespace Ignite
                 indices.push_back(face.mIndices[j]);
         }
 
-        std::vector<std::shared_ptr<ITexture2D>> diffuseMaps;
-        std::vector<std::shared_ptr<ITexture2D>> specularMaps;
-
-        
-        if (mesh->mMaterialIndex >= 0)
+        std::shared_ptr<IMaterial> material;
+		if(mesh->mMaterialIndex > 0)
+		{
+            const aiMaterial* aiMaterial = scene->mMaterials[mesh->mMaterialIndex];
+            material = getMaterial(aiMaterial, path);
+		}
+        else
         {
-            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
-            //load diffuse textures
-            std::vector<std::shared_ptr<ITexture2D>> diffuseMaps = loadMaterialTextures(material,
-                aiTextureType_DIFFUSE, TextureType::eDIFFUSE);
-            textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-            //load specular textures
-            std::vector<std::shared_ptr<ITexture2D>> specularMaps = loadMaterialTextures(material,
-                aiTextureType_SPECULAR, TextureType::eSPECULAR);
-            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end()); 
+	        //make default mat
+            material = IMaterial::Create("default", nullptr);
         }
-
+		
 		//finaly create mesh
-        return IMesh::Create(vertices, indices, textures);
+        return IMesh::Create(vertices, indices, material);
 	}
 
-	void Model::loadMaterials(const aiScene* aScene)
+	std::shared_ptr<IMaterial> Model::getMaterial(const aiMaterial* material, const std::string& path)
 	{
-        m_materials.resize(aScene->mNumMaterials);
+        aiString name;
+        material->Get(AI_MATKEY_NAME, name);
 
-        for (size_t i = 0; i < m_materials.size(); i++)
+        // Properties
+        aiColor4D color;
+        material->Get(AI_MATKEY_COLOR_AMBIENT, color);
+        glm::vec4 ambient = glm::make_vec4(&color.r) + glm::vec4(0.1f);
+        material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+        glm::vec4 diffuse = glm::make_vec4(&color.r);
+        material->Get(AI_MATKEY_COLOR_SPECULAR, color);
+        glm::vec4 specular = glm::make_vec4(&color.r);
+        float opacity;
+        material->Get(AI_MATKEY_OPACITY, opacity);
+
+        aiString str;
+        std::shared_ptr<ITexture2D> texture;
+        if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
-            //m_materials[i] = IMaterial::Create(m)
+            material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
+            std::string file = path + "/" + str.C_Str();
+            texture = ITexture2D::Create(str.C_Str(), file, TextureType::eDIFFUSE);
         }
+
+        return IMaterial::Create(name.C_Str(), texture.get());
 	}
 
 	std::vector<std::shared_ptr<ITexture2D>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,

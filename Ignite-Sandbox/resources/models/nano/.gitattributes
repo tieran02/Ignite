@@ -1,0 +1,2 @@
+*.{jpg,png,bmp,tga,tiff,iff,pict,dds,xcf,gif,mp3,ogg,wav,fbx,obj,dae,mb,ma,3ds,blebd,dll,pdb,mbd,exe} filter=lfs diff=lfs merge=lfs -text
+*.{jpg,png,bmp,tga,tiff,iff,pict,dds,xcf,gif,mp3,ogg,wav,fbx,obj,dae,mb,ma,3ds,blend,dll,pdb,mbd,exe} filter=lfs diff=lfs merge=lfs -text

@@ -8,8 +8,8 @@ namespace Ignite
 	{
 		friend class IMesh;
 	protected:
-		VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures);
-		void Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures) override;
+		VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, std::shared_ptr<IMaterial> material);
+		void Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices) override;
 		void Cleanup() override;
 	public:
 		~VulkanMesh() override;
@@ -18,8 +18,7 @@ namespace Ignite
 		
 		void createVBO(const std::vector<Vertex>& verts);
 		void createIndices(const std::vector<uint32_t>& indices);
-		void createTextures(const std::vector<std::shared_ptr<ITexture2D>>& textures);
-		
+
 	public:
 		void CreateDescriptorSet();
 		void BindDescriptors() const override;

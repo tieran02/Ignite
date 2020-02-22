@@ -12,13 +12,18 @@ layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inTexCoord;
 
-layout(location = 0) out vec3 normal;
-layout(location = 1) out vec2 fragTexCoord;
-layout(location = 2) out vec3 LightDir;
+layout(location = 0) out vec3 FragPos;
+layout(location = 1) out vec3 Normal;
+layout(location = 2) out vec2 TexCoords;
+layout(location = 3) out vec3 LightDir;
 
-void main() {
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
-    normal = inNormal;
-    fragTexCoord = inTexCoord;
+void main() 
+{
+    FragPos = vec3(ubo.model * vec4(inPosition, 1.0));
+    Normal = Normal = mat3(transpose(inverse(ubo.model))) * inNormal;
+    TexCoords = inTexCoord;
+
     LightDir = ubo.lightDir;
+
+    gl_Position = ubo.proj * ubo.view * vec4(FragPos, 1.0);
 }

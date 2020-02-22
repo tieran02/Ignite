@@ -10,24 +10,24 @@ namespace Ignite
 	class IMesh
 	{
 	protected:
-		IMesh();
-		virtual void Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures) = 0;
+		IMesh(const std::shared_ptr<IMaterial>& material);
+		virtual void Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices) = 0;
 		virtual void Cleanup() = 0;
 	public:
 		virtual ~IMesh() = default;
 		virtual void BindDescriptors() const = 0;
 		const IGraphicsContext* m_context;
 
-		static std::shared_ptr<IMesh> Create(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures);
+		static std::shared_ptr<IMesh> Create(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::shared_ptr<IMaterial>& material);
 
 		const IVertexBuffer* VertexBuffer() const { return m_vertexBuffer.get(); }
 		const IIndexBuffer* IndexBuffer() const { return m_IndexBuffer.get(); }
-		const std::vector<std::shared_ptr<ITexture2D>>& Textures() const { return m_textures; }
+		const IMaterial* Material() const { return m_matieral.get(); }
 		uint32_t IndexCount() const { return m_indexCount; }
 	protected:
 		std::shared_ptr<IVertexBuffer> m_vertexBuffer;
 		std::shared_ptr<IIndexBuffer> m_IndexBuffer;
 		uint32_t m_indexCount;
-		std::vector<std::shared_ptr<ITexture2D>> m_textures;
+		std::shared_ptr<IMaterial> m_matieral;
 	};
 }

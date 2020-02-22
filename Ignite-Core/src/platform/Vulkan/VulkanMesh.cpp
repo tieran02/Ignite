@@ -8,17 +8,16 @@
 
 namespace Ignite
 {
-	VulkanMesh::VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures)
+	VulkanMesh::VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, std::shared_ptr<IMaterial> material) : IMesh(material)
 	{
 		m_indexCount = indices.size();
-		Init(verts, indices, textures);
+		Init(verts, indices);
 	}
 
-	void VulkanMesh::Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, const std::vector<std::shared_ptr<ITexture2D>>& textures)
+	void VulkanMesh::Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices)
 	{
 		createVBO(verts);
 		createIndices(indices);
-		createTextures(textures);
 		CreateDescriptorSet();
 	}
 
@@ -41,10 +40,6 @@ namespace Ignite
 		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(indices[0]) * indices.size());
 	}
 
-	void VulkanMesh::createTextures(const std::vector<std::shared_ptr<ITexture2D>>& textures)
-	{
-		m_textures = textures;
-	}	
 
 	void VulkanMesh::CreateDescriptorSet()
 	{
