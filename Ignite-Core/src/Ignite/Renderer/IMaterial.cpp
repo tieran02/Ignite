@@ -7,8 +7,8 @@
 
 namespace Ignite
 {
-	IMaterial::IMaterial(const IPipeline* pipeline, const std::string& name, const ITexture2D* diffuseTexture)
-		: m_context(Renderer::GraphicsContext()), m_pipeline(pipeline), m_name(name), m_diffuseTexture(diffuseTexture)
+	IMaterial::IMaterial(const std::string& name, const ITexture2D* diffuseTexture)
+		: m_context(Renderer::GraphicsContext()),m_name(name), m_diffuseTexture(diffuseTexture)
 	{
 		m_properties = MaterialProperties
 		{
@@ -17,9 +17,22 @@ namespace Ignite
 			glm::vec4{0,0,0,1.0f},
 			0.0f
 		};
+
+		if (diffuseTexture == nullptr)
+		{
+			if (m_context->Texture2Ds().find("default_diffuse") != m_context->Texture2Ds().end())
+			{
+				//get default texture
+				m_diffuseTexture = m_context->Texture2Ds().at("default_diffuse").get();
+			}
+			else
+			{
+				LOG_CORE_FATAL("FAILED TO FIND DEFAULT DIFFUSE TEXTURE (default_diffuse)");
+			}
+		}
 	}
 
-	std::shared_ptr<IMaterial> IMaterial::Create(const IPipeline* pipeline, const std::string& name, const ITexture2D* diffuseTexture)
+	std::shared_ptr<IMaterial> IMaterial::Create(const std::string& name, const ITexture2D* diffuseTexture)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
@@ -29,7 +42,7 @@ namespace Ignite
 			case IRendererAPI::API::VULKAN:
 				if (Renderer::GraphicsContext()->m_materials.find(name) == Renderer::GraphicsContext()->m_materials.end())
 				{
-					std::shared_ptr<IMaterial> material = std::shared_ptr<VulkanMaterial>(new VulkanMaterial(pipeline,name, diffuseTexture));
+					std::shared_ptr<IMaterial> material = std::shared_ptr<VulkanMaterial>(new VulkanMaterial(name, diffuseTexture));
 					Renderer::GraphicsContext()->m_materials.insert(std::make_pair(name, material));
 					return material;
 				}

@@ -9,13 +9,13 @@ namespace Ignite
 	{
 		friend class IMaterial;
 	protected:
-		VulkanMaterial(const IPipeline* pipeline, const std::string& name, const ITexture2D* diffuseTexture);
+		VulkanMaterial(const std::string& name, const ITexture2D* diffuseTexture);
 		void Init() override;
 		void Cleanup() override;
 	public:
 		~VulkanMaterial() override;
-		void Bind() const override;
-		void Unbind() const override;
+		void Bind(const IPipeline* pipeline) const override;
+		void Unbind(const IPipeline* pipeline) const override;
 
 		void CreateDescriptorSets();
 	private:

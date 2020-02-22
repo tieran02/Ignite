@@ -19,19 +19,12 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
-    if(normal != vec3(0.0,0.0,0.0))
-    {
-        vec3 norm = normalize(normal);
-        vec3 lightDir = normalize(-LightDir);  
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(-LightDir);  
 
-        float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * texture(texSampler, fragTexCoord).rgb * material.diffuse.rgb;
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * texture(texSampler, fragTexCoord).rgb * material.diffuse.rgb;
 
-        vec4 result = vec4((material.ambient.rgb + diffuse), 1.0-material.opacity);
-        outColor = result;
-    }
-    else
-    {
-        outColor = texture(texSampler, fragTexCoord);
-    }
+    vec4 result = vec4((material.ambient.rgb + diffuse), 1.0-material.opacity);
+    outColor = result;
 }

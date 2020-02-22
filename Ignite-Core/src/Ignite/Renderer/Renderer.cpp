@@ -56,10 +56,10 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh, cons
 	
 	//bind pipeline
 	pipeline->Bind();
-	material->Bind();
+	material->Bind(pipeline);
 	//TODO draw stuff here
 	submitMesh(mesh);
-	material->Unbind();
+	material->Unbind(pipeline);
 	pipeline->Unbind();
 }
 
@@ -70,12 +70,12 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, con
 	
 	//bind pipeline
 	pipeline->Bind();
-	material->Bind();
+	material->Bind(pipeline);
 	for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
 	{
 		submitMesh(mesh.get());
 	}
-	material->Unbind();
+	material->Unbind(pipeline);
 	pipeline->Unbind();
 }
 

@@ -106,7 +106,8 @@ namespace Ignite
 
         std::vector<std::shared_ptr<ITexture2D>> diffuseMaps;
         std::vector<std::shared_ptr<ITexture2D>> specularMaps;
-		
+
+        
         if (mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -122,36 +123,18 @@ namespace Ignite
             textures.insert(textures.end(), specularMaps.begin(), specularMaps.end()); 
         }
 
-		//add default diffuse texture if diffuse textures is empty
-        if (diffuseMaps.empty())
-        {
-            if (Renderer::GraphicsContext()->Texture2Ds().find("default_diffuse") != Renderer::GraphicsContext()->Texture2Ds().end())
-            {
-                //get default texture
-                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_diffuse"));
-            }
-            else
-            {
-                LOG_CORE_FATAL("FAILED TO FIND DEFAULT DIFFUSE TEXTURE (default_diffuse)");
-            }
-        }
-		
-        //add default specular texture if specular textures is empty
-        if (specularMaps.empty())
-        {
-            if (Renderer::GraphicsContext()->Texture2Ds().find("default_specular") != Renderer::GraphicsContext()->Texture2Ds().end())
-            {
-                //get default texture
-                textures.push_back(Renderer::GraphicsContext()->Texture2Ds().at("default_specular"));
-            }
-            else
-            {
-                LOG_CORE_FATAL("FAILED TO FIND DEFAULT SPECULAR TEXTURE (default_specular)");
-            }
-        }
-
 		//finaly create mesh
         return IMesh::Create(vertices, indices, textures);
+	}
+
+	void Model::loadMaterials(const aiScene* aScene)
+	{
+        m_materials.resize(aScene->mNumMaterials);
+
+        for (size_t i = 0; i < m_materials.size(); i++)
+        {
+            //m_materials[i] = IMaterial::Create(m)
+        }
 	}
 
 	std::vector<std::shared_ptr<ITexture2D>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,

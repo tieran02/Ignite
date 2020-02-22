@@ -22,27 +22,7 @@ public:
 		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg", Ignite::TextureType::eDIFFUSE);
 		std::shared_ptr<Ignite::ITexture2D> chalet = Ignite::ITexture2D::Create("chalet", "resources/textures/chalet.jpg", Ignite::TextureType::eDIFFUSE);
 
-		material = Ignite::IMaterial::Create(pipeline.get(), "defaultMaterial", image.get());
-
-		//two floats pos, three floats color
-		std::vector<float> vertices =
-		{
-			-0.5f, -0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f,		1.0f, 1.0f, 1.0f,	1.0f, 1.0f,
-
-			-0.5f, -0.5f, -0.5f,	1.0f, 0.0f, 0.0f,	1.0f, 0.0f,
-			 0.5f, -0.5f, -0.5f,	0.0f, 1.0f, 0.0f,	0.0f, 0.0f,
-			 0.5f,  0.5f, -0.5f,	0.0f, 0.0f, 1.0f,	0.0f, 1.0f,
-			-0.5f,  0.5f, -0.5f,	1.0f, 1.0f, 1.0f,	1.0f, 1.0f
-		};
-
-		std::vector<uint32_t> indices =
-		{
-			0, 1, 2, 2, 3, 0,
-			4, 5, 6, 6, 7, 4
-		};
+		material = Ignite::IMaterial::Create("defaultMaterial");
 
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/dragon.obj");
@@ -66,7 +46,7 @@ public:
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
-		material->Properties().diffuse = glm::vec4(0.0f, (10.0f * (sin(time) + 1.0f) / 2.0f),0.0f,1.0f);
+		material->Properties().diffuse = glm::vec4(0.0f, (1.0f * (sin(time) + 1.0f) / 2.0f),0.0f,1.0f);
 		
         //start scene
         Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });

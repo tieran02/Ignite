@@ -4,14 +4,15 @@
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 
-Ignite::VulkanMaterial::VulkanMaterial(const IPipeline* pipeline, const std::string& name,
-	const ITexture2D* diffuseTexture) : IMaterial(pipeline, name,diffuseTexture)
+Ignite::VulkanMaterial::VulkanMaterial(const std::string& name,
+	const ITexture2D* diffuseTexture) : IMaterial(name,diffuseTexture)
 {
 	Init();
 }
 
 void Ignite::VulkanMaterial::Init()
 {
+
 	CreateDescriptorSets();
 }
 
@@ -24,13 +25,13 @@ Ignite::VulkanMaterial::~VulkanMaterial()
 	Cleanup();
 }
 
-void Ignite::VulkanMaterial::Bind() const
+void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 {
 	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 	CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");
 
 	CORE_ASSERT(m_pipeline, "Failed to bind Descriptors, m_pipeline  is null");
-	VkPipelineLayout layout = static_cast<const VulkanPipeline*>(m_pipeline)->PipelineLayout();
+	VkPipelineLayout layout = static_cast<const VulkanPipeline*>(pipeline)->PipelineLayout();
 
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 	{
@@ -50,7 +51,7 @@ void Ignite::VulkanMaterial::Bind() const
 	
 }
 
-void Ignite::VulkanMaterial::Unbind() const
+void Ignite::VulkanMaterial::Unbind(const IPipeline* pipeline) const
 {
 }
 
