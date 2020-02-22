@@ -320,12 +320,21 @@ namespace  Ignite
 		///
 		///Pipeline layout
 		///
+
+		// push constraints for materials
+		VkPushConstantRange pushConstantRange{};
+		pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		pushConstantRange.offset = 0;
+		pushConstantRange.size = sizeof(MaterialProperties);
+
+		std::array<VkDescriptorSetLayout, 2> setLayouts = { vulkanContext->SceneDescriptorSetLayout(), vulkanContext->MaterialDescriptorSetLayout() };
+		
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = 1; // Optional
-		pipelineLayoutInfo.pSetLayouts = &vulkanContext->DescriptorSetLayout(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
-		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		pipelineLayoutInfo.setLayoutCount = setLayouts.size(); // Optional
+		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = 1; // Optional
+		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; // Optional
 
 		VK_CHECK_RESULT(vkCreatePipelineLayout(vulkanContext->Device().LogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
 

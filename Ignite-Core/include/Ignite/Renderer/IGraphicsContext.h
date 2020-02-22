@@ -1,6 +1,7 @@
 #pragma once
 #include "NonCopyable.h"
 #include "IBuffer.h"
+#include "IMaterial.h"
 
 namespace Ignite
 {
@@ -15,6 +16,7 @@ namespace Ignite
 		friend class IIndexBuffer;
 		friend class ITexture2D;
 		friend class IMesh;
+		friend class IMaterial;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
@@ -31,6 +33,7 @@ namespace Ignite
 		const std::vector<std::shared_ptr<IMesh>>& Models() const { return m_models; }
 	protected:
 		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
+		std::unordered_map<std::string, std::shared_ptr<IMaterial>> m_materials;
 		std::vector<std::shared_ptr<IBuffer>> m_buffers;
 		std::unordered_map<std::string, std::shared_ptr<ITexture2D>> m_texture2Ds;
 		std::vector<std::shared_ptr<IMesh>> m_models;

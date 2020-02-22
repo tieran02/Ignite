@@ -44,14 +44,15 @@ namespace Ignite
 	void VulkanMesh::createTextures(const std::vector<std::shared_ptr<ITexture2D>>& textures)
 	{
 		m_textures = textures;
-	}
+	}	
 
 	void VulkanMesh::CreateDescriptorSet()
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
-		CORE_ASSERT(vulkanContext, "Failed to cleanup VulkanBuffer, vulkan context is null");
+		CORE_ASSERT(vulkanContext, "Failed to create descriptorsets, vulkan context is null");
 		
-		std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->DescriptorSetLayout());
+		std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->SceneDescriptorSetLayout());
+		
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 		allocInfo.descriptorPool = vulkanContext->DescriptorPool();
@@ -59,7 +60,7 @@ namespace Ignite
 		allocInfo.pSetLayouts = layouts.data();
 
 		m_descriptorSets.resize(vulkanContext->Swapchain().ImageViews().size());
-		VK_CHECK_RESULT(vkAllocateDescriptorSets(vulkanContext->Device().LogicalDevice(), &allocInfo, m_descriptorSets.data()));
+		VkResult r = vkAllocateDescriptorSets(vulkanContext->Device().LogicalDevice(), &allocInfo, m_descriptorSets.data());
 
 		for (size_t i = 0; i < vulkanContext->Swapchain().ImageViews().size(); i++)
 		{
@@ -68,21 +69,7 @@ namespace Ignite
 			bufferInfo.offset = 0;
 			bufferInfo.range = sizeof(UniformBufferObject);
 
-
-			//TODO have a model class with the descriptor set inside it, when we creae a model we create the descriptor set for it
-			//todo get bound image
-			std::vector<VkDescriptorImageInfo> imageInfos{ m_textures.size() };
-			for (size_t i = 0; i < m_textures.size(); i++)
-			{
-				imageInfos[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				const VulkanTexture2D& vulkanimage = *(VulkanTexture2D*)m_textures[i].get();
-				imageInfos[i].imageView = vulkanimage.ImageView();
-				imageInfos[i].sampler = vulkanimage.Sampler();
-			}
-
-			std::vector<VkWriteDescriptorSet> descriptorWrites;
-
-			VkWriteDescriptorSet descriptorWrite{};
+			VkWriteDescriptorSet descriptorWrite = {};
 			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrite.dstSet = m_descriptorSets[i];
 			descriptorWrite.dstBinding = 0;
@@ -90,22 +77,9 @@ namespace Ignite
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			descriptorWrite.descriptorCount = 1;
 			descriptorWrite.pBufferInfo = &bufferInfo;
-			descriptorWrites.push_back(descriptorWrite);
 
-			if (!m_textures.empty())
-			{
-				VkWriteDescriptorSet imageDescriptorWrite{};
-				imageDescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				imageDescriptorWrite.dstSet = m_descriptorSets[i];
-				imageDescriptorWrite.dstBinding = 1;
-				imageDescriptorWrite.dstArrayElement = 0;
-				imageDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				imageDescriptorWrite.descriptorCount = imageInfos.size();
-				imageDescriptorWrite.pImageInfo = imageInfos.data();
-				descriptorWrites.push_back(imageDescriptorWrite);
-			}
-
-			vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), descriptorWrites.size(), descriptorWrites.data(), 0, nullptr);
+			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
+			vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
 		}
 	}
 

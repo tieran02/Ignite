@@ -5,6 +5,7 @@
 #include "Ignite/Application.h"
 #include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Model.h"
+#include "Ignite/Renderer/IMaterial.h"
 #include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
@@ -48,31 +49,33 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh, const IMaterial* material, const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
+	material->Bind();
 	//TODO draw stuff here
 	submitMesh(mesh);
+	material->Unbind();
 	pipeline->Unbind();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const IMaterial* material, const glm::mat4& transform)
 {
 	if(!model)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
-	//TODO draw stuff here
-
+	material->Bind();
 	for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
 	{
 		submitMesh(mesh.get());
-	}	
+	}
+	material->Unbind();
 	pipeline->Unbind();
 }
 

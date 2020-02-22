@@ -30,8 +30,8 @@ namespace Ignite
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
 		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& UniformBuffers() const { return m_uniformBuffers; }
 		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
-		const VkDescriptorSetLayout& DescriptorSetLayout() const { return m_descriptorSetLayout; }
-    	
+		const VkDescriptorSetLayout& SceneDescriptorSetLayout() const { return m_sceneDscriptorSetLayout; }
+		const VkDescriptorSetLayout& MaterialDescriptorSetLayout() const { return m_materialDescriptorSetLayout; }
 
 		~VulkanContext();
 
@@ -52,7 +52,8 @@ namespace Ignite
 		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_uniformBuffers;
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
-		VkDescriptorSetLayout m_descriptorSetLayout;
+		VkDescriptorSetLayout m_materialDescriptorSetLayout;
+		VkDescriptorSetLayout m_sceneDscriptorSetLayout;
     	//comands
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
@@ -67,7 +68,7 @@ namespace Ignite
 		void createUniformBuffers();
 		void createDescriptorPool();
 		void createDescriptorSetLayout();
-		//void createDescriptorSets();
+		//void CreateDescriptorSets();
     	
 		void createCommandPool();
 		void createCommandBuffers();

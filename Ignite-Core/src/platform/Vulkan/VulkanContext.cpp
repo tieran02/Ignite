@@ -7,6 +7,7 @@
 #include "Ignite/Renderer/ITexture2D.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 #include "platform/Vulkan/VulkanMesh.h"
+#include "platform/Vulkan/VulkanMaterial.h"
 
 namespace Ignite
 {
@@ -29,7 +30,7 @@ namespace Ignite
 		
 		createUniformBuffers();
 		createDescriptorPool();
-		//createDescriptorSets();
+		//CreateDescriptorSets();
 		createCommandPool();
 		createCommandBuffers();
 		createSyncObjects();
@@ -55,7 +56,8 @@ namespace Ignite
 		
 		cleanupSwapchain();
 
-		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_descriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_sceneDscriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_materialDescriptorSetLayout, nullptr);
 		
 		LOG_CORE_INFO("Cleaning up vulkan semaphores");
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -160,6 +162,12 @@ namespace Ignite
 			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(m_models[i].get());
 			vulkanModel->CreateDescriptorSet();
 		}
+
+		for (auto& material : m_materials)
+		{
+			VulkanMaterial* vulkanMaterial = static_cast<VulkanMaterial*>(material.second.get());
+			vulkanMaterial->CreateDescriptorSets();
+		}
 		
 		createCommandBuffers();
 	}
@@ -202,6 +210,7 @@ namespace Ignite
 		std::array<VkDescriptorPoolSize, 2> poolSizes = {};
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		poolSizes[0].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		
 		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		poolSizes[1].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 
@@ -209,35 +218,48 @@ namespace Ignite
 		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 		poolInfo.pPoolSizes = poolSizes.data();
-		poolInfo.maxSets = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		poolInfo.maxSets = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size() * 2);
 
 		VK_CHECK_RESULT(vkCreateDescriptorPool(m_vulkanDevice->LogicalDevice(), &poolInfo, nullptr, &descriptorPool));
 	}
 
 	void VulkanContext::createDescriptorSetLayout()
 	{
+		// Descriptor set and pipeline layouts
+		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
+		
+		//scene descriptors
 		VkDescriptorSetLayoutBinding uboLayoutBinding = {};
 		uboLayoutBinding.binding = 0;
 		uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		uboLayoutBinding.descriptorCount = 1;
 		uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 		uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
+		setLayoutBindings.push_back(uboLayoutBinding);
 
-		//texture sampler
+		VkDescriptorSetLayoutCreateInfo sceneLayoutInfo = {};
+		sceneLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		sceneLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+		sceneLayoutInfo.pBindings = setLayoutBindings.data();
+		
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &m_sceneDscriptorSetLayout));
+
+		setLayoutBindings.clear();
+		//material descriptors
 		VkDescriptorSetLayoutBinding samplerLayoutBinding = {};
-		samplerLayoutBinding.binding = 1;
+		samplerLayoutBinding.binding = 0;
 		samplerLayoutBinding.descriptorCount = 1;
 		samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		setLayoutBindings.push_back(samplerLayoutBinding);
 
-		std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
-		VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-		layoutInfo.pBindings = bindings.data();
+		VkDescriptorSetLayoutCreateInfo materialLayoutInfo = {};
+		materialLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		materialLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+		materialLayoutInfo.pBindings = setLayoutBindings.data();
 
-		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &layoutInfo, nullptr, &m_descriptorSetLayout));
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &materialLayoutInfo, nullptr, &m_materialDescriptorSetLayout));
 	}
 
 	void VulkanContext::createCommandPool()
