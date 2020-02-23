@@ -1,7 +1,8 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(set = 1, binding = 0) uniform sampler2D texSampler;
+layout(set = 1, binding = 0) uniform sampler2D DiffuseSampler;
+layout(set = 1, binding = 1) uniform sampler2D SpecularSampler;
 
 layout(push_constant) uniform Material 
 {
@@ -21,14 +22,14 @@ layout(location = 0) out vec4 outColor;
 void main() 
 {
     // ambient
-    vec3 ambient = vec3(0.4,0.4,0.4) * texture(texSampler, TexCoords).rgb;
+    vec3 ambient = vec3(0.4,0.4,0.4) * texture(DiffuseSampler, TexCoords).rgb;
 
     // diffuse 
     vec3 norm = normalize(Normal);
     //vec3 lightDir = normalize(vec3(12,12,12) - FragPos);
     vec3 lightDir = normalize(-LightDir);  
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = vec3(2.0,2.0,2.0) * diff * texture(texSampler, TexCoords).rgb;  
+    vec3 diffuse = vec3(2.0,2.0,2.0) * diff * texture(DiffuseSampler, TexCoords).rgb;  
 
     vec3 result = ambient + diffuse;
     outColor = vec4(result, 1.0);

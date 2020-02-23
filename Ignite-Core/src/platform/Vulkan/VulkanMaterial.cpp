@@ -5,7 +5,7 @@
 #include "platform/Vulkan/VulkanTexture2D.h"
 
 Ignite::VulkanMaterial::VulkanMaterial(const std::string& name,
-	const ITexture2D* diffuseTexture) : IMaterial(name,diffuseTexture)
+	const ITexture2D* diffuseTexture, const ITexture2D* specularTexture) : IMaterial(name,diffuseTexture,specularTexture)
 {
 	Init();
 }
@@ -74,13 +74,12 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 	for (size_t i = 0; i < vulkanContext->Swapchain().ImageViews().size(); i++)
 	{
 		
-		VkDescriptorImageInfo imageInfos;
-
+		VkDescriptorImageInfo diffuseImageInfo;
 		//diffuse texture
-		imageInfos.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanimage = *(VulkanTexture2D*)m_diffuseTexture;
-		imageInfos.imageView = vulkanimage.ImageView();
-		imageInfos.sampler = vulkanimage.Sampler();
+		diffuseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		const VulkanTexture2D& vulkanDiffuseImage = *(VulkanTexture2D*)m_diffuseTexture;
+		diffuseImageInfo.imageView = vulkanDiffuseImage.ImageView();
+		diffuseImageInfo.sampler = vulkanDiffuseImage.Sampler();
 
 
 		VkWriteDescriptorSet diffuseDescriptorWrite{};
@@ -90,8 +89,26 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		diffuseDescriptorWrite.dstArrayElement = 0;
 		diffuseDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		diffuseDescriptorWrite.descriptorCount = 1;
-		diffuseDescriptorWrite.pImageInfo = &imageInfos;
+		diffuseDescriptorWrite.pImageInfo = &diffuseImageInfo;
 
-		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), 1, &diffuseDescriptorWrite, 0, nullptr);
+		//specular texture
+		VkDescriptorImageInfo specularImageInfo;
+		specularImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		const VulkanTexture2D& vulkanSpecularImage = *(VulkanTexture2D*)m_specularTexture;
+		specularImageInfo.imageView = vulkanSpecularImage.ImageView();
+		specularImageInfo.sampler = vulkanSpecularImage.Sampler();
+
+		VkWriteDescriptorSet specularDescriptorWrite{};
+		specularDescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		specularDescriptorWrite.dstSet = m_descriptorSets[i];
+		specularDescriptorWrite.dstBinding = 1;
+		specularDescriptorWrite.dstArrayElement = 0;
+		specularDescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		specularDescriptorWrite.descriptorCount = 1;
+		specularDescriptorWrite.pImageInfo = &specularImageInfo;
+
+		std::array<VkWriteDescriptorSet, 2> sets{ diffuseDescriptorWrite,specularDescriptorWrite };
+
+		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), sets.size(), sets.data(), 0, nullptr);
 	}
 }

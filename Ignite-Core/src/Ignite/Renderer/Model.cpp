@@ -143,15 +143,22 @@ namespace Ignite
         material->Get(AI_MATKEY_OPACITY, opacity);
 
         aiString str;
-        std::shared_ptr<ITexture2D> texture;
+        std::shared_ptr<ITexture2D> diffuseTexture;
         if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
             material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
             std::string file = path + "/" + str.C_Str();
-            texture = ITexture2D::Create(str.C_Str(), file, TextureType::eDIFFUSE);
+            diffuseTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eDIFFUSE);
+        }
+        std::shared_ptr<ITexture2D> specularTexture;
+		if (material->GetTextureCount(aiTextureType_SPECULAR) > 0)
+        {
+            material->GetTexture(aiTextureType_SPECULAR, 0, &str);
+            std::string file = path + "/" + str.C_Str();
+            specularTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eSPECULAR);
         }
 
-        return IMaterial::Create(name.C_Str(), texture.get());
+        return IMaterial::Create(name.C_Str(), diffuseTexture.get(), specularTexture.get());
 	}
 
 	std::vector<std::shared_ptr<ITexture2D>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,

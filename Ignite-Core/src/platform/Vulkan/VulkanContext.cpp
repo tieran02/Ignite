@@ -253,6 +253,14 @@ namespace Ignite
 		samplerLayoutBinding.pImmutableSamplers = nullptr;
 		samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		setLayoutBindings.push_back(samplerLayoutBinding);
+		//specular
+		VkDescriptorSetLayoutBinding specularLayoutBinding = {};
+		specularLayoutBinding.binding = 1;
+		specularLayoutBinding.descriptorCount = 1;
+		specularLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		specularLayoutBinding.pImmutableSamplers = nullptr;
+		specularLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		setLayoutBindings.push_back(specularLayoutBinding);
 
 		VkDescriptorSetLayoutCreateInfo materialLayoutInfo = {};
 		materialLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
