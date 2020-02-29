@@ -47,11 +47,14 @@ void Ignite::WinWindow::Init()
 	glfwInit();
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	//glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	
 
 	glfwSetErrorCallback(GLFWErrorCallback);
 	
 	m_glfwWindow = glfwCreateWindow(m_properites.Width, m_properites.Height, "Ignite Engine", nullptr, nullptr);
 	glfwSetWindowUserPointer(m_glfwWindow, &m_properites);
+	// tell GLFW to capture our mouse
+	glfwSetInputMode(m_glfwWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//callback events
 	

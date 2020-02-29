@@ -14,6 +14,7 @@
 #include "Ignite/Renderer/ITexture2D.h"
 #include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Model.h"
+#include "Ignite/Renderer/Camera.h"
 
 namespace Ignite
 {
