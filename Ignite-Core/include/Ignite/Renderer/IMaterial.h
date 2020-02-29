@@ -23,7 +23,12 @@ namespace Ignite
 	class IMaterial : NonCopyable
 	{
 	protected:
-		IMaterial(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture);
+		IMaterial(const std::string& name,
+			const ITexture2D* diffuseTexture,
+			const ITexture2D* specularTexture,
+			const ITexture2D* normalTexture,
+			const ITexture2D* alphaTexture);
+		
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -32,13 +37,19 @@ namespace Ignite
 		virtual void Unbind(const IPipeline* pipeline) const = 0;
 		MaterialProperties& Properties() { return m_properties; }
 		
-		static std::shared_ptr<IMaterial> Create(const std::string& name, const ITexture2D* diffuseTexture = nullptr, const ITexture2D* specularTexture = nullptr);
+		static std::shared_ptr<IMaterial> Create(const std::string& name,
+			const ITexture2D* diffuseTexture = nullptr,
+			const ITexture2D* specularTexture = nullptr,
+			const ITexture2D* normalTexture = nullptr,
+			const ITexture2D* alphaTexture = nullptr);
 	protected:
 		const IGraphicsContext* m_context;
 
 		std::string m_name;
 		const ITexture2D* m_diffuseTexture;
 		const ITexture2D* m_specularTexture;
+		const ITexture2D* m_normalTexture;
+		const ITexture2D* m_alphaTexture;
 		MaterialProperties m_properties;
 	};
 }

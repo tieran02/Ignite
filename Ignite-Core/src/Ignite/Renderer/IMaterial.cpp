@@ -7,8 +7,8 @@
 
 namespace Ignite
 {
-	IMaterial::IMaterial(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture)
-		: m_context(Renderer::GraphicsContext()),m_name(name), m_diffuseTexture(diffuseTexture), m_specularTexture(specularTexture)
+	IMaterial::IMaterial(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture, const ITexture2D* normalTexture, const ITexture2D* alphaTexture)
+		: m_context(Renderer::GraphicsContext()),m_name(name), m_diffuseTexture(diffuseTexture), m_specularTexture(specularTexture), m_normalTexture(normalTexture), m_alphaTexture(alphaTexture)
 	{
 		m_properties = MaterialProperties
 		{
@@ -44,9 +44,36 @@ namespace Ignite
 				LOG_CORE_FATAL("FAILED TO FIND DEFAULT SPECULAR TEXTURE (default_specular)");
 			}
 		}
+
+		if (normalTexture == nullptr)
+		{
+			if (m_context->Texture2Ds().find("default_normal") != m_context->Texture2Ds().end())
+			{
+				//get default texture
+				m_normalTexture = m_context->Texture2Ds().at("default_normal").get();
+			}
+			else
+			{
+				LOG_CORE_FATAL("FAILED TO FIND DEFAULT NORMAL TEXTURE (default_normal)");
+			}
+		}
+
+		if (alphaTexture == nullptr)
+		{
+			if (m_context->Texture2Ds().find("default_specular") != m_context->Texture2Ds().end())
+			{
+				//get default texture
+				m_alphaTexture = m_context->Texture2Ds().at("default_specular").get();
+			}
+			else
+			{
+				LOG_CORE_FATAL("FAILED TO FIND DEFAULT ALPHA TEXTURE (default_specular)");
+			}
+		}
 	}
 
-	std::shared_ptr<IMaterial> IMaterial::Create(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture)
+	std::shared_ptr<IMaterial> IMaterial::Create(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture,
+												 const ITexture2D* normalTexture, const ITexture2D* alphaTexture)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
@@ -56,7 +83,7 @@ namespace Ignite
 			case IRendererAPI::API::VULKAN:
 				if (Renderer::GraphicsContext()->m_materials.find(name) == Renderer::GraphicsContext()->m_materials.end())
 				{
-					std::shared_ptr<IMaterial> material = std::shared_ptr<VulkanMaterial>(new VulkanMaterial(name, diffuseTexture, specularTexture));
+					std::shared_ptr<IMaterial> material = std::shared_ptr<VulkanMaterial>(new VulkanMaterial(name, diffuseTexture, specularTexture, normalTexture, alphaTexture));
 					Renderer::GraphicsContext()->m_materials.insert(std::make_pair(name, material));
 					return material;
 				}
