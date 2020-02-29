@@ -140,7 +140,7 @@ namespace Ignite
 
 		for (size_t i = 0; i < m_swapChainImages.size(); i++)
 		{
-			m_swapChainImageViews[i] = VulkanResources::CreateImageView(m_device.LogicalDevice(), m_swapChainImages[i], m_selectedFormat.format, VK_IMAGE_ASPECT_COLOR_BIT);
+			m_swapChainImageViews[i] = VulkanResources::CreateImageView(m_device.LogicalDevice(), m_swapChainImages[i], m_selectedFormat.format, VK_IMAGE_ASPECT_COLOR_BIT,1);
 		}
 	}
 }
