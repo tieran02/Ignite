@@ -60,10 +60,10 @@ namespace Ignite
 
 		if (alphaTexture == nullptr)
 		{
-			if (m_context->Texture2Ds().find("default_specular") != m_context->Texture2Ds().end())
+			if (m_context->Texture2Ds().find("default_diffuse") != m_context->Texture2Ds().end())
 			{
 				//get default texture
-				m_alphaTexture = m_context->Texture2Ds().at("default_specular").get();
+				m_alphaTexture = m_context->Texture2Ds().at("default_diffuse").get();
 			}
 			else
 			{

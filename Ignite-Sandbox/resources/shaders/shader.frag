@@ -25,6 +25,9 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
+    if(texture(AlphaSampler, TexCoords).r == 0)
+        discard;
+
     // ambient
     vec3 ambient = vec3(0.4,0.4,0.4) * texture(DiffuseSampler, TexCoords).rgb;
 
