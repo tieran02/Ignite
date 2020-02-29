@@ -15,6 +15,7 @@ namespace Ignite
 			glm::vec4{.35f,0.35f,0.35f,1.0f},
 			glm::vec4{1,1,1,1.0f},
 			glm::vec4{0,0,0,1.0f},
+			0.0f,
 			0.0f
 		};
 

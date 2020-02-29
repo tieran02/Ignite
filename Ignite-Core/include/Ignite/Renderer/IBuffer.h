@@ -9,7 +9,8 @@ namespace Ignite
 		alignas(16) glm::mat4 model;
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 proj;
-		glm::vec3 light_dir;
+		alignas(16) glm::vec3 view_pos;
+		alignas(16) glm::vec3 light_dir;
 	};
 	
 	class IGraphicsContext;

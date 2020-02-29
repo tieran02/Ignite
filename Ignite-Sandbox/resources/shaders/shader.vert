@@ -5,6 +5,7 @@ layout(set = 0, binding = 0) uniform UniformBufferObject {
     mat4 model;
     mat4 view;
     mat4 proj;
+    vec3 viewPosition;
     vec3 lightDir;
 } ubo;
 
@@ -15,7 +16,8 @@ layout(location = 2) in vec2 inTexCoord;
 layout(location = 0) out vec3 FragPos;
 layout(location = 1) out vec3 Normal;
 layout(location = 2) out vec2 TexCoords;
-layout(location = 3) out vec3 LightDir;
+layout(location = 3) out vec3 ViewPos;
+layout(location = 4) out vec3 LightDir;
 
 void main() 
 {
@@ -24,6 +26,7 @@ void main()
     TexCoords = inTexCoord;
 
     LightDir = ubo.lightDir;
+    ViewPos = ubo.viewPosition;
 
     gl_Position = ubo.proj * ubo.view * vec4(FragPos, 1.0);
 }

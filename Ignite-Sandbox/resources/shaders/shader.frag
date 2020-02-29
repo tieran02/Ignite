@@ -8,14 +8,16 @@ layout(push_constant) uniform Material
 {
 	vec4 ambient;
 	vec4 diffuse;
-	vec4 specular;
+    vec4 specular;
+    float shininess;
 	float opacity;
 } material;
 
 layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec3 Normal;
 layout(location = 2) in vec2 TexCoords;
-layout(location = 3) in vec3 LightDir;
+layout(location = 3) in vec3 ViewPos;
+layout(location = 4) in vec3 LightDir;
 
 layout(location = 0) out vec4 outColor;
 
@@ -31,6 +33,13 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = vec3(2.0,2.0,2.0) * diff * texture(DiffuseSampler, TexCoords).rgb;  
 
-    vec3 result = ambient + diffuse;
-    outColor = vec4(result, 1.0);
+    // specular
+    vec3 viewDir = normalize(ViewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = material.specular.rgb * spec * texture(SpecularSampler, TexCoords).rgb;  
+    //vec3 specular = spec * texture(SpecularSampler, TexCoords).rgb;  
+
+    vec3 result = ambient + diffuse + specular;
+    outColor = vec4(result, material.opacity);
 }

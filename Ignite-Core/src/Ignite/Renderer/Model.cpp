@@ -141,6 +141,8 @@ namespace Ignite
         glm::vec4 specular = glm::make_vec4(&color.r);
         float opacity;
         material->Get(AI_MATKEY_OPACITY, opacity);
+        float shininess;
+        material->Get(AI_MATKEY_SHININESS, shininess);
 
         aiString str;
         std::shared_ptr<ITexture2D> diffuseTexture;
@@ -158,7 +160,15 @@ namespace Ignite
             specularTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eSPECULAR);
         }
 
-        return IMaterial::Create(name.C_Str(), diffuseTexture.get(), specularTexture.get());
+        std::shared_ptr<IMaterial> mat = IMaterial::Create(name.C_Str(), diffuseTexture.get(), specularTexture.get());
+
+        mat->Properties().ambient = ambient;
+        mat->Properties().diffuse = diffuse;
+        mat->Properties().specular = specular;
+        mat->Properties().shininess = shininess;
+        mat->Properties().opacity = opacity;
+		
+        return mat;
 	}
 
 	std::vector<std::shared_ptr<ITexture2D>> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type,

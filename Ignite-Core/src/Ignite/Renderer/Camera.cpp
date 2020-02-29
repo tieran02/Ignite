@@ -62,4 +62,14 @@ namespace Ignite
 	{
 		return glm::lookAt(m_position, m_position + m_front, m_up);
 	}
+
+	const glm::vec3& Camera::Position() const
+	{
+		return m_position;
+	}
+
+	const glm::vec3& Camera::Front() const
+	{
+		return m_front;
+	}
 }
