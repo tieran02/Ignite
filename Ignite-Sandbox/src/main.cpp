@@ -1,6 +1,7 @@
 #include <memory>
 #include "Ignite/Ignite.h"
 #include <chrono>
+#include "Ignite/Events/MouseEvent.h"
 
 class ExampleLayer : public Ignite::Layer
 {
@@ -9,14 +10,14 @@ public:
 
 	void OnAttach() override
 	{
-		Ignite::PipelineInputLayout layout = 
+		Ignite::PipelineInputLayout layout =
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
 			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
-		
-		pipeline = Ignite::IPipeline::Create("shader","resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
+
+		pipeline = Ignite::IPipeline::Create("shader", "resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
 
 		//create texture
 		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg", Ignite::TextureType::eDIFFUSE);
@@ -27,10 +28,11 @@ public:
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/nano", "nanosuit.obj");
 
-		m_ubo.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 1000.0f);
+		//m_ubo.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
 		m_ubo.proj[1][1] *= -1;
-		
+		m_ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
 		m_ubo.light_dir = glm::vec3(-1, 0.0f, 0);
 	}
 
@@ -45,22 +47,36 @@ public:
 
 		auto currentTime = std::chrono::high_resolution_clock::now();
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//m_ubo.model = glm::rotate(m_ubo.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
-		
-        //start scene
-        Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
+
+		//camera
+		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
+			camera.Translate(Ignite::CameraDirection::eFORWARD, 0.16);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_S))
+			camera.Translate(Ignite::CameraDirection::eBACKWARD, 0.16);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_A))
+			camera.Translate(Ignite::CameraDirection::eLEFT, 0.16);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_D))
+			camera.Translate(Ignite::CameraDirection::eRIGHT, 0.16);
+
+		camera.MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
+
+		m_ubo.view = camera.GetViewMatrix();
+
+		//start scene
+		Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
 
 		Ignite::RenderCommand::SetUniformBufferObject(m_ubo);
-		
-        Ignite::Renderer::BeginScene();
+
+		Ignite::Renderer::BeginScene();
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get());
 
-        Ignite::Renderer::EndScene();
+		Ignite::Renderer::EndScene();
 
-        Ignite::Renderer::SwapBuffers();
-		
+		Ignite::Renderer::SwapBuffers();
+
 		//FL_LOG_INFO("ExampleLayer::Update");
 		if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))
 		{
@@ -71,6 +87,10 @@ public:
 	void OnEvent(Ignite::Event& event) override
 	{
 		//FL_LOG_TRACE("{0}", event);
+		if (event.GetEventType() == Ignite::EventType::MouseMoved)
+		{
+			Ignite::MouseMovedEvent& mouseEvent = (Ignite::MouseMovedEvent&)event;
+		}
 	}
 
 private:
@@ -80,14 +100,18 @@ private:
 	std::shared_ptr<Ignite::Model> model;
 	std::shared_ptr<Ignite::IMesh> mesh;
 	Ignite::UniformBufferObject m_ubo;
+
+	Ignite::Camera camera{ glm::vec3(0,0,0) };
+	float lastMouseX = 0;
+	float lastMouseY = 0;
 };
 
 int main()
 {
 	Ignite::Ignite ignite;
 	ignite.App().PushLayer(new ExampleLayer);
-	
-    ignite.App().Start(1920, 1080);
 
-    return 0;
+	ignite.App().Start(1920, 1080);
+
+	return 0;
 }
