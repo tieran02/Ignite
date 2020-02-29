@@ -26,7 +26,7 @@ public:
 		material = Ignite::IMaterial::Create("defaultMaterial");
 
 		//load model with default texture
-		model = Ignite::Model::Load("resources/models/nano", "nanosuit.obj");
+		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
 
 		//m_ubo.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
