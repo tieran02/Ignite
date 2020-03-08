@@ -14,7 +14,9 @@ public:
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
-			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
+			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" },
+			{ Ignite::PipelineDataType::eFloat3, "a_Tangent" },
+			{ Ignite::PipelineDataType::eFloat3, "a_Bitangent" },
 		};
 
 		pipeline = Ignite::IPipeline::Create("shader", "resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
@@ -32,8 +34,6 @@ public:
 		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
 		m_ubo.proj[1][1] *= -1;
 		m_ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		m_ubo.light_dir = glm::vec3(-1, 0.0f, 0);
 	}
 
 	void OnDetach() override
@@ -49,7 +49,8 @@ public:
 		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		//m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//m_ubo.model = glm::rotate(m_ubo.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
-
+		m_ubo.light_position = glm::vec3(0, 1000.0f, 0);
+	
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
 			camera.Translate(Ignite::CameraDirection::eFORWARD, 0.16);

@@ -16,10 +16,12 @@ layout(push_constant) uniform Material
 } material;
 
 layout(location = 0) in vec3 FragPos;
-layout(location = 1) in vec3 Normal;
-layout(location = 2) in vec2 TexCoords;
+layout(location = 1) in vec2 TexCoords;
 layout(location = 3) in vec3 ViewPos;
-layout(location = 4) in vec3 LightDir;
+layout(location = 4) in vec3 LightPos;
+layout(location = 5) in mat3 TBN;
+layout(location = 8) in vec3 DebugNormal;
+
 
 layout(location = 0) out vec4 outColor;
 
@@ -28,23 +30,30 @@ void main()
     if(texture(AlphaSampler, TexCoords).r == 0)
         discard;
 
+     // obtain normal from normal map in range [0,1]
+    vec3 normal = normalize(2*(texture(NormalSampler, TexCoords).rgb)-1);
+
+    vec3 lightDirectionTangent = TBN * normalize(vec3(0,1,0));
+    vec3 viewDirectionTangent = TBN * normalize(ViewPos - FragPos);
+
+    // get diffuse color
+    vec3 color = texture(DiffuseSampler, TexCoords).rgb;
     // ambient
-    vec3 ambient = vec3(0.4,0.4,0.4) * texture(DiffuseSampler, TexCoords).rgb;
+    vec3 ambient = (0.2 * texture(DiffuseSampler, TexCoords)).rgb;
 
     // diffuse 
-    vec3 norm = normalize(Normal);
-    //vec3 lightDir = normalize(vec3(12,12,12) - FragPos);
-    vec3 lightDir = normalize(-LightDir);  
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = vec3(2.0,2.0,2.0) * diff * texture(DiffuseSampler, TexCoords).rgb;  
+    //vec3 lightDir = normalize(vec3(-.5,1,.1));
+    float diff = max(dot(lightDirectionTangent, normal), 0.0);
+    vec3 diffuse = vec3(0.4,0.2,0.3)* diff * color * 2;  
 
     // specular
-    vec3 viewDir = normalize(ViewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = material.specular.rgb * spec * texture(SpecularSampler, TexCoords).rgb;  
-    //vec3 specular = spec * texture(SpecularSampler, TexCoords).rgb;  
+    //vec3 viewDir = normalize(TBN * normalize(ViewPos - FragPos));
+    vec3 reflectDir = reflect(-viewDirectionTangent, normal); 
+    vec3 halfwayDir = normalize(lightDirectionTangent + viewDirectionTangent);  
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+
+    vec3 specular = material.specular.rgb * spec * texture(SpecularSampler, TexCoords).rgb;
 
     vec3 result = ambient + diffuse + specular;
-    outColor = vec4(result, material.opacity);
+    outColor = vec4(result, 1.0);
 }
