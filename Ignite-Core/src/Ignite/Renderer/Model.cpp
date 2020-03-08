@@ -159,8 +159,24 @@ namespace Ignite
             std::string file = path + "/" + str.C_Str();
             specularTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eSPECULAR);
         }
+        std::shared_ptr<ITexture2D> normalTexture;
+        if (material->GetTextureCount(aiTextureType_HEIGHT) > 0)
+        {
+            material->GetTexture(aiTextureType_HEIGHT, 0, &str);
+            std::string file = path + "/" + str.C_Str();
+            normalTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eNORMAL);
+        }
 
-        std::shared_ptr<IMaterial> mat = IMaterial::Create(name.C_Str(), diffuseTexture.get(), specularTexture.get());
+        std::shared_ptr<ITexture2D> alphaTexture;
+        if (material->GetTextureCount(aiTextureType_OPACITY) > 0)
+        {
+            material->GetTexture(aiTextureType_OPACITY, 0, &str);
+            std::string file = path + "/" + str.C_Str();
+            alphaTexture = ITexture2D::Create(str.C_Str(), file, TextureType::eALPHAMASK);
+        }
+
+        std::shared_ptr<IMaterial> mat = IMaterial::Create(name.C_Str(), diffuseTexture.get(),
+            specularTexture.get(), normalTexture.get(), alphaTexture.get());
 
         mat->Properties().ambient = ambient;
         mat->Properties().diffuse = diffuse;

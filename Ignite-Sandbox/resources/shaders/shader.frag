@@ -3,6 +3,8 @@
 
 layout(set = 1, binding = 0) uniform sampler2D DiffuseSampler;
 layout(set = 1, binding = 1) uniform sampler2D SpecularSampler;
+layout(set = 1, binding = 2) uniform sampler2D NormalSampler;
+layout(set = 1, binding = 3) uniform sampler2D AlphaSampler;
 
 layout(push_constant) uniform Material 
 {
@@ -23,6 +25,9 @@ layout(location = 0) out vec4 outColor;
 
 void main() 
 {
+    if(texture(AlphaSampler, TexCoords).r == 0)
+        discard;
+
     // ambient
     vec3 ambient = vec3(0.4,0.4,0.4) * texture(DiffuseSampler, TexCoords).rgb;
 

@@ -262,6 +262,24 @@ namespace Ignite
 		specularLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 		setLayoutBindings.push_back(specularLayoutBinding);
 
+		//normal mask
+		VkDescriptorSetLayoutBinding normalLayoutBinding = {};
+		normalLayoutBinding.binding = 2;
+		normalLayoutBinding.descriptorCount = 1;
+		normalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		normalLayoutBinding.pImmutableSamplers = nullptr;
+		normalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		setLayoutBindings.push_back(normalLayoutBinding);
+		
+		//alpha mask
+		VkDescriptorSetLayoutBinding alphaLayoutBinding = {};
+		alphaLayoutBinding.binding = 3;
+		alphaLayoutBinding.descriptorCount = 1;
+		alphaLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		alphaLayoutBinding.pImmutableSamplers = nullptr;
+		alphaLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		setLayoutBindings.push_back(alphaLayoutBinding);
+
 		VkDescriptorSetLayoutCreateInfo materialLayoutInfo = {};
 		materialLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		materialLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());

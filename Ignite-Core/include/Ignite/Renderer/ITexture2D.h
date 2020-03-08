@@ -7,7 +7,9 @@ namespace Ignite
 	{
 		eUNDEFINED,
 		eDIFFUSE,
-		eSPECULAR
+		eSPECULAR,
+		eNORMAL,
+		eALPHAMASK
 	};
 	
 	class ITexture2D

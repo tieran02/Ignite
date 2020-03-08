@@ -6,9 +6,6 @@
 #include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Model.h"
 #include "Ignite/Renderer/IMaterial.h"
-#include "glm/gtx/associated_min_max.hpp"
-#include "glm/gtx/associated_min_max.hpp"
-#include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -20,6 +17,7 @@ void Ignite::Renderer::Init()
 	//add default textures
 	std::shared_ptr<ITexture2D> defaultDiffuseTexture = ITexture2D::Create("default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE);
 	std::shared_ptr<ITexture2D> defaultSpecularTexture = ITexture2D::Create("default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR);
+	std::shared_ptr<ITexture2D> defaultNormalTexture = ITexture2D::Create("default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL);
 }
 
 void Ignite::Renderer::Shutdown()
