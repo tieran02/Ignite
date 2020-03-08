@@ -20,6 +20,7 @@ public:
 		};
 
 		pipeline = Ignite::IPipeline::Create("shader", "resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
+		unlitPipeline = Ignite::IPipeline::Create("unlit", "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv", layout);
 
 		//create texture
 		std::shared_ptr<Ignite::ITexture2D> image = Ignite::ITexture2D::Create("texture", "resources/textures/texture.jpg", Ignite::TextureType::eDIFFUSE);
@@ -29,7 +30,7 @@ public:
 
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
-
+		
 		//m_ubo.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
 		m_ubo.proj[1][1] *= -1;
@@ -43,10 +44,10 @@ public:
 	void OnUpdate() override
 	{
 		//rotate
-		static auto startTime = std::chrono::high_resolution_clock::now();
+		//static auto startTime = std::chrono::high_resolution_clock::now();
 
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		//auto currentTime = std::chrono::high_resolution_clock::now();
+		//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		//m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//m_ubo.model = glm::rotate(m_ubo.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
 		m_ubo.light_position = glm::vec3(0, 1000.0f, 0);
@@ -73,7 +74,7 @@ public:
 
 		Ignite::Renderer::BeginScene();
 
-		Ignite::Renderer::Submit(pipeline.get(), model.get());
+		Ignite::Renderer::Submit(unlitPipeline.get(), model.get());
 
 		Ignite::Renderer::EndScene();
 
@@ -97,9 +98,11 @@ public:
 
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
+	std::shared_ptr<Ignite::IPipeline> unlitPipeline;
 	std::shared_ptr<Ignite::IMaterial> material;
 
 	std::shared_ptr<Ignite::Model> model;
+	std::shared_ptr<Ignite::Model> nanoModel;
 	std::shared_ptr<Ignite::IMesh> mesh;
 	Ignite::UniformBufferObject m_ubo;
 

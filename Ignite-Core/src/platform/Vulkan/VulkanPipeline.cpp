@@ -159,8 +159,8 @@ namespace  Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 
 		//read files
-		auto vertShaderCode = Utils::ReadFile("resources/shaders/vert.spv");
-		auto fragShaderCode = Utils::ReadFile("resources/shaders/frag.spv");
+		auto vertShaderCode = Utils::ReadFile(m_vertexShader);
+		auto fragShaderCode = Utils::ReadFile(m_fragmentShader);
 
 		///
 		///Shader modules
