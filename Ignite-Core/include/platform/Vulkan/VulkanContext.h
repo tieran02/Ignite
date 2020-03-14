@@ -28,11 +28,13 @@ namespace Ignite
 		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
-		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& UniformBuffers() const { return m_uniformBuffers; }
+		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& SceneUniformBuffers() const { return m_sceneUniformBuffers; }
 		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
-		const VkDescriptorSetLayout& SceneDescriptorSetLayout() const { return m_sceneDscriptorSetLayout; }
+		const VkDescriptorSetLayout& SceneDescriptorSetLayout() const { return m_sceneDescriptorSetLayout; }
 		const VkDescriptorSetLayout& MaterialDescriptorSetLayout() const { return m_materialDescriptorSetLayout; }
-
+		const std::vector<VkDescriptorSet>& SceneDescriptorSets() const { return m_sceneDescriptorSets; }
+		const VkFence& InFlightFence() const { return inFlightFences[currentFrame]; }
+		const VkFence& ImageInFlightFence() const { return imagesInFlight[currentFrame]; }
 		~VulkanContext();
 
 		void SwapBuffers() override;
@@ -49,11 +51,13 @@ namespace Ignite
 		std::unique_ptr<VulkenRenderpass> m_renderpass;
 
     	//uniform buffers
-		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_uniformBuffers;
+		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_sceneUniformBuffers;
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
 		VkDescriptorSetLayout m_materialDescriptorSetLayout;
-		VkDescriptorSetLayout m_sceneDscriptorSetLayout;
+		VkDescriptorSetLayout m_sceneDescriptorSetLayout;
+
+		std::vector<VkDescriptorSet> m_sceneDescriptorSets;
     	//comands
 		VkCommandPool m_commandPool;
 		std::vector<VkCommandBuffer> m_commandBuffers;
@@ -68,7 +72,7 @@ namespace Ignite
 		void createUniformBuffers();
 		void createDescriptorPool();
 		void createDescriptorSetLayout();
-		//void CreateDescriptorSets();
+		void createSceneDescriptorSets();
     	
 		void createCommandPool();
 		void createCommandBuffers();

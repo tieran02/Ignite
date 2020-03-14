@@ -22,22 +22,11 @@ layout (location = 4) in vec3 inBitangent;
 
 layout(location = 0) out vec3 FragPos;
 layout(location = 1) out vec2 TexCoords;
-layout(location = 3) out vec3 ViewPos;
-layout(location = 4) out vec3 LightPos;
-layout(location = 5) out mat3 TBN;
 
 void main() 
 {
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
-
-    vec3 T = normalize(vec3(model.model * vec4(inTangent,   0.0)));
-    vec3 B = normalize(vec3(model.model * vec4(inBitangent, 0.0)));
-    vec3 N = normalize(vec3(model.model * vec4(inNormal,    0.0)));
-    TBN = transpose(mat3(T, B, N));
-
-    ViewPos = scene.viewPosition;
-    LightPos = scene.LightPos;
 
     gl_Position = scene.proj * scene.view * vec4(FragPos, 1.0);
 }

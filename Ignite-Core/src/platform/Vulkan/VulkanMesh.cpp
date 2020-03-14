@@ -18,7 +18,7 @@ namespace Ignite
 	{
 		createVBO(verts);
 		createIndices(indices);
-		CreateDescriptorSet();
+		//CreateDescriptorSet();
 	}
 
 	void VulkanMesh::Cleanup()
@@ -43,10 +43,10 @@ namespace Ignite
 
 	void VulkanMesh::CreateDescriptorSet()
 	{
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
+		/*const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to create descriptorsets, vulkan context is null");
 		
-		std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->SceneDescriptorSetLayout());
+		std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->ModelDescriptorSetLayout());
 		
 		VkDescriptorSetAllocateInfo allocInfo = {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -60,9 +60,9 @@ namespace Ignite
 		for (size_t i = 0; i < vulkanContext->Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = vulkanContext->UniformBuffers()[i]->Buffer();
+			bufferInfo.buffer = vulkanContext->ModelUniformBuffers()[i]->Buffer();
 			bufferInfo.offset = 0;
-			bufferInfo.range = sizeof(UniformBufferObject);
+			bufferInfo.range = sizeof(ModelUniformBuffer);
 
 			VkWriteDescriptorSet descriptorWrite = {};
 			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -76,6 +76,7 @@ namespace Ignite
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
 			vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
 		}
+		*/
 	}
 
 	void VulkanMesh::BindDescriptors() const
@@ -89,7 +90,7 @@ namespace Ignite
 
 		for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 		{
-			vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 0, 1,
+			vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 1, 1,
 				&m_descriptorSets[i], 0, nullptr);
 		}
 	}

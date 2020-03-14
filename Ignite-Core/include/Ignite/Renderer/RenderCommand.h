@@ -14,9 +14,7 @@ namespace Ignite {
 
 		static void Clear();
 
-		static void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount);
-
-		static void SetUniformBufferObject(const UniformBufferObject& ubo);
+		static void DrawIndexed(const ::Ignite::IVertexBuffer* vertexBuffer, const ::Ignite::IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform);
 	private:
 		static std::unique_ptr<IRendererAPI> s_renderer;
 	};

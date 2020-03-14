@@ -3,9 +3,12 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include "Ignite/Log.h"
 #include "Ignite/Utils.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace  Ignite
 {
+	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
+	
 	VulkanPipeline::VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout)
 	: IPipeline(name, vertexShader, fragmentShader, inputLayout)
 	{
@@ -34,7 +37,6 @@ namespace  Ignite
 
 		LOG_CORE_INFO("Cleaning up Vulkan Pipeline: " + m_name);
 		vkDestroyPipeline(vulkanContext->Device().LogicalDevice(), m_pipeline, nullptr);
-		vkDestroyPipelineLayout(vulkanContext->Device().LogicalDevice(), m_pipelineLayout, nullptr);
 		m_deleted = true;
 	}
 
@@ -72,6 +74,47 @@ namespace  Ignite
 	{
 		//TODO when unbinding a pipeline we need to create a new command to end the render pass
 
+	}
+
+	const VkPipelineLayout& VulkanPipeline::PipelineLayout()
+	{
+		if(m_pipelineLayout != VK_NULL_HANDLE)
+			return m_pipelineLayout;
+
+		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(Renderer::GraphicsContext());
+		///
+		///Pipeline layout
+		///
+
+		// push constraints for materials
+		VkPushConstantRange modelPushConstantRange{};
+		modelPushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		modelPushConstantRange.offset = 0;
+		modelPushConstantRange.size = sizeof(ModelUniformBuffer);
+		
+		VkPushConstantRange matPushConstantRange{};
+		matPushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		matPushConstantRange.offset = sizeof(ModelUniformBuffer);
+		matPushConstantRange.size = sizeof(MaterialProperties);
+
+		std::array<VkPushConstantRange, 2> pushConstants{modelPushConstantRange,matPushConstantRange};
+
+		std::array<VkDescriptorSetLayout, 2> setLayouts =
+		{
+			vulkanContext->SceneDescriptorSetLayout(),
+			vulkanContext->MaterialDescriptorSetLayout()
+		};
+
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
+		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutInfo.setLayoutCount = setLayouts.size(); // Optional
+		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = pushConstants.size(); // Optional
+		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data(); // Optional
+
+		VK_CHECK_RESULT(vkCreatePipelineLayout(vulkanContext->Device().LogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
+
+		return m_pipelineLayout;
 	}
 
 	VkShaderModule VulkanPipeline::createShaderModule(const VulkanDevice& device, const std::vector<char>& code)
@@ -159,8 +202,8 @@ namespace  Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 
 		//read files
-		auto vertShaderCode = Utils::ReadFile("resources/shaders/vert.spv");
-		auto fragShaderCode = Utils::ReadFile("resources/shaders/frag.spv");
+		auto vertShaderCode = Utils::ReadFile(m_vertexShader);
+		auto fragShaderCode = Utils::ReadFile(m_fragmentShader);
 
 		///
 		///Shader modules
@@ -317,27 +360,6 @@ namespace  Ignite
 		dynamicState.dynamicStateCount = 2;
 		dynamicState.pDynamicStates = dynamicStates;
 
-		///
-		///Pipeline layout
-		///
-
-		// push constraints for materials
-		VkPushConstantRange pushConstantRange{};
-		pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-		pushConstantRange.offset = 0;
-		pushConstantRange.size = sizeof(MaterialProperties);
-
-		std::array<VkDescriptorSetLayout, 2> setLayouts = { vulkanContext->SceneDescriptorSetLayout(), vulkanContext->MaterialDescriptorSetLayout() };
-		
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = setLayouts.size(); // Optional
-		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = 1; // Optional
-		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange; // Optional
-
-		VK_CHECK_RESULT(vkCreatePipelineLayout(vulkanContext->Device().LogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
-
 		//create pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo = {};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -353,7 +375,7 @@ namespace  Ignite
 		pipelineInfo.pColorBlendState = &colorBlending;
 		pipelineInfo.pDepthStencilState = &depthStencil;
 		pipelineInfo.pDynamicState = nullptr; // Optional
-		pipelineInfo.layout = m_pipelineLayout;
+		pipelineInfo.layout = PipelineLayout();
 
 		pipelineInfo.renderPass = vulkanContext->Renderpass().Renderpass();
 		pipelineInfo.subpass = 0;

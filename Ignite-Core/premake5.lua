@@ -40,8 +40,7 @@ project "Ignite-Core"
 	links 
 	{ 
 		"$(VULKAN_SDK)/lib/vulkan-1.lib",
-		"GLFW",
-		"assimp"
+		"GLFW"
 	}
 
 	filter "system:windows"
@@ -62,6 +61,10 @@ project "Ignite-Core"
 		{
 		  ("{COPY} %{prj.location}/vendor/assimp/debug ../bin/" .. outputdir .. "/Ignite-Sandbox")
 		}
+		links
+		{
+			"assimpd"
+		}
 
 	filter "configurations:Release"
 		defines "IGCORE_RELEASE"
@@ -71,4 +74,8 @@ project "Ignite-Core"
 		postbuildcommands
 		{
 		  ("{COPY} %{prj.location}/vendor/assimp/release ../bin/" .. outputdir .. "/Ignite-Sandbox")
+		}
+				links
+		{
+			"assimp"
 		}

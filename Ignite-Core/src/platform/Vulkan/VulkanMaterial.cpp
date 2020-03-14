@@ -44,7 +44,7 @@ void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 				vulkanContext->CommandBuffers()[i],
 				layout,
 				VK_SHADER_STAGE_FRAGMENT_BIT,
-				0,
+				sizeof(ModelUniformBuffer),
 				sizeof(MaterialProperties),
 				&m_properties);
 	}

@@ -90,11 +90,14 @@ namespace Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 
+		stbi_set_flip_vertically_on_load(true);
 		int texWidth, texHeight, texChannels;
 		stbi_uc* pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 		m_width = texWidth;
 		m_height = texHeight;
 		CORE_ASSERT(pixels != nullptr, "failed to load texture image!");
+
+		//todo fix failed to load texture for release mode
 
 		//calculate mipmap levels
 		m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;

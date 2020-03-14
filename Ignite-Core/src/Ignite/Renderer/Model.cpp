@@ -32,8 +32,15 @@ namespace Ignite
 
 	void Model::loadModel(const std::string& path, const std::string& file)
 	{
+        unsigned int importOptions = 
+			  aiProcess_Triangulate
+            | aiProcess_OptimizeMeshes
+            | aiProcess_JoinIdenticalVertices
+            | aiProcess_Triangulate
+            | aiProcess_CalcTangentSpace;
+		
 		Assimp::Importer import;
-		const aiScene* scene = import.ReadFile(path + "/" + file, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = import.ReadFile(path + "/" + file, importOptions);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -99,6 +106,25 @@ namespace Ignite
             else
             {
                 vertex.TexCoord = { 0.0f,0.0f };
+            }
+
+            if (mesh->HasTangentsAndBitangents()) // does the mesh contain texture coordinates?
+            {
+                vertex.Tangent = {
+                        mesh->mTangents[i].x,
+                        mesh->mTangents[i].y,
+                        mesh->mTangents[i].z
+                };
+                vertex.Bitangent = {
+                        mesh->mBitangents[i].x,
+                        mesh->mBitangents[i].y,
+                        mesh->mBitangents[i].z
+                };
+            }
+            else
+            {
+                vertex.Tangent = { 0.0f,0.0f,0.0f };
+                vertex.Bitangent = { 0.0f,0.0f,0.0f };
             }
             vertices.push_back(vertex);
         }

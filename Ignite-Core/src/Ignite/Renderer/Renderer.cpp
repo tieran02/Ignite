@@ -6,8 +6,11 @@
 #include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Model.h"
 #include "Ignite/Renderer/IMaterial.h"
+#include "Ignite/Renderer/Camera.h"
+#include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
+Ignite::SceneUniformBuffer Ignite::Renderer::m_sceneUBO;
 
 void Ignite::Renderer::Init()
 {
@@ -30,14 +33,20 @@ bool Ignite::Renderer::IsInitialised()
 	return RenderCommand::s_renderer != nullptr;
 }
 
-void Ignite::Renderer::BeginScene()
+void Ignite::Renderer::BeginScene(const Camera& camera)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
+
+	m_sceneUBO.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 5000.0f);
+	m_sceneUBO.proj[1][1] *= -1;
+
+	m_sceneUBO.view = camera.GetViewMatrix();
+	m_sceneUBO.view_pos = camera.Position();
 	
 	m_recordingScene = true;
 	//get the renderer api
-	RenderCommand::s_renderer->BeginScene();
+	RenderCommand::s_renderer->BeginScene(camera);
 }
 
 void Ignite::Renderer::EndScene()
@@ -56,7 +65,7 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh,const
 	
 	//bind pipeline
 	pipeline->Bind();
-		submitMesh(pipeline,mesh);
+		submitMesh(pipeline,mesh,transform);
 	pipeline->Unbind();
 }
 
@@ -69,7 +78,7 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, con
 	pipeline->Bind();
 		for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
 		{
-			submitMesh(pipeline,mesh.get());
+			submitMesh(pipeline,mesh.get(),transform);
 		}
 	pipeline->Unbind();
 }
@@ -88,6 +97,11 @@ Ignite::IGraphicsContext* Ignite::Renderer::GraphicsContext()
 	return RenderCommand::s_renderer->GetGraphicsContext();
 }
 
+Ignite::SceneUniformBuffer& Ignite::Renderer::SceneUBO()
+{
+	return m_sceneUBO;
+}
+
 void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
 {
 	if (mesh != nullptr)
@@ -95,9 +109,9 @@ void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, 
 		mesh->Material()->Bind(pipeline);
 		mesh->VertexBuffer()->Bind();
 		mesh->IndexBuffer()->Bind();
-		mesh->BindDescriptors();
-
-		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount());
+		//mesh->BindDescriptors();
+		
+		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount(),transform);
 		mesh->Material()->Unbind(pipeline);
 	}
 }
