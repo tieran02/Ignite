@@ -8,6 +8,10 @@ class ExampleLayer : public Ignite::Layer
 public:
 	ExampleLayer() : Layer("Example") {}
 
+	float lastPrintTime;
+	float lastFrameTime;
+	int nbFrames = 0;
+	float deltaTime = 16.0f;
 	void OnAttach() override
 	{
 		Ignite::PipelineInputLayout layout =
@@ -26,6 +30,8 @@ public:
 
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
+		
+		lastPrintTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 	}
 
 	void OnDetach() override
@@ -35,22 +41,30 @@ public:
 	void OnUpdate() override
 	{
 		//rotate
-		static auto startTime = std::chrono::high_resolution_clock::now();
+		float currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		deltaTime = currentTime - lastFrameTime;
+		lastFrameTime = currentTime;
+		nbFrames++;
 
-		auto currentTime = std::chrono::high_resolution_clock::now();
-		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		if (currentTime - lastPrintTime >= 1000.0f)
+		{ 
+			printf("%i fps	", nbFrames);
+			printf("%f ms\n", deltaTime);
+			nbFrames = 0;
+			lastPrintTime += 1000.0;
+		}
 		
 		Ignite::Renderer::SceneUBO().light_position = glm::vec3(0, 1000.0f, 0);
 	
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
-			camera.Translate(Ignite::CameraDirection::eFORWARD, 0.16);
+			camera.Translate(Ignite::CameraDirection::eFORWARD, deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_S))
-			camera.Translate(Ignite::CameraDirection::eBACKWARD, 0.16);
+			camera.Translate(Ignite::CameraDirection::eBACKWARD, deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_A))
-			camera.Translate(Ignite::CameraDirection::eLEFT, 0.16);
+			camera.Translate(Ignite::CameraDirection::eLEFT, deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_D))
-			camera.Translate(Ignite::CameraDirection::eRIGHT, 0.16);
+			camera.Translate(Ignite::CameraDirection::eRIGHT, deltaTime);
 
 		camera.MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 

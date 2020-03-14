@@ -48,7 +48,12 @@ namespace Ignite
 			VK_KHR_SWAPCHAIN_EXTENSION_NAME
 		};
 
-		const bool ENABLE_VALIDATION{ true };
+		#ifdef IGCORE_DEBUG
+			const bool ENABLE_VALIDATION{ true };
+		#else
+			const bool ENABLE_VALIDATION{ false };
+		#endif
+
 		VkInstance m_instance{nullptr};
 		VkDebugUtilsMessengerEXT m_debugMessenger;
 		/** @brief Physical m_device representation */
