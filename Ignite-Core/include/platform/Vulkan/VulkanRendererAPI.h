@@ -17,7 +17,7 @@ namespace Ignite {
         void EndScene() override;
     	
         void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
-        void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount) override;
+        void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform) override;
         void SetSceneUniformBufferObject(const SceneUniformBuffer& ubo) override;
         void SetClearColor(const glm::vec4 &color) override;
         

@@ -70,7 +70,7 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, con
 	pipeline->Bind();
 		for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
 		{
-			submitMesh(pipeline,mesh.get());
+			submitMesh(pipeline,mesh.get(),transform);
 		}
 	pipeline->Unbind();
 }
@@ -98,7 +98,7 @@ void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, 
 		mesh->IndexBuffer()->Bind();
 		mesh->BindDescriptors();
 
-		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount());
+		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount(), transform);
 		mesh->Material()->Unbind(pipeline);
 	}
 }

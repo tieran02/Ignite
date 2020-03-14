@@ -45,10 +45,10 @@ public:
 	void OnUpdate() override
 	{
 		//rotate
-		//static auto startTime = std::chrono::high_resolution_clock::now();
+		static auto startTime = std::chrono::high_resolution_clock::now();
 
-		//auto currentTime = std::chrono::high_resolution_clock::now();
-		//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 		//m_sceneUBO.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		//m_sceneUBO.model = glm::rotate(m_sceneUBO.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
 		m_sceneUBO.light_position = glm::vec3(0, 1000.0f, 0);
@@ -75,7 +75,7 @@ public:
 
 		Ignite::Renderer::BeginScene(camera);
 
-		Ignite::Renderer::Submit(unlitPipeline.get(), model.get());
+		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(2000,0,0)));
 
 		Ignite::Renderer::EndScene();
 

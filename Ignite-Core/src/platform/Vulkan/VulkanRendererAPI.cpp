@@ -101,13 +101,22 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
-void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount)
+void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 {
 	//TODO when binding a pipeline we need to create a new command to start the render pass
 	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
 	CORE_ASSERT(vulkanContext, "Failed to draw index, vulkan context is null");
 	CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to draw index, vulkan command buffers are empty");
 
+	ModelUniformBuffer modelUBO{transform};
+	for (size_t i = 0; i < vulkanContext->ModelUniformBuffers().size(); i++)
+	{
+		void* data;
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory(), 0, sizeof(modelUBO), 0, &data);
+		memcpy(data, &modelUBO, sizeof(modelUBO));
+		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory());
+	}
+	
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++) {
 
 		//draw test
@@ -129,16 +138,6 @@ void Ignite::VulkanRendererAPI::SetSceneUniformBufferObject(const SceneUniformBu
 		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(ubo), 0, &data);
 		memcpy(data, &ubo, sizeof(ubo));
 		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory());
-	}
-
-	//TODO temp
-	ModelUniformBuffer modelUBO;
-	for (size_t i = 0; i < vulkanContext->ModelUniformBuffers().size(); i++)
-	{
-		void* data;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory(), 0, sizeof(modelUBO), 0, &data);
-		memcpy(data, &modelUBO, sizeof(modelUBO));
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory());
 	}
 }
 
