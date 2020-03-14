@@ -1,5 +1,6 @@
 #pragma once
 #include "Ignite/Renderer/IRendererAPI.h"
+#include <vulkan/vulkan.h>
 
 namespace Ignite {
     class VulkanRendererAPI : public IRendererAPI {
@@ -12,16 +13,20 @@ namespace Ignite {
 	public:
 		~VulkanRendererAPI() override;
 
-        void BeginScene() override;
+        void BeginScene(const Camera& camera) override;
         void EndScene() override;
     	
         void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) override;
         void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount) override;
-        void SetUniformBufferObject(const UniformBufferObject& ubo) override;
+        void SetSceneUniformBufferObject(const SceneUniformBuffer& ubo) override;
         void SetClearColor(const glm::vec4 &color) override;
         
         void Clear() override;
     private:
         glm::vec4 m_clearColour{ 0.0f,0.0f,0.0f,1.0f };
+        std::vector<VkDescriptorSet> m_sceneDescriptorSets;
+
+        void createDescriptorSets();
+        void bindDescriptors();
     };
 }

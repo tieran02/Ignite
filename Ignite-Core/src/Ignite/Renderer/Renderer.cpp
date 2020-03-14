@@ -6,6 +6,7 @@
 #include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Model.h"
 #include "Ignite/Renderer/IMaterial.h"
+#include "Ignite/Renderer/Camera.h"
 
 bool Ignite::Renderer::m_recordingScene = false;
 
@@ -30,14 +31,14 @@ bool Ignite::Renderer::IsInitialised()
 	return RenderCommand::s_renderer != nullptr;
 }
 
-void Ignite::Renderer::BeginScene()
+void Ignite::Renderer::BeginScene(const Camera& camera)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
 	
 	m_recordingScene = true;
 	//get the renderer api
-	RenderCommand::s_renderer->BeginScene();
+	RenderCommand::s_renderer->BeginScene(camera);
 }
 
 void Ignite::Renderer::EndScene()

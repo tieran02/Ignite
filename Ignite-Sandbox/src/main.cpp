@@ -31,10 +31,11 @@ public:
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
 		
-		//m_ubo.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		m_ubo.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
-		m_ubo.proj[1][1] *= -1;
-		m_ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//m_sceneUBO.view = glm::lookAt(glm::vec3(10.75f, 10.0f, 0), glm::vec3(0.0f, 8.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_sceneUBO.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 50000.0f);
+		m_sceneUBO.proj[1][1] *= -1;
+		
+		//m_sceneUBO.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	}
 
 	void OnDetach() override
@@ -48,9 +49,9 @@ public:
 
 		//auto currentTime = std::chrono::high_resolution_clock::now();
 		//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-		//m_ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		//m_ubo.model = glm::rotate(m_ubo.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
-		m_ubo.light_position = glm::vec3(0, 1000.0f, 0);
+		//m_sceneUBO.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		//m_sceneUBO.model = glm::rotate(m_sceneUBO.model, glm::radians(90.0f), glm::vec3(0, 1, 0));
+		m_sceneUBO.light_position = glm::vec3(0, 1000.0f, 0);
 	
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
@@ -64,15 +65,15 @@ public:
 
 		camera.MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 
-		m_ubo.view = camera.GetViewMatrix();
-		m_ubo.view_pos = camera.Position();
+		m_sceneUBO.view = camera.GetViewMatrix();
+		m_sceneUBO.view_pos = camera.Position();
 
 		//start scene
 		Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
 
-		Ignite::RenderCommand::SetUniformBufferObject(m_ubo);
+		Ignite::RenderCommand::SetSceneUniformBuffer(m_sceneUBO);
 
-		Ignite::Renderer::BeginScene();
+		Ignite::Renderer::BeginScene(camera);
 
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get());
 
@@ -104,7 +105,7 @@ private:
 	std::shared_ptr<Ignite::Model> model;
 	std::shared_ptr<Ignite::Model> nanoModel;
 	std::shared_ptr<Ignite::IMesh> mesh;
-	Ignite::UniformBufferObject m_ubo;
+	Ignite::SceneUniformBuffer m_sceneUBO;
 
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 	float lastMouseX = 0;

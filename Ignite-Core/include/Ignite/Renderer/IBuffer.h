@@ -1,17 +1,24 @@
 #pragma once
 #include "NonCopyable.h"
-#include "glm/mat4x4.hpp"
+#include "glm/glm.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Ignite
 {
-	struct UniformBufferObject
+	struct SceneUniformBuffer
 	{
-		alignas(16) glm::mat4 model;
 		alignas(16) glm::mat4 view;
 		alignas(16) glm::mat4 proj;
 		alignas(16) glm::vec3 view_pos;
 		alignas(16) glm::vec3 light_position;
 	};
+
+	struct ModelUniformBuffer
+	{
+		//TODO this is temp
+		alignas(16) glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	};
+
 	
 	class IGraphicsContext;
 	class IBuffer : NonCopyable

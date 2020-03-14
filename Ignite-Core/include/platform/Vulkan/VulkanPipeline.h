@@ -23,9 +23,9 @@ namespace  Ignite
 		void Bind() const override;
 		void Unbind() const override;
 
-		const VkPipelineLayout& PipelineLayout() const { return m_pipelineLayout; };
+		static const VkPipelineLayout& PipelineLayout();;
 	private:
-		VkPipelineLayout m_pipelineLayout;
+		static VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_pipeline;
 		
 		VkShaderModule createShaderModule(const VulkanDevice& device, const std::vector<char>& code);

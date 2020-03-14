@@ -1,10 +1,10 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(set = 1, binding = 0) uniform sampler2D DiffuseSampler;
-layout(set = 1, binding = 1) uniform sampler2D SpecularSampler;
-layout(set = 1, binding = 2) uniform sampler2D NormalSampler;
-layout(set = 1, binding = 3) uniform sampler2D AlphaSampler;
+layout(set = 2, binding = 0) uniform sampler2D DiffuseSampler;
+layout(set = 2, binding = 1) uniform sampler2D SpecularSampler;
+layout(set = 2, binding = 2) uniform sampler2D NormalSampler;
+layout(set = 2, binding = 3) uniform sampler2D AlphaSampler;
 
 layout(push_constant) uniform Material 
 {

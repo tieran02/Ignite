@@ -31,8 +31,8 @@ namespace Ignite
 		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount);
 	}
 
-	void RenderCommand::SetUniformBufferObject(const UniformBufferObject& ubo)
+	void RenderCommand::SetSceneUniformBuffer(const SceneUniformBuffer& ubo)
 	{
-		s_renderer->SetUniformBufferObject(ubo);
+		s_renderer->SetSceneUniformBufferObject(ubo);
 	}
 }

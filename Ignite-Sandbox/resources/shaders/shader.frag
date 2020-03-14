@@ -1,10 +1,10 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-layout(set = 1, binding = 0) uniform sampler2D DiffuseSampler;
-layout(set = 1, binding = 1) uniform sampler2D SpecularSampler;
-layout(set = 1, binding = 2) uniform sampler2D NormalSampler;
-layout(set = 1, binding = 3) uniform sampler2D AlphaSampler;
+layout(set = 2, binding = 0) uniform sampler2D DiffuseSampler;
+layout(set = 2, binding = 1) uniform sampler2D SpecularSampler;
+layout(set = 2, binding = 2) uniform sampler2D NormalSampler;
+layout(set = 2, binding = 3) uniform sampler2D AlphaSampler;
 
 layout(push_constant) uniform Material 
 {
@@ -20,7 +20,6 @@ layout(location = 1) in vec2 TexCoords;
 layout(location = 3) in vec3 ViewPos;
 layout(location = 4) in vec3 LightPos;
 layout(location = 5) in mat3 TBN;
-layout(location = 8) in vec3 DebugNormal;
 
 
 layout(location = 0) out vec4 outColor;

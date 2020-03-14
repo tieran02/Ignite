@@ -36,7 +36,7 @@ void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 	{
-		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 1, 1,
+		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 2, 1,
 			&m_descriptorSets[i], 0, nullptr);
 
 		//Pass material properies via push constants

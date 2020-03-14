@@ -5,7 +5,9 @@
 #include <glm/glm.hpp>
 
 namespace Ignite {
-    class IRendererAPI : NonCopyable
+	class Camera;
+
+	class IRendererAPI : NonCopyable
 	{
     public:
         enum class API {
@@ -16,10 +18,12 @@ namespace Ignite {
 		IRendererAPI();
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
+
+        std::unique_ptr<IGraphicsContext> m_graphicsContext;
     public:
 		virtual ~IRendererAPI() {}
 
-        virtual void BeginScene() = 0;
+        virtual void BeginScene(const Camera& camera) = 0;
         virtual void EndScene() = 0;
     	
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;
@@ -30,7 +34,7 @@ namespace Ignite {
 
         virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount) = 0;
 
-        virtual void SetUniformBufferObject(const UniformBufferObject& ubo) = 0;
+        virtual void SetSceneUniformBufferObject(const SceneUniformBuffer& ubo) = 0;
 
         static API GetAPI() { return s_API; }
 
@@ -40,6 +44,5 @@ namespace Ignite {
 
     private:
         static API s_API;
-		std::unique_ptr<IGraphicsContext> m_graphicsContext;
     };
 }
