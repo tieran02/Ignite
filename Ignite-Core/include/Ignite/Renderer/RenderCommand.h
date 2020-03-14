@@ -15,8 +15,6 @@ namespace Ignite {
 		static void Clear();
 
 		static void DrawIndexed(const ::Ignite::IVertexBuffer* vertexBuffer, const ::Ignite::IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform);
-
-		static void SetSceneUniformBuffer(const SceneUniformBuffer& ubo);
 	private:
 		static std::unique_ptr<IRendererAPI> s_renderer;
 	};

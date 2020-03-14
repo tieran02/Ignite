@@ -30,7 +30,7 @@ namespace Ignite
 		
 		createUniformBuffers();
 		createDescriptorPool();
-		//CreateDescriptorSets();
+		createSceneDescriptorSets();
 		createCommandPool();
 		createCommandBuffers();
 		createSyncObjects();
@@ -57,7 +57,6 @@ namespace Ignite
 		cleanupSwapchain();
 
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_sceneDescriptorSetLayout, nullptr);
-		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_modelDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_materialDescriptorSetLayout, nullptr);
 
 		if(VulkanPipeline::PipelineLayout() != VK_NULL_HANDLE)
@@ -88,6 +87,9 @@ namespace Ignite
 		//TODO recrate swapchain if not compatible 
 		vkAcquireNextImageKHR(m_vulkanDevice->LogicalDevice(), m_vulkanSwapchain->Swapchain(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
+		//TODO update ubo
+		
+		
 		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
 		if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
 			vkWaitForFences(m_vulkanDevice->LogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
@@ -160,6 +162,9 @@ namespace Ignite
 		createUniformBuffers();
 		createDescriptorPool();
 
+		//create scene descriptor sets
+		createSceneDescriptorSets();
+		
 		//recreate model descriptor sets
 		for (size_t i = 0; i < m_models.size(); i++)
 		{
@@ -197,7 +202,6 @@ namespace Ignite
 	void VulkanContext::createUniformBuffers()
 	{
 		m_sceneUniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());
-		m_modelUniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());
 		
 		//create a ubo for each swapcahin image
 		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++) 
@@ -205,13 +209,7 @@ namespace Ignite
 			//Create scene unform buffers (Camera projection/view and lights)
 			m_sceneUniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
 			SceneUniformBuffer sceneUBO{};
-			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-
-			//Create model unform buffers (model transformations)
-			m_modelUniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
-			ModelUniformBuffer modeleUBO{};
-			m_modelUniformBuffers[i]->CreateHostVisable(&modeleUBO, sizeof(ModelUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-			
+			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);			
 		}
 	}
 
@@ -223,7 +221,7 @@ namespace Ignite
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		poolSizes[0].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 		//model ubo set
-		poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 		poolSizes[1].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 		//texture set
 		poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -258,24 +256,6 @@ namespace Ignite
 		sceneLayoutInfo.pBindings = setLayoutBindings.data();
 		
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &m_sceneDescriptorSetLayout));
-
-		//model descriptors
-		setLayoutBindings.clear();
-		
-		VkDescriptorSetLayoutBinding modelUBOLayoutBinding = {};
-		modelUBOLayoutBinding.binding = 0;
-		modelUBOLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		modelUBOLayoutBinding.descriptorCount = 1;
-		modelUBOLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-		modelUBOLayoutBinding.pImmutableSamplers = nullptr; // Optional
-		setLayoutBindings.push_back(modelUBOLayoutBinding);
-
-		VkDescriptorSetLayoutCreateInfo modelLayoutInfo = {};
-		sceneLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		sceneLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
-		sceneLayoutInfo.pBindings = setLayoutBindings.data();
-
-		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &m_modelDescriptorSetLayout));
 		
 		setLayoutBindings.clear();
 		//material descriptors
@@ -319,6 +299,40 @@ namespace Ignite
 		materialLayoutInfo.pBindings = setLayoutBindings.data();
 
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &materialLayoutInfo, nullptr, &m_materialDescriptorSetLayout));
+	}
+
+	void VulkanContext::createSceneDescriptorSets()
+	{
+		std::vector<VkDescriptorSetLayout> layouts(Swapchain().ImageViews().size(), SceneDescriptorSetLayout());
+
+		VkDescriptorSetAllocateInfo allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = DescriptorPool();
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(Swapchain().ImageViews().size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		m_sceneDescriptorSets.resize(Swapchain().ImageViews().size());
+		VkResult r = vkAllocateDescriptorSets(Device().LogicalDevice(), &allocInfo, m_sceneDescriptorSets.data());
+
+		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
+		{
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = SceneUniformBuffers()[i]->Buffer();
+			bufferInfo.offset = 0;
+			bufferInfo.range = sizeof(SceneUniformBuffer);
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_sceneDescriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
+			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+		}
 	}
 
 	void VulkanContext::createCommandPool()
@@ -400,7 +414,6 @@ namespace Ignite
 		for (size_t i = 0; i < m_sceneUniformBuffers.size(); i++)
 		{
 			m_sceneUniformBuffers[i]->Free();
-			m_modelUniformBuffers[i]->Free();
 		}
 		
 		LOG_CORE_INFO("Cleaning up vulkan Descriptor Pool");

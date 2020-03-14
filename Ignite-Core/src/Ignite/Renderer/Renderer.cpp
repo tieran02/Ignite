@@ -7,8 +7,10 @@
 #include "Ignite/Renderer/Model.h"
 #include "Ignite/Renderer/IMaterial.h"
 #include "Ignite/Renderer/Camera.h"
+#include "glm/gtx/associated_min_max.hpp"
 
 bool Ignite::Renderer::m_recordingScene = false;
+Ignite::SceneUniformBuffer Ignite::Renderer::m_sceneUBO;
 
 void Ignite::Renderer::Init()
 {
@@ -35,6 +37,12 @@ void Ignite::Renderer::BeginScene(const Camera& camera)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
+
+	m_sceneUBO.proj = glm::perspective(glm::radians(75.0f), (float)Ignite::Application::Instance().Window()->Width() / (float)Ignite::Application::Instance().Window()->Height(), 0.1f, 5000.0f);
+	m_sceneUBO.proj[1][1] *= -1;
+
+	m_sceneUBO.view = camera.GetViewMatrix();
+	m_sceneUBO.view_pos = camera.Position();
 	
 	m_recordingScene = true;
 	//get the renderer api
@@ -57,7 +65,7 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh,const
 	
 	//bind pipeline
 	pipeline->Bind();
-		submitMesh(pipeline,mesh);
+		submitMesh(pipeline,mesh,transform);
 	pipeline->Unbind();
 }
 
@@ -89,6 +97,11 @@ Ignite::IGraphicsContext* Ignite::Renderer::GraphicsContext()
 	return RenderCommand::s_renderer->GetGraphicsContext();
 }
 
+Ignite::SceneUniformBuffer& Ignite::Renderer::SceneUBO()
+{
+	return m_sceneUBO;
+}
+
 void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
 {
 	if (mesh != nullptr)
@@ -96,9 +109,9 @@ void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, 
 		mesh->Material()->Bind(pipeline);
 		mesh->VertexBuffer()->Bind();
 		mesh->IndexBuffer()->Bind();
-		mesh->BindDescriptors();
-
-		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount(), transform);
+		//mesh->BindDescriptors();
+		
+		RenderCommand::DrawIndexed(mesh->VertexBuffer(), mesh->IndexBuffer(), mesh->IndexCount(),transform);
 		mesh->Material()->Unbind(pipeline);
 	}
 }

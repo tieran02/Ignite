@@ -18,7 +18,7 @@ namespace Ignite
 	{
 		createVBO(verts);
 		createIndices(indices);
-		CreateDescriptorSet();
+		//CreateDescriptorSet();
 	}
 
 	void VulkanMesh::Cleanup()
@@ -43,7 +43,7 @@ namespace Ignite
 
 	void VulkanMesh::CreateDescriptorSet()
 	{
-		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
+		/*const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to create descriptorsets, vulkan context is null");
 		
 		std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->ModelDescriptorSetLayout());
@@ -76,6 +76,7 @@ namespace Ignite
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
 			vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
 		}
+		*/
 	}
 
 	void VulkanMesh::BindDescriptors() const

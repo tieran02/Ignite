@@ -2,6 +2,7 @@
 #include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Log.h"
 #include "glm/gtx/associated_min_max.hpp"
+#include "glm/gtx/associated_min_max.hpp"
 
 namespace Ignite
 {
@@ -29,11 +30,6 @@ namespace Ignite
 
 	void RenderCommand::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 	{
-		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount,transform);
-	}
-
-	void RenderCommand::SetSceneUniformBuffer(const SceneUniformBuffer& ubo)
-	{
-		s_renderer->SetSceneUniformBufferObject(ubo);
+		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount, transform);
 	}
 }

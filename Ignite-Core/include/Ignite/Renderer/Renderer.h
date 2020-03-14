@@ -28,10 +28,11 @@ namespace Ignite {
 		static void SwapBuffers();
 
 		static IGraphicsContext* GraphicsContext();
+		static SceneUniformBuffer& SceneUBO();
 	private:
 		static bool m_recordingScene;
+		static SceneUniformBuffer m_sceneUBO;
 
-		static void submitMesh(const ::Ignite::IPipeline* pipeline, const ::Ignite::IMesh* mesh, const glm::mat4&
-			                       transform = glm::mat4(1.0f));
+		static void submitMesh(const ::Ignite::IPipeline* pipeline, const ::Ignite::IMesh* mesh, const glm::mat4& transform);
 	};
 }

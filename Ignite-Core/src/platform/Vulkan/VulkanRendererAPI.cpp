@@ -3,6 +3,8 @@
 #include "platform/Vulkan/VulkanRendererAPI.h"
 #include "platform/Vulkan/VulkanContext.h"
 #include "platform/Vulkan/VulkanPipeline.h"
+#include "Ignite/Renderer/Camera.h"
+#include "Ignite/Renderer/Renderer.h"
 
 Ignite::VulkanRendererAPI::VulkanRendererAPI()
 {
@@ -12,7 +14,6 @@ Ignite::VulkanRendererAPI::VulkanRendererAPI()
 void Ignite::VulkanRendererAPI::Init()
 {
     LOG_CORE_INFO("Initialising VulkanRendererAPI");
-	createDescriptorSets();
 }
 
 void Ignite::VulkanRendererAPI::Cleanup()
@@ -71,7 +72,12 @@ void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera)
 		//LOG_CORE_INFO("Scene Recording Started");
 
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 0, 1,
-			&m_sceneDescriptorSets[i], 0, nullptr);
+			&vulkanContext->SceneDescriptorSets()[i], 0, nullptr);
+
+		void* data;
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(Renderer::SceneUBO()), 0, &data);
+		memcpy(data, &Renderer::SceneUBO(), sizeof(Renderer::SceneUBO()));
+		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory());
 	}
 }	
 
@@ -107,18 +113,18 @@ void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, c
 	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
 	CORE_ASSERT(vulkanContext, "Failed to draw index, vulkan context is null");
 	CORE_ASSERT(vulkanContext->CommandBuffers().size(), "Failed to draw index, vulkan command buffers are empty");
-
-	ModelUniformBuffer modelUBO{transform};
-	for (size_t i = 0; i < vulkanContext->ModelUniformBuffers().size(); i++)
-	{
-		void* data;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory(), 0, sizeof(modelUBO), 0, &data);
-		memcpy(data, &modelUBO, sizeof(modelUBO));
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->ModelUniformBuffers()[i]->DeviceMemory());
-	}
 	
-	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++) {
-
+	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
+	{
+		ModelUniformBuffer ubo{ transform };
+		vkCmdPushConstants(
+			vulkanContext->CommandBuffers()[i],
+			VulkanPipeline::PipelineLayout(),
+			VK_SHADER_STAGE_VERTEX_BIT,
+			0,
+			sizeof(ModelUniformBuffer),
+			&ubo);
+		
 		//draw test
 		//TODO add index vertexBuffer
 		vkCmdDrawIndexed(vulkanContext->CommandBuffers()[i], static_cast<uint32_t>(indexCount), 1, 0, 0, 0);
@@ -126,19 +132,9 @@ void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, c
 	
 }
 
-void Ignite::VulkanRendererAPI::SetSceneUniformBufferObject(const SceneUniformBuffer& ubo)
+void Ignite::VulkanRendererAPI::SetModelUniformBufferObject(const ModelUniformBuffer& ubo)
 {
-	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
-	CORE_ASSERT(vulkanContext, "Failed to set uniform buffer object, vulkan context is null");
-	CORE_ASSERT(!vulkanContext->SceneUniformBuffers().empty(), "Failed to set uniform buffer object, no uniform buffers");
 
-	for (size_t i = 0; i < vulkanContext->SceneUniformBuffers().size(); i++)
-	{
-		void* data;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(ubo), 0, &data);
-		memcpy(data, &ubo, sizeof(ubo));
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory());
-	}
 }
 
 void Ignite::VulkanRendererAPI::SetClearColor(const glm::vec4 &color)
@@ -151,43 +147,6 @@ void Ignite::VulkanRendererAPI::Clear()
 
 }
 
-void Ignite::VulkanRendererAPI::createDescriptorSets()
-{
-	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_graphicsContext.get());
-	CORE_ASSERT(vulkanContext, "Failed to create descriptorsets, vulkan context is null");
-
-	std::vector<VkDescriptorSetLayout> layouts(vulkanContext->Swapchain().ImageViews().size(), vulkanContext->ModelDescriptorSetLayout());
-
-	VkDescriptorSetAllocateInfo allocInfo = {};
-	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = vulkanContext->DescriptorPool();
-	allocInfo.descriptorSetCount = static_cast<uint32_t>(vulkanContext->Swapchain().ImageViews().size());
-	allocInfo.pSetLayouts = layouts.data();
-
-	m_sceneDescriptorSets.resize(vulkanContext->Swapchain().ImageViews().size());
-	VkResult r = vkAllocateDescriptorSets(vulkanContext->Device().LogicalDevice(), &allocInfo, m_sceneDescriptorSets.data());
-
-	for (size_t i = 0; i < vulkanContext->Swapchain().ImageViews().size(); i++)
-	{
-		VkDescriptorBufferInfo bufferInfo = {};
-		bufferInfo.buffer = vulkanContext->SceneUniformBuffers()[i]->Buffer();
-		bufferInfo.offset = 0;
-		bufferInfo.range = sizeof(SceneUniformBuffer);
-
-		VkWriteDescriptorSet descriptorWrite = {};
-		descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrite.dstSet = m_sceneDescriptorSets[i];
-		descriptorWrite.dstBinding = 0;
-		descriptorWrite.dstArrayElement = 0;
-		descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-		descriptorWrite.descriptorCount = 1;
-		descriptorWrite.pBufferInfo = &bufferInfo;
-
-		std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
-		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
-	}
-}
-
 void Ignite::VulkanRendererAPI::bindDescriptors()
 {
 	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_graphicsContext.get());
@@ -198,6 +157,6 @@ void Ignite::VulkanRendererAPI::bindDescriptors()
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 	{
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, layout, 1, 1,
-			&m_sceneDescriptorSets[i], 0, nullptr);
+			&vulkanContext->SceneDescriptorSets()[i], 0, nullptr);
 	}
 }

@@ -34,7 +34,7 @@ namespace Ignite {
 
         virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform) = 0;
 
-        virtual void SetSceneUniformBufferObject(const SceneUniformBuffer& ubo) = 0;
+        virtual void SetModelUniformBufferObject(const ModelUniformBuffer& ubo) = 0;
 
         static API GetAPI() { return s_API; }
 
