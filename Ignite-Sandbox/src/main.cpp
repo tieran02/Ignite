@@ -34,6 +34,8 @@ public:
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
 		
 		lastPrintTime = std::chrono::high_resolution_clock::now();
+
+		lights.emplace_back(Ignite::Light{ glm::vec4(1,0,0,0) });
 	}
 
 	void OnDetach() override
@@ -75,7 +77,7 @@ public:
 		//start scene
 		Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
 
-		Ignite::Renderer::BeginScene(camera);
+		Ignite::Renderer::BeginScene(camera,lights);
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0,0,2500)));
@@ -103,6 +105,7 @@ private:
 
 	std::shared_ptr<Ignite::Model> model;
 	std::shared_ptr<Ignite::IMesh> mesh;
+	std::vector<Ignite::Light> lights;
 
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 };

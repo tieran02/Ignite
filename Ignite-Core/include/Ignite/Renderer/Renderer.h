@@ -3,6 +3,7 @@
 #include "glm/mat4x4.hpp"
 #include "IMesh.h"
 #include "Camera.h"
+#include "Light.h"
 
 namespace Ignite {
 	class Model;
@@ -18,7 +19,7 @@ namespace Ignite {
 
 		//static void OnWindowResize(uint32_t width, uint32_t height);
 
-		static void BeginScene(const Camera& camera);
+		static void BeginScene(const Camera& camera, const std::vector<Light>& lights);
 		static void EndScene();
 
 		//static void Submit(const IPipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
@@ -29,6 +30,7 @@ namespace Ignite {
 
 		static IGraphicsContext* GraphicsContext();
 		static SceneUniformBuffer& SceneUBO();
+		static constexpr uint32_t MAX_LIGHTS{ 10 };
 	private:
 		static bool m_recordingScene;
 		static SceneUniformBuffer m_sceneUBO;
