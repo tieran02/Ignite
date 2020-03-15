@@ -84,14 +84,14 @@ void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vect
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 2, 1,
 			&vulkanContext->LightDescriptorSets()[i], 0, nullptr);
 
-		size_t lightBufferSize = sizeof(Renderer::MAX_LIGHTS) + (sizeof(Light) * Renderer::MAX_LIGHTS);
-		uint32_t lightCount = lights.size();
+		LightBuffer lightBuffer{ lights.size(), lights[0] };
 		
 		void* lightData;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory(), 0, lightBufferSize, 0, &lightData);
-		memcpy(lightData, &lightCount, sizeof(uint32_t));
-		memcpy((char*)lightData + sizeof(uint32_t), lights.data(), sizeof(Light) * lightCount );
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory(), 0, sizeof(lightBuffer), 0, &lightData);
+		memcpy(lightData, &lightBuffer, sizeof(lightBuffer));
+
 		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory());
+
 	}
 }	
 

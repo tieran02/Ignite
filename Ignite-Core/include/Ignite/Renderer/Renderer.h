@@ -30,7 +30,6 @@ namespace Ignite {
 
 		static IGraphicsContext* GraphicsContext();
 		static SceneUniformBuffer& SceneUBO();
-		static constexpr uint32_t MAX_LIGHTS{ 10 };
 	private:
 		static bool m_recordingScene;
 		static SceneUniformBuffer m_sceneUBO;

@@ -215,7 +215,7 @@ namespace Ignite
 			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
 			//create light storage buffers
-			size_t lightBufferSize = sizeof(Renderer::MAX_LIGHTS) + (sizeof(Light) * Renderer::MAX_LIGHTS);
+			size_t lightBufferSize = sizeof(LightBuffer);
 			m_lightStorageBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
 			m_lightStorageBuffers[i]->CreateHostVisable(nullptr, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 			
@@ -374,7 +374,7 @@ namespace Ignite
 		m_lightDescriptorSets.resize(Swapchain().ImageViews().size());
 		r = vkAllocateDescriptorSets(Device().LogicalDevice(), &allocInfo, m_lightDescriptorSets.data());
 
-		size_t lightBufferSize = sizeof(Renderer::MAX_LIGHTS) + (sizeof(Light) * Renderer::MAX_LIGHTS);
+		size_t lightBufferSize = sizeof(LightBuffer);
 		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};

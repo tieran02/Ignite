@@ -5,15 +5,16 @@
 struct Light {
    vec4 position;
    vec3 intensities;
+   vec3 coneDirection;
    float attenuation;
    float ambientCoefficient;
    float coneAngle;
-   vec3 coneDirection;
 };
-layout(set = 2, binding = 0) buffer Lights {
+layout(set = 2, binding = 0) buffer Lights
+{
     uint LightCount;
     Light lights[MAX_LIGHTS];
-};
+} lights;
 
 layout(set = 1, binding = 0) uniform sampler2D DiffuseSampler;
 layout(set = 1, binding = 1) uniform sampler2D SpecularSampler;
