@@ -5,7 +5,6 @@ layout(set = 0, binding = 0) uniform Scene {
     mat4 view;
     mat4 proj;
     vec3 viewPosition;
-    vec3 LightPos;
 } scene;
 
 layout(push_constant) uniform Model

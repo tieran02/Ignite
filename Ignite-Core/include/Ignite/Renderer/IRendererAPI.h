@@ -3,6 +3,7 @@
 #include "Ignite/Renderer/IGraphicsContext.h"
 
 #include <glm/glm.hpp>
+#include "Light.h"
 
 namespace Ignite {
 	class Camera;
@@ -23,7 +24,7 @@ namespace Ignite {
     public:
 		virtual ~IRendererAPI() {}
 
-        virtual void BeginScene(const Camera& camera) = 0;
+        virtual void BeginScene(const Camera& camera,const std::vector<Light>& lights) = 0;
         virtual void EndScene() = 0;
     	
         virtual void SetViewPort(uint32_t x, uint32_t y, uint32_t width, uint32_t height) = 0;

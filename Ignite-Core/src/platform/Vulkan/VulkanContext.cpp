@@ -8,6 +8,7 @@
 #include "platform/Vulkan/VulkanTexture2D.h"
 #include "platform/Vulkan/VulkanMesh.h"
 #include "platform/Vulkan/VulkanMaterial.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace Ignite
 {
@@ -58,6 +59,7 @@ namespace Ignite
 
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_sceneDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_materialDescriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_lightDescriptorSetLayout, nullptr);
 
 		if(VulkanPipeline::PipelineLayout() != VK_NULL_HANDLE)
 			vkDestroyPipelineLayout(m_vulkanDevice->LogicalDevice(), VulkanPipeline::PipelineLayout(), nullptr);
@@ -202,6 +204,7 @@ namespace Ignite
 	void VulkanContext::createUniformBuffers()
 	{
 		m_sceneUniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());
+		m_lightStorageBuffers.resize(m_vulkanSwapchain->ImageViews().size());
 		
 		//create a ubo for each swapcahin image
 		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++) 
@@ -209,7 +212,13 @@ namespace Ignite
 			//Create scene unform buffers (Camera projection/view and lights)
 			m_sceneUniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
 			SceneUniformBuffer sceneUBO{};
-			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);			
+			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+			//create light storage buffers
+			size_t lightBufferSize = sizeof(LightBuffer);
+			m_lightStorageBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
+			m_lightStorageBuffers[i]->CreateHostVisable(nullptr, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			
 		}
 	}
 
@@ -220,11 +229,11 @@ namespace Ignite
 		//scene ubo set
 		poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		poolSizes[0].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
-		//model ubo set
-		poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-		poolSizes[1].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 		//texture set
-		poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		poolSizes[1].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
+		//light storage buffer
+		poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		poolSizes[2].descriptorCount = static_cast<uint32_t>(m_vulkanSwapchain->ImageViews().size());
 
 		VkDescriptorPoolCreateInfo poolInfo = {};
@@ -299,6 +308,25 @@ namespace Ignite
 		materialLayoutInfo.pBindings = setLayoutBindings.data();
 
 		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &materialLayoutInfo, nullptr, &m_materialDescriptorSetLayout));
+
+		//light descriptor sets
+		setLayoutBindings.clear();
+		
+		//light descriptors
+		VkDescriptorSetLayoutBinding lightUBOLayoutBinding = {};
+		lightUBOLayoutBinding.binding = 0;
+		lightUBOLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		lightUBOLayoutBinding.descriptorCount = 1;
+		lightUBOLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		lightUBOLayoutBinding.pImmutableSamplers = nullptr; // Optional
+		setLayoutBindings.push_back(lightUBOLayoutBinding);
+
+		VkDescriptorSetLayoutCreateInfo lightLayoutInfo = {};
+		lightLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		lightLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+		lightLayoutInfo.pBindings = setLayoutBindings.data();
+
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &lightLayoutInfo, nullptr, &m_lightDescriptorSetLayout));
 	}
 
 	void VulkanContext::createSceneDescriptorSets()
@@ -327,6 +355,39 @@ namespace Ignite
 			descriptorWrite.dstBinding = 0;
 			descriptorWrite.dstArrayElement = 0;
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			descriptorWrite.descriptorCount = 1;
+			descriptorWrite.pBufferInfo = &bufferInfo;
+
+			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
+			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+		}
+
+		//light storage buffer
+		layouts = std::vector<VkDescriptorSetLayout>(Swapchain().ImageViews().size(), LightDescriptorSetLayout());
+
+		allocInfo = {};
+		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		allocInfo.descriptorPool = DescriptorPool();
+		allocInfo.descriptorSetCount = static_cast<uint32_t>(Swapchain().ImageViews().size());
+		allocInfo.pSetLayouts = layouts.data();
+
+		m_lightDescriptorSets.resize(Swapchain().ImageViews().size());
+		r = vkAllocateDescriptorSets(Device().LogicalDevice(), &allocInfo, m_lightDescriptorSets.data());
+
+		size_t lightBufferSize = sizeof(LightBuffer);
+		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
+		{
+			VkDescriptorBufferInfo bufferInfo = {};
+			bufferInfo.buffer = m_lightStorageBuffers[i]->Buffer();
+			bufferInfo.offset = 0;
+			bufferInfo.range = lightBufferSize;
+
+			VkWriteDescriptorSet descriptorWrite = {};
+			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+			descriptorWrite.dstSet = m_lightDescriptorSets[i];
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 			descriptorWrite.descriptorCount = 1;
 			descriptorWrite.pBufferInfo = &bufferInfo;
 
@@ -414,6 +475,7 @@ namespace Ignite
 		for (size_t i = 0; i < m_sceneUniformBuffers.size(); i++)
 		{
 			m_sceneUniformBuffers[i]->Free();
+			m_lightStorageBuffers[i]->Free();
 		}
 		
 		LOG_CORE_INFO("Cleaning up vulkan Descriptor Pool");

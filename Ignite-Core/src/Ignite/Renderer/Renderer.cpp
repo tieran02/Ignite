@@ -33,7 +33,7 @@ bool Ignite::Renderer::IsInitialised()
 	return RenderCommand::s_renderer != nullptr;
 }
 
-void Ignite::Renderer::BeginScene(const Camera& camera)
+void Ignite::Renderer::BeginScene(const Camera& camera, const std::vector<Light>& lights)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
@@ -46,7 +46,7 @@ void Ignite::Renderer::BeginScene(const Camera& camera)
 	
 	m_recordingScene = true;
 	//get the renderer api
-	RenderCommand::s_renderer->BeginScene(camera);
+	RenderCommand::s_renderer->BeginScene(camera,lights);
 }
 
 void Ignite::Renderer::EndScene()

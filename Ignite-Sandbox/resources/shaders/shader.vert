@@ -5,7 +5,6 @@ layout(set = 0, binding = 0) uniform Scene {
     mat4 view;
     mat4 proj;
     vec3 viewPosition;
-    vec3 LightPos;
 } scene;
 
 layout(push_constant) uniform Model
@@ -23,8 +22,7 @@ layout (location = 4) in vec3 inBitangent;
 layout(location = 0) out vec3 FragPos;
 layout(location = 1) out vec2 TexCoords;
 layout(location = 3) out vec3 ViewPos;
-layout(location = 4) out vec3 LightPos;
-layout(location = 5) out mat3 TBN;
+layout(location = 4) out mat3 TBN;
 
 void main() 
 {
@@ -37,7 +35,6 @@ void main()
     TBN = transpose(mat3(T, B, N));
 
     ViewPos = scene.viewPosition;
-    LightPos = scene.LightPos;
 
     gl_Position = scene.proj * scene.view * vec4(FragPos, 1.0);
 }

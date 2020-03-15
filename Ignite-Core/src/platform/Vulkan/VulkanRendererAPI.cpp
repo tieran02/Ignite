@@ -26,7 +26,7 @@ Ignite::VulkanRendererAPI::~VulkanRendererAPI()
 	Cleanup();
 }
 
-void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera)
+void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vector<Light>& lights)
 {
 	//TODO start recording command buffers
 	//free command buffers
@@ -71,13 +71,27 @@ void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera)
 		vkCmdBeginRenderPass(vulkanContext->CommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		//LOG_CORE_INFO("Scene Recording Started");
 
+		//upload scene ubo (Camera/View)
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 0, 1,
 			&vulkanContext->SceneDescriptorSets()[i], 0, nullptr);
 
-		void* data;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(Renderer::SceneUBO()), 0, &data);
-		memcpy(data, &Renderer::SceneUBO(), sizeof(Renderer::SceneUBO()));
+		void* sceneData;
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(Renderer::SceneUBO()), 0, &sceneData);
+		memcpy(sceneData, &Renderer::SceneUBO(), sizeof(Renderer::SceneUBO()));
 		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory());
+		
+		//upload lights
+		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 2, 1,
+			&vulkanContext->LightDescriptorSets()[i], 0, nullptr);
+
+		LightBuffer lightBuffer{ lights.size(), lights[0] };
+		
+		void* lightData;
+		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory(), 0, sizeof(lightBuffer), 0, &lightData);
+		memcpy(lightData, &lightBuffer, sizeof(lightBuffer));
+
+		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory());
+
 	}
 }	
 

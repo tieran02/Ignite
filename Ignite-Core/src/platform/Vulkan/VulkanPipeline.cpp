@@ -99,10 +99,11 @@ namespace  Ignite
 
 		std::array<VkPushConstantRange, 2> pushConstants{modelPushConstantRange,matPushConstantRange};
 
-		std::array<VkDescriptorSetLayout, 2> setLayouts =
+		std::array<VkDescriptorSetLayout, 3> setLayouts =
 		{
 			vulkanContext->SceneDescriptorSetLayout(),
-			vulkanContext->MaterialDescriptorSetLayout()
+			vulkanContext->MaterialDescriptorSetLayout(),
+			vulkanContext->LightDescriptorSetLayout()
 		};
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
@@ -225,6 +226,7 @@ namespace  Ignite
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		fragShaderStageInfo.module = fragShaderModule;
 		fragShaderStageInfo.pName = "main";
+		
 
 		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 

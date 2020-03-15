@@ -34,6 +34,8 @@ public:
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
 		
 		lastPrintTime = std::chrono::high_resolution_clock::now();
+
+		lights.emplace_back(Ignite::Light{ glm::normalize(glm::vec4(0.6f,1,0,0)) , glm::vec3(.8,.4,.4) });
 	}
 
 	void OnDetach() override
@@ -56,9 +58,7 @@ public:
 			nbFrames = 0;
 			lastPrintTime = currentTime;
 		}
-		
-		Ignite::Renderer::SceneUBO().light_position = glm::vec3(0, 1000.0f, 0);
-
+	
 		constexpr float CAMERA_SPEED = 0.5f;
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
@@ -75,7 +75,7 @@ public:
 		//start scene
 		Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
 
-		Ignite::Renderer::BeginScene(camera);
+		Ignite::Renderer::BeginScene(camera,lights);
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0,0,2500)));
@@ -103,6 +103,7 @@ private:
 
 	std::shared_ptr<Ignite::Model> model;
 	std::shared_ptr<Ignite::IMesh> mesh;
+	std::vector<Ignite::Light> lights;
 
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 };
