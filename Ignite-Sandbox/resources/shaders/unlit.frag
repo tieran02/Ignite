@@ -32,6 +32,8 @@ layout(push_constant) uniform Material
 
 layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec2 TexCoords;
+layout(location = 3) in vec3 ViewPos;
+layout(location = 4) in mat3 TBN;
 
 
 layout(location = 0) out vec4 outColor;
@@ -43,6 +45,9 @@ void main()
 
     // get diffuse color
     vec3 color = texture(DiffuseSampler, TexCoords).rgb;
+
+     // normal in tangent space
+    vec3 normal = normalize(2*(texture(NormalSampler, TexCoords).rgb)-1);
     
-    outColor = vec4(color, 1.0);
+    outColor = vec4(TBN * normal, 1.0);
 }

@@ -58,7 +58,9 @@ public:
 			nbFrames = 0;
 			lastPrintTime = currentTime;
 		}
-	
+
+		lights[0].Position.x = sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() * 0.001);
+		lights[0].Position.z = cos(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() * 0.001);
 		constexpr float CAMERA_SPEED = 0.5f;
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))

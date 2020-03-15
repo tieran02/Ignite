@@ -32,6 +32,13 @@ void main()
     vec3 T = normalize(vec3(model.model * vec4(inTangent,   0.0)));
     vec3 B = normalize(vec3(model.model * vec4(inBitangent, 0.0)));
     vec3 N = normalize(vec3(model.model * vec4(inNormal,    0.0)));
+
+    // TBN must form a right handed coord system.
+    // Some models have symetric UVs. Check and fix.
+    if (dot(cross(N, T), B) < 0.0){
+        T = T * -1.0;
+    }
+
     TBN = transpose(mat3(T, B, N));
 
     ViewPos = scene.viewPosition;
