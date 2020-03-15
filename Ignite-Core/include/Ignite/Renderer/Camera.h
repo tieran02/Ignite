@@ -16,7 +16,7 @@ namespace Ignite
 	public:
 		Camera(const glm::vec3& origin);
 
-		void Translate(CameraDirection direction, float deltaTime);
+		void Translate(CameraDirection direction, float speed);
 
 		void MousePosition(double xpos, double ypos);
 

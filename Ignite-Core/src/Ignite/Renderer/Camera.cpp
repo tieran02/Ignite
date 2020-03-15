@@ -12,21 +12,21 @@ namespace Ignite
 	{
 	}
 
-	void Camera::Translate(CameraDirection direction, float deltaTime)
+	void Camera::Translate(CameraDirection direction, float speed)
 	{
 		switch (direction)
 		{
 		case CameraDirection::eLEFT:
-			m_position -= glm::normalize(glm::cross(m_front, m_up)) * m_speed;
+			m_position -= glm::normalize(glm::cross(m_front, m_up)) * speed;
 			break;
 		case CameraDirection::eRIGHT:
-			m_position += glm::normalize(glm::cross(m_front, m_up)) * m_speed;
+			m_position += glm::normalize(glm::cross(m_front, m_up)) * speed;
 			break;
 		case CameraDirection::eFORWARD:
-			m_position += m_speed * m_front;
+			m_position += m_front * speed;
 			break;
 		case CameraDirection::eBACKWARD:
-			m_position -= m_speed * m_front;
+			m_position -= m_front * speed;
 			break;
 		}
 	}
