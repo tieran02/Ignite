@@ -3,13 +3,15 @@
 #include <chrono>
 #include "Ignite/Events/MouseEvent.h"
 
+using ms = std::chrono::duration<float, std::milli>;
+
 class ExampleLayer : public Ignite::Layer
 {
 public:
 	ExampleLayer() : Layer("Example") {}
 
-	float lastPrintTime;
-	float lastFrameTime;
+	std::chrono::high_resolution_clock::time_point lastPrintTime;
+	std::chrono::high_resolution_clock::time_point lastFrameTime;
 	int nbFrames = 0;
 	float deltaTime = 16.0f;
 	void OnAttach() override
@@ -31,7 +33,7 @@ public:
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
 		
-		lastPrintTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+		lastPrintTime = std::chrono::high_resolution_clock::now();
 	}
 
 	void OnDetach() override
@@ -41,30 +43,32 @@ public:
 	void OnUpdate() override
 	{
 		//rotate
-		float currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-		deltaTime = currentTime - lastFrameTime;
+		std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
+		
+		deltaTime = std::chrono::duration_cast<ms>(currentTime - lastFrameTime).count();
 		lastFrameTime = currentTime;
 		nbFrames++;
 
-		if (currentTime - lastPrintTime >= 1000.0f)
+		if (std::chrono::duration_cast<ms>(currentTime - lastPrintTime).count() >= 1000.0f)
 		{ 
 			printf("%i fps	", nbFrames);
 			printf("%f ms\n", deltaTime);
 			nbFrames = 0;
-			lastPrintTime += 1000.0;
+			lastPrintTime = currentTime;
 		}
 		
 		Ignite::Renderer::SceneUBO().light_position = glm::vec3(0, 1000.0f, 0);
-	
+
+		constexpr float CAMERA_SPEED = 0.5f;
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
-			camera.Translate(Ignite::CameraDirection::eFORWARD, deltaTime);
+			camera.Translate(Ignite::CameraDirection::eFORWARD, CAMERA_SPEED * deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_S))
-			camera.Translate(Ignite::CameraDirection::eBACKWARD, deltaTime);
+			camera.Translate(Ignite::CameraDirection::eBACKWARD, CAMERA_SPEED * deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_A))
-			camera.Translate(Ignite::CameraDirection::eLEFT, deltaTime);
+			camera.Translate(Ignite::CameraDirection::eLEFT, CAMERA_SPEED * deltaTime);
 		if (Ignite::Input::IsKeyPressed(IG_KEY_D))
-			camera.Translate(Ignite::CameraDirection::eRIGHT, deltaTime);
+			camera.Translate(Ignite::CameraDirection::eRIGHT, CAMERA_SPEED * deltaTime);
 
 		camera.MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 
@@ -89,11 +93,7 @@ public:
 
 	void OnEvent(Ignite::Event& event) override
 	{
-		//FL_LOG_TRACE("{0}", event);
-		if (event.GetEventType() == Ignite::EventType::MouseMoved)
-		{
-			Ignite::MouseMovedEvent& mouseEvent = (Ignite::MouseMovedEvent&)event;
-		}
+
 	}
 
 private:

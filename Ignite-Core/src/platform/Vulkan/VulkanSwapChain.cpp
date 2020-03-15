@@ -54,7 +54,7 @@ namespace Ignite
 		//TODO check if the user want to use VSync/triple buffer or not
 		std::vector<std::pair<VkPresentModeKHR, unsigned int>> PresentModeRating
 		{
-				{ VK_PRESENT_MODE_IMMEDIATE_KHR   , 1 },
+				{ VK_PRESENT_MODE_IMMEDIATE_KHR   , 4 },
 				{ VK_PRESENT_MODE_FIFO_RELAXED_KHR, 2 },
 				{ VK_PRESENT_MODE_FIFO_KHR        , 3 },
 				{ VK_PRESENT_MODE_MAILBOX_KHR     , 0 }
