@@ -11,7 +11,7 @@ namespace Ignite
 	class IPipeline : NonCopyable
 	{
 	protected:
-		IPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
+		IPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader);
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -25,7 +25,7 @@ namespace Ignite
 		
 		const std::string& Name() const { return m_name; }
 		
-		static std::shared_ptr<IPipeline> Create(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
+		static std::shared_ptr<IPipeline> Create(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader);
 		static const IPipeline* CurrentBoundPipeline() { return s_currentBoundPipeline; }
 	protected:
 		std::string m_name;

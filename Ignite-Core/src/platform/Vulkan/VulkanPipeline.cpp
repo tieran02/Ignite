@@ -9,8 +9,8 @@ namespace  Ignite
 {
 	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
 	
-	VulkanPipeline::VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout)
-	: IPipeline(name, vertexShader, fragmentShader, inputLayout)
+	VulkanPipeline::VulkanPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader)
+	: IPipeline(name, inputLayout, vertexShader, fragmentShader)
 	{
 		Init();
 	}

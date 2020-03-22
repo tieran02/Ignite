@@ -29,8 +29,8 @@ public:
 			{ Ignite::PipelineDataType::eFloat3, "a_Bitangent" },
 		};
 
-		pipeline = Ignite::IPipeline::Create("shader", "resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
-		unlitPipeline = Ignite::IPipeline::Create("unlit", "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv", layout);
+		pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
+		unlitPipeline = Ignite::IPipeline::Create("unlit", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv");
 
 		material = Ignite::IMaterial::Create("defaultMaterial");
 
