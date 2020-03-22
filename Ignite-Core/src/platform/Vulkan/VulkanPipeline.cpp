@@ -9,8 +9,8 @@ namespace  Ignite
 {
 	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
 	
-	VulkanPipeline::VulkanPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader)
-	: IPipeline(name, inputLayout, vertexShader, fragmentShader)
+	VulkanPipeline::VulkanPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader)
+	: IPipeline(name, inputLayout, vertexShader, fragmentShader, geometryShader)
 	{
 		Init();
 	}
@@ -202,9 +202,12 @@ namespace  Ignite
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 
+		const bool HAS_GEOMETRY_SHADER = !m_geometryShader.empty();
+		
 		//read files
-		auto vertShaderCode = Utils::ReadFile(m_vertexShader);
-		auto fragShaderCode = Utils::ReadFile(m_fragmentShader);
+		std::vector<char> vertShaderCode = Utils::ReadFile(m_vertexShader);
+		std::vector<char> fragShaderCode = Utils::ReadFile(m_fragmentShader);
+		std::vector<char> geometryShaderCode = HAS_GEOMETRY_SHADER ? Utils::ReadFile(m_geometryShader) : std::vector<char>();
 
 		///
 		///Shader modules
@@ -213,6 +216,8 @@ namespace  Ignite
 		//create shader modules
 		VkShaderModule vertShaderModule = createShaderModule(vulkanContext->Device(), vertShaderCode);
 		VkShaderModule fragShaderModule = createShaderModule(vulkanContext->Device(), fragShaderCode);
+		VkShaderModule geometryShaderModule = HAS_GEOMETRY_SHADER ? createShaderModule(vulkanContext->Device(), fragShaderCode) : VkShaderModule{};
+		
 
 		//vertex shader stage
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
@@ -226,9 +231,18 @@ namespace  Ignite
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		fragShaderStageInfo.module = fragShaderModule;
 		fragShaderStageInfo.pName = "main";
+
+		//geometry shader stage
+		VkPipelineShaderStageCreateInfo geometryShaderStageInfo = {};
+		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		fragShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+		fragShaderStageInfo.module = geometryShaderModule;
+		fragShaderStageInfo.pName = "main";
 		
 
-		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+		std::vector<VkPipelineShaderStageCreateInfo> shaderStages = { vertShaderStageInfo, fragShaderStageInfo };
+		if (HAS_GEOMETRY_SHADER)
+			shaderStages.push_back(geometryShaderStageInfo);
 
 		///
 		///Fixed functions
@@ -365,8 +379,8 @@ namespace  Ignite
 		//create pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo = {};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount = 2;
-		pipelineInfo.pStages = shaderStages;
+		pipelineInfo.stageCount = shaderStages.size();
+		pipelineInfo.pStages = shaderStages.data();
 		
 		pipelineInfo.pVertexInputState = &vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &inputAssembly;
@@ -389,6 +403,8 @@ namespace  Ignite
 
 		vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), fragShaderModule, nullptr);
 		vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), vertShaderModule, nullptr);
+		if(HAS_GEOMETRY_SHADER)
+			vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), geometryShaderModule, nullptr);
 
 		LOG_CORE_INFO("Created Vulkan Pipeline: " + m_name);
 		m_deleted = false;
