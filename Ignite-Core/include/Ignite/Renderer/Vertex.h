@@ -16,6 +16,13 @@ namespace Ignite
         bool operator==(const Vertex& other) const {
             return Position == other.Position && Normal == other.Normal && TexCoord == other.TexCoord;
         }
+
+    	void CheckTangent()
+        {
+            if (glm::dot(glm::cross(Normal, Tangent), Bitangent) < 0.0) {
+                Tangent = (Tangent * -1.0f);
+            }
+        }
     };
 }
 

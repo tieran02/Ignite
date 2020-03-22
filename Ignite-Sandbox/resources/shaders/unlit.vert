@@ -23,23 +23,18 @@ layout(location = 0) out vec3 FragPos;
 layout(location = 1) out vec2 TexCoords;
 layout(location = 3) out vec3 ViewPos;
 layout(location = 4) out mat3 TBN;
+layout(location = 7) out vec3 Normal;
 
 void main() 
 {
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
+    Normal = mat3(transpose(inverse(model.model))) * inNormal;  
 
-
-    vec3 T = normalize(vec3(model.model * vec4(inTangent,   0.0)));
-    vec3 B = normalize(vec3(model.model * vec4(inBitangent, 0.0)));
-    vec3 N = normalize(vec3(model.model * vec4(inNormal,    0.0)));
-
-    // TBN must form a right handed coord system.
-    // Some models have symetric UVs. Check and fix.
-    if (dot(cross(N, T), B) < 0.0){
-        T = T * -1.0;
-    }
-
+    mat3 normalMatrix = transpose(inverse(mat3(model.model)));
+    vec3 T = mat3(transpose(inverse(model.model))) * inTangent;  
+    vec3 N = mat3(transpose(inverse(model.model))) * inNormal;  
+    vec3 B = normalize(cross(N, T));
     TBN = mat3(T, B, N);
 
     ViewPos = scene.viewPosition;

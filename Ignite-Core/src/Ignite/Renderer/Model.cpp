@@ -34,9 +34,7 @@ namespace Ignite
 	{
         unsigned int importOptions = 
 			  aiProcess_Triangulate
-            | aiProcess_OptimizeMeshes
-            | aiProcess_JoinIdenticalVertices
-            | aiProcess_Triangulate
+			| aiProcess_GenNormals
             | aiProcess_CalcTangentSpace;
 		
 		Assimp::Importer import;
@@ -126,6 +124,7 @@ namespace Ignite
                 vertex.Tangent = { 0.0f,0.0f,0.0f };
                 vertex.Bitangent = { 0.0f,0.0f,0.0f };
             }
+            vertex.CheckTangent();
             vertices.push_back(vertex);
         }
 

@@ -34,6 +34,7 @@ layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec2 TexCoords;
 layout(location = 3) in vec3 ViewPos;
 layout(location = 4) in mat3 TBN;
+layout(location = 7) in vec3 Normal;
 
 
 layout(location = 0) out vec4 outColor;
@@ -47,7 +48,10 @@ void main()
     vec3 color = texture(DiffuseSampler, TexCoords).rgb;
 
      // normal in tangent space
-    vec3 normal = normalize(2*(texture(NormalSampler, TexCoords).rgb)-1);
+    vec3 normal = texture(NormalSampler, TexCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0);   
+    normal = normalize(TBN * normal);
+    //vec3 normal = normalize(2*(texture(NormalSampler, TexCoords).rgb)-1);
     
-    outColor = vec4(TBN * normal, 1.0);
+    outColor = vec4(normal, 1.0);
 }
