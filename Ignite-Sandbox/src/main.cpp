@@ -16,10 +16,6 @@ public:
 	float deltaTime = 16.0f;
 	void OnAttach() override
 	{
-		printf("%d\n", sizeof(Ignite::Light));   // Should show 64
-		printf("%d\n", alignof(Ignite::Light));  // Should show 16
-		printf("%d\n", sizeof(Ignite::LightBuffer));   // Should show 64
-		printf("%d\n", alignof(Ignite::LightBuffer));  // Should show 16
 		Ignite::PipelineInputLayout layout =
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
@@ -49,7 +45,8 @@ public:
 		lights.emplace_back(Ignite::Light{ glm::normalize(glm::vec4(0.6f,1,0,0)) , glm::vec3(.8,.4,.4) });
 		//point light
 		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500,});
-
+		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z - 500,1) , glm::vec3(5.0,.25f,.25f) ,glm::vec3(0),500, });
+		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z + 500,1) , glm::vec3(.25f,5.0f,.25f) ,glm::vec3(0),500, });
 	}
 
 	void OnDetach() override
@@ -73,9 +70,10 @@ public:
 			lastPrintTime = currentTime;
 		}
 
-		lightPosition.x = 1000 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
+		lightPosition.x = 1200 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
 		lights[1].Position.x = lightPosition.x;
-		printf("%f ms\n", lights[1].Position.w);
+		lights[2].Position.x = lightPosition.x;
+		lights[3].Position.x = lightPosition.x;
 		
 		constexpr float CAMERA_SPEED = 0.5f;
 		//camera
@@ -96,7 +94,7 @@ public:
 		Ignite::Renderer::BeginScene(camera,lights);
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
-		Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+		//Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 
 		//Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 2500)));
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0,0,2500)));
