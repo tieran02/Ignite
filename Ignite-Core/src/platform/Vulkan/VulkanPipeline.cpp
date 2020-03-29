@@ -216,7 +216,7 @@ namespace  Ignite
 		//create shader modules
 		VkShaderModule vertShaderModule = createShaderModule(vulkanContext->Device(), vertShaderCode);
 		VkShaderModule fragShaderModule = createShaderModule(vulkanContext->Device(), fragShaderCode);
-		VkShaderModule geometryShaderModule = HAS_GEOMETRY_SHADER ? createShaderModule(vulkanContext->Device(), fragShaderCode) : VkShaderModule{};
+		VkShaderModule geometryShaderModule = HAS_GEOMETRY_SHADER ? createShaderModule(vulkanContext->Device(), geometryShaderCode) : VkShaderModule{};
 		
 
 		//vertex shader stage
@@ -234,10 +234,10 @@ namespace  Ignite
 
 		//geometry shader stage
 		VkPipelineShaderStageCreateInfo geometryShaderStageInfo = {};
-		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		fragShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
-		fragShaderStageInfo.module = geometryShaderModule;
-		fragShaderStageInfo.pName = "main";
+		geometryShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+		geometryShaderStageInfo.stage = VK_SHADER_STAGE_GEOMETRY_BIT;
+		geometryShaderStageInfo.module = geometryShaderModule;
+		geometryShaderStageInfo.pName = "main";
 		
 
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages = { vertShaderStageInfo, fragShaderStageInfo };

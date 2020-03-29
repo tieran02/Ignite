@@ -24,13 +24,17 @@ public:
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
-			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Tangent" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Bitangent" },
+			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
 
 		pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
 		unlitPipeline = Ignite::IPipeline::Create("unlit", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv");
+		debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
+			"resources/shaders/debugNormalVert.spv",
+			"resources/shaders/debugNormalFrag.spv",
+			"resources/shaders/debugNormalGeom.spv");
 
 		material = Ignite::IMaterial::Create("defaultMaterial");
 
@@ -44,7 +48,7 @@ public:
 		//directional light
 		lights.emplace_back(Ignite::Light{ glm::normalize(glm::vec4(0.6f,1,0,0)) , glm::vec3(.8,.4,.4) });
 		//point light
-		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition,1) , glm::vec3(0,0,5) ,glm::vec3(0),500,});
+		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500,});
 
 	}
 
@@ -92,6 +96,9 @@ public:
 		Ignite::Renderer::BeginScene(camera,lights);
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+		Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+
+		//Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 2500)));
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0,0,2500)));
 
 		//render light
@@ -116,6 +123,7 @@ public:
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
 	std::shared_ptr<Ignite::IPipeline> unlitPipeline;
+	std::shared_ptr<Ignite::IPipeline> debugNormalPipeline;
 	std::shared_ptr<Ignite::IMaterial> material;
 
 	std::shared_ptr<Ignite::Model> model;
