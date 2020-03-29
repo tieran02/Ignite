@@ -16,26 +16,40 @@ public:
 	float deltaTime = 16.0f;
 	void OnAttach() override
 	{
+		printf("%d\n", sizeof(Ignite::Light));   // Should show 64
+		printf("%d\n", alignof(Ignite::Light));  // Should show 16
+		printf("%d\n", sizeof(Ignite::LightBuffer));   // Should show 64
+		printf("%d\n", alignof(Ignite::LightBuffer));  // Should show 16
 		Ignite::PipelineInputLayout layout =
 		{
 			{ Ignite::PipelineDataType::eFloat3, "a_Position" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
-			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Tangent" },
 			{ Ignite::PipelineDataType::eFloat3, "a_Bitangent" },
+			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
 
-		pipeline = Ignite::IPipeline::Create("shader", "resources/shaders/vert.spv", "resources/shaders/frag.spv", layout);
-		unlitPipeline = Ignite::IPipeline::Create("unlit", "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv", layout);
+		pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
+		unlitPipeline = Ignite::IPipeline::Create("unlit", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv");
+		debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
+			"resources/shaders/debugNormalVert.spv",
+			"resources/shaders/debugNormalFrag.spv",
+			"resources/shaders/debugNormalGeom.spv");
 
 		material = Ignite::IMaterial::Create("defaultMaterial");
 
 		//load model with default texture
 		model = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
+		//cube model
+		cubeModel = Ignite::Model::Load("resources/models", "cube.obj");
 		
 		lastPrintTime = std::chrono::high_resolution_clock::now();
 
+		//directional light
 		lights.emplace_back(Ignite::Light{ glm::normalize(glm::vec4(0.6f,1,0,0)) , glm::vec3(.8,.4,.4) });
+		//point light
+		lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500,});
+
 	}
 
 	void OnDetach() override
@@ -59,8 +73,10 @@ public:
 			lastPrintTime = currentTime;
 		}
 
-		lights[0].Position.x = sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() * 0.001);
-		lights[0].Position.z = cos(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() * 0.001);
+		lightPosition.x = 1000 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
+		lights[1].Position.x = lightPosition.x;
+		printf("%f ms\n", lights[1].Position.w);
+		
 		constexpr float CAMERA_SPEED = 0.5f;
 		//camera
 		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
@@ -80,8 +96,14 @@ public:
 		Ignite::Renderer::BeginScene(camera,lights);
 
 		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+		Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+
+		//Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 2500)));
 		Ignite::Renderer::Submit(unlitPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0,0,2500)));
 
+		//render light
+		Ignite::Renderer::Submit(unlitPipeline.get(), cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));
+		
 		Ignite::Renderer::EndScene();
 
 		Ignite::Renderer::SwapBuffers();
@@ -101,12 +123,15 @@ public:
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
 	std::shared_ptr<Ignite::IPipeline> unlitPipeline;
+	std::shared_ptr<Ignite::IPipeline> debugNormalPipeline;
 	std::shared_ptr<Ignite::IMaterial> material;
 
 	std::shared_ptr<Ignite::Model> model;
+	std::shared_ptr<Ignite::Model> cubeModel;
 	std::shared_ptr<Ignite::IMesh> mesh;
 	std::vector<Ignite::Light> lights;
 
+	glm::vec3 lightPosition{ 50,100,-8 };
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 };
 

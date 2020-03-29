@@ -11,7 +11,7 @@ namespace  Ignite
 	{
 		friend class IPipeline;
 	protected:
-		VulkanPipeline(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader, const PipelineInputLayout& inputLayout);
+		VulkanPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader);
 	public:
 		~VulkanPipeline() override;
 	protected:

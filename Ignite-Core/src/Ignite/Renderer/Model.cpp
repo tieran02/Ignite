@@ -32,12 +32,10 @@ namespace Ignite
 
 	void Model::loadModel(const std::string& path, const std::string& file)
 	{
-        unsigned int importOptions = 
-			  aiProcess_Triangulate
-            | aiProcess_OptimizeMeshes
-            | aiProcess_JoinIdenticalVertices
-            | aiProcess_Triangulate
-            | aiProcess_CalcTangentSpace;
+        unsigned int importOptions =
+            aiProcess_Triangulate |
+            aiProcess_GenNormals |
+            aiProcess_CalcTangentSpace;
 		
 		Assimp::Importer import;
 		const aiScene* scene = import.ReadFile(path + "/" + file, importOptions);
@@ -52,11 +50,13 @@ namespace Ignite
 	}
 
 	void Model::processNode(aiNode* node, const aiScene* scene, const std::string& path)
-	{
+	{		
 		// process all the node's meshes (if any)
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            //if (mesh->mName != aiString("sponza_117"))
+            //    continue;
 			m_meshes.push_back(processMesh(mesh, scene,path));
 		}
 		// then do the same for each of its children
@@ -67,7 +67,7 @@ namespace Ignite
 	}
 
     std::shared_ptr<IMesh> Model::processMesh(aiMesh* mesh, const aiScene* scene, const std::string& path)
-    {
+    {	
         std::vector<Vertex> vertices;
         std::vector<uint32_t> indices;
         std::vector<std::shared_ptr<ITexture2D>> textures;
@@ -126,6 +126,7 @@ namespace Ignite
                 vertex.Tangent = { 0.0f,0.0f,0.0f };
                 vertex.Bitangent = { 0.0f,0.0f,0.0f };
             }
+            vertex.CheckTangent();
             vertices.push_back(vertex);
         }
 
@@ -147,7 +148,8 @@ namespace Ignite
 	        //make default mat
             material = IMaterial::Create("default", nullptr);
         }
-		
+
+        //computeTangentBasis(indices, vertices);
 		//finaly create mesh
         return IMesh::Create(vertices, indices, material);
 	}

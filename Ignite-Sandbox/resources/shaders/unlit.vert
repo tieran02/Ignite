@@ -15,32 +15,21 @@ layout(push_constant) uniform Model
 
 layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inNormal;
-layout (location = 2) in vec2 inTexCoord;
-layout (location = 3) in vec3 inTangent;
-layout (location = 4) in vec3 inBitangent;  
+layout (location = 2) in vec3 inTangent;
+layout (location = 3) in vec3 inBitangent;  
+layout (location = 4) in vec2 inTexCoord;
 
 layout(location = 0) out vec3 FragPos;
 layout(location = 1) out vec2 TexCoords;
 layout(location = 3) out vec3 ViewPos;
-layout(location = 4) out mat3 TBN;
-
+layout(location = 4) out vec3 Normal;
+layout(location = 5) out vec3 Tangent;
 void main() 
 {
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
-
-
-    vec3 T = normalize(vec3(model.model * vec4(inTangent,   0.0)));
-    vec3 B = normalize(vec3(model.model * vec4(inBitangent, 0.0)));
-    vec3 N = normalize(vec3(model.model * vec4(inNormal,    0.0)));
-
-    // TBN must form a right handed coord system.
-    // Some models have symetric UVs. Check and fix.
-    if (dot(cross(N, T), B) < 0.0){
-        T = T * -1.0;
-    }
-
-    TBN = mat3(T, B, N);
+    Normal = mat3(transpose(inverse(model.model))) * inNormal;  
+    Tangent = mat3(transpose(inverse(model.model))) * inTangent;
 
     ViewPos = scene.viewPosition;
 
