@@ -32,26 +32,28 @@ layout(push_constant) uniform Material
 
 layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec2 TexCoords;
-layout(location = 3) in vec3 ViewPos;
-layout(location = 4) in vec3 Normal;
-layout(location = 5) in vec3 Tangent;
-
+layout(location = 2) in vec3 ViewPos;
+layout(location = 3) in vec3 Normal;
+layout(location = 4) in vec4 Tangent;
 
 layout(location = 0) out vec4 outColor;
 
 vec3 FetchNormalVector(vec2 texCoord)
 {
-    vec2 m = texture(NormalSampler, TexCoords).xy;
-    return vec3(m ,sqrt(1.0 - m.x * m.x - m.y * m.y));
+    vec3 m = texture(NormalSampler, TexCoords).xyz;
+    vec3 normal = vec3((2.0 * m) - 1.0);
+    return normal.xyz;
 }
 
-vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec3 tangent, float sigma)
+vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec4 tangent, float sigma)
 {
-    vec3 m = FetchNormalVector(texcoord);
-    vec3 n = normalize(normal);
-    vec3 t = normalize(tangent - n * dot(tangent,n));
-    vec3 b = cross(normal, tangent) * sigma;
-    return (t * m.x + b * m.y + n * m.z);
+    vec3 N = normalize(normal);
+	//N.y = -N.y;
+	vec3 T = normalize(tangent.rgb);
+	vec3 B = tangent.w * cross(N,T);
+	mat3 TBN = mat3(T, B, N);
+	vec3 tnorm = TBN * FetchNormalVector(texcoord);
+    return tnorm;
 }
 
 void main() 
@@ -63,7 +65,9 @@ void main()
     vec3 color = texture(DiffuseSampler, TexCoords).rgb;
      // normal in object space
     vec3 tnorm = FetchObjectNormalVector(TexCoords,Normal,Tangent,1.0);
+    //vec3 tnorm = FetchNormalVector(TexCoords);
     //vec3 tnorm = Normal;
+    //vec3 normal = mat3(WorldMatrix) * tnorm;
     
-    outColor = vec4(normalize(tnorm), 1.0);
+    outColor = vec4((tnorm + 1.0) / 2.0, 1.0);
 }

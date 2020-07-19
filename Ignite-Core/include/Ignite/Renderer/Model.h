@@ -1,11 +1,12 @@
 #pragma once
 #include "IMesh.h"
 
-struct aiMaterial;
-struct aiNode;
-struct aiMesh;
-struct aiScene;
-enum aiTextureType;
+namespace tinyobj
+{
+    struct attrib_t;
+    struct shape_t;
+    struct material_t;
+}
 
 namespace Ignite
 {
@@ -23,9 +24,11 @@ namespace Ignite
         std::vector<std::shared_ptr<IMaterial>> m_materials;
 
         void loadModel(const std::string& path, const std::string& file);
-        void processNode(aiNode* node, const aiScene* scene, const std::string& path);
-        std::shared_ptr<IMesh> processMesh(aiMesh* mesh, const aiScene* scene, const std::string& path);
-        std::shared_ptr<IMaterial> getMaterial(const aiMaterial* material, const std::string& path);
-        std::vector<std::shared_ptr<ITexture2D>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
+        //void processNode(aiNode* node, const aiScene* scene, const std::string& path);
+        std::shared_ptr<IMesh> processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
+        std::shared_ptr<IMaterial> getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
+        //std::vector<std::shared_ptr<ITexture2D>> loadMaterialTextures(aiMaterial* mat, aiTextureType type, TextureType textureType);
+
+        void CalculateTangents(std::vector<Vertex>& verts, const std::vector<uint32_t>& indices);
     };
 }

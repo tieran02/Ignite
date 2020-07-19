@@ -9,21 +9,12 @@ namespace Ignite
 	{
         glm::vec3 Position;
         glm::vec3 Normal;
-        glm::vec3 Tangent;
-        glm::vec3 Bitangent;
+        glm::vec4 Tangent;
+        //glm::vec3 Bitangent;
         glm::vec2 TexCoord;
     	
         bool operator==(const Vertex& other) const {
             return Position == other.Position && Normal == other.Normal && TexCoord == other.TexCoord;
-        }
-
-    	void CheckTangent()
-        {
-            // Calculate handedness
-            if (glm::dot(glm::cross(Normal, Tangent), Bitangent) < 0.0f) {
-                Tangent = Tangent * -1.0f;
-            }
-
         }
     };
 }

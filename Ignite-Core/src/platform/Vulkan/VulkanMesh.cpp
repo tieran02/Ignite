@@ -5,19 +5,20 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 #include "platform/Vulkan/VulkanPipeline.h"
+#include "Ignite/Renderer/MeshData.h"
 
 namespace Ignite
 {
-	VulkanMesh::VulkanMesh(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices, std::shared_ptr<IMaterial> material) : IMesh(material)
+	VulkanMesh::VulkanMesh(const MeshData& meshData, std::shared_ptr<IMaterial> material) : IMesh(material)
 	{
-		m_indexCount = indices.size();
-		Init(verts, indices);
+		m_indexCount = meshData.Triangles().size();
+		Init(meshData);
 	}
 
-	void VulkanMesh::Init(const std::vector<Vertex>& verts, const std::vector<uint32_t>& indices)
+	void VulkanMesh::Init(const MeshData& meshData)
 	{
-		createVBO(verts);
-		createIndices(indices);
+		createVBO(meshData.ToVertices());
+		createIndices(meshData.Triangles());
 		//CreateDescriptorSet();
 	}
 
