@@ -20,12 +20,12 @@ namespace Ignite
 
     static int mikk_vertex_index(const MeshData* mesh, const int face_num, const int vert_num)
     {
-        return mesh->Triangles()[face_num * 3 + vert_num];
+        return mesh->Triangles()[3 * face_num + vert_num];
     }
 
     static int mikk_corner_index(const MeshData* mesh, const int face_num, const int vert_num)
     {
-        return face_num * 3 + vert_num;
+         return mesh->Triangles()[3 * face_num + vert_num];
     }
 
 
@@ -50,7 +50,7 @@ namespace Ignite
         const MeshData* userdata = (const MeshData*)context->m_pUserData;
         if (!userdata->TextureCoords().empty()) {
             const int corner_index = mikk_corner_index(userdata, face_num, vert_num);
-            glm::float2 tfuv = userdata->TextureCoords()[corner_index];
+            glm::vec2 tfuv = userdata->TextureCoords()[corner_index];
             uv[0] = tfuv.x;
             uv[1] = tfuv.y;
         }

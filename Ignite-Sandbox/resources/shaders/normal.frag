@@ -45,15 +45,25 @@ vec3 FetchNormalVector(vec2 texCoord)
     return normal.xyz;
 }
 
+vec3 two_component_normal(vec2 N)
+{
+	return vec3(N, sqrt(max(1.0 - dot(N, N), 0.0)));
+}
+
+
 vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec4 tangent, float sigma)
 {
     vec3 N = normalize(normal);
 	//N.y = -N.y;
-	vec3 T = normalize(tangent.rgb);
-	vec3 B = tangent.w * cross(N,T);
+	vec3 T = normalize(tangent.xyz);
+	vec3 B = cross(N, T) * tangent.w;
 	mat3 TBN = mat3(T, B, N);
-	vec3 tnorm = TBN * FetchNormalVector(texcoord);
-    return tnorm;
+
+	vec3 tnorm = normalize(TBN * FetchNormalVector(texcoord));
+    if (gl_FrontFacing)
+        return tnorm;
+    else
+        return -tnorm;
 }
 
 void main() 

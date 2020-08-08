@@ -31,15 +31,15 @@ layout(push_constant) uniform Material
 	float opacity;
 } material;
 
+
 layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec2 TexCoords;
-layout(location = 3) in vec3 ViewPos;
-layout(location = 4) in vec3 Normal;
-layout(location = 5) in vec3 Tangent;
-layout(location = 6) in vec3 Bitangent;
-
+layout(location = 2) in vec3 ViewPos;
+layout(location = 3) in vec3 Normal;
+layout(location = 4) in vec4 Tangent;
 
 layout(location = 0) out vec4 outColor;
+
 vec3 FetchNormalVector(vec2 texCoord)
 {
     vec3 m = texture(NormalSampler, TexCoords).xyz;
@@ -47,18 +47,24 @@ vec3 FetchNormalVector(vec2 texCoord)
     return normal.xyz;
 }
 
-vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec3 tangent,vec3 bitangent, float sigma)
+vec3 two_component_normal(vec2 N)
+{
+	return vec3(N, sqrt(max(1.0 - dot(N, N), 0.0)));
+}
+
+
+vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec4 tangent, float sigma)
 {
     vec3 N = normalize(normal);
 	//N.y = -N.y;
-	vec3 T = normalize(tangent);
-	vec3 B = normalize(bitangent);
+	vec3 T = normalize(tangent.rgb);
+	vec3 B = tangent.w * cross(N,T);
 
-	mat3 TBN = mat3(T, B, N);
-	vec3 tnorm = TBN * FetchNormalVector(texcoord);
+    vec2 tangent_space = texture(NormalSampler, TexCoords).xy * 2.0 - 1.0;
+
+	vec3 tnorm = normalize(mat3(T, B, N) * two_component_normal(tangent_space));
     return tnorm;
 }
-
 
 vec3 SpecularPhong(vec3 LightDirectionTangent, vec3 normal,vec3 ViewDirectionTangent)
 {
@@ -120,7 +126,7 @@ void main()
         discard;
 
      // obtain normal from normal map in range [0,1] in world space
-    vec3 normTexture = FetchObjectNormalVector(TexCoords,Normal,Tangent,Bitangent,1.0);
+    vec3 normTexture = FetchObjectNormalVector(TexCoords,Normal,Tangent,1.0);
     //vec3 normTexture = Normal;
 
     //vec3 N = normalize(Normal);

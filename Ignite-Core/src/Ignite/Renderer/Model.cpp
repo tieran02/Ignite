@@ -57,6 +57,9 @@ namespace Ignite
 
         //MeshData meshData(attrib.vertices.size(),shape.mesh.indices.size());
         MeshData meshData;
+        Vertex vertex{};
+
+        std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
         for (const auto& index : shape.mesh.indices)
         {
@@ -65,8 +68,7 @@ namespace Ignite
 					attrib.vertices[3 * index.vertex_index + 1],
 					attrib.vertices[3 * index.vertex_index + 2]
             };
-
-            meshData.Positions().push_back(positon);
+            vertex.Position = positon;
 
             if (!attrib.normals.empty()) // does the mesh contain texture coordinates?
             {
@@ -76,12 +78,12 @@ namespace Ignite
 					attrib.normals[3 * index.normal_index + 2]
                 };
 
-                meshData.Normals().push_back(normal);
+                vertex.Normal = normal;
             }
             else
             {
-                glm::vec3 normal = { 0.0f,0.0f,0.0f };
-                meshData.Normals().push_back(normal);
+                glm::vec3 normal = { 0.0f,1.0f,0.0f };
+                vertex.Normal = normal;
             }
 
             if (!attrib.texcoords.empty()) // does the mesh contain texture coordinates?
@@ -92,15 +94,26 @@ namespace Ignite
 				attrib.texcoords[2 * index.texcoord_index + 1]
                 };
 
-                meshData.TextureCoords().push_back(texCoord);
+                vertex.TexCoord = texCoord;
             }
             else
             {
                 glm::vec2 texCoord = { 0.0f,0.0f };
-                meshData.TextureCoords().push_back(texCoord);
+
+                vertex.TexCoord = texCoord;
             }
 
-            meshData.Triangles().push_back(meshData.Triangles().size());
+            if (uniqueVertices.count(vertex) == 0)
+            {
+                uniqueVertices[vertex] = static_cast<uint32_t>(meshData.Positions().size());
+                meshData.Positions().push_back(vertex.Position);
+                meshData.Normals().push_back(vertex.Normal);
+                meshData.TextureCoords().push_back(vertex.TexCoord);
+            }
+
+
+
+            meshData.Triangles().push_back(uniqueVertices[vertex]);
         }
 
 

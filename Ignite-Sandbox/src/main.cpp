@@ -2,6 +2,7 @@
 #include "Ignite/Ignite.h"
 #include <chrono>
 #include "Ignite/Events/MouseEvent.h"
+#include "TangentTestLayer.h"
 
 using ms = std::chrono::duration<float, std::milli>;
 
@@ -24,7 +25,7 @@ public:
 			{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 		};
 
-		//pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
+		pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
 		//unlitPipeline = Ignite::IPipeline::Create("unlit", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv");
 		normalPipeline = Ignite::IPipeline::Create("normal", layout, "resources/shaders/normalVert.spv", "resources/shaders/normalFrag.spv");
 		//debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
@@ -106,7 +107,7 @@ public:
 
 		Ignite::Renderer::BeginScene(camera,lights);
 
-		//Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+		Ignite::Renderer::Submit(pipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 		Ignite::Renderer::Submit(normalPipeline.get(), armour.get(), glm::translate(glm::mat4(1), glm::vec3(0, 100, 0)));
 		//Ignite::Renderer::Submit(debugNormalPipeline.get(), model.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 
@@ -152,7 +153,7 @@ private:
 int main()
 {
 	Ignite::Ignite ignite;
-	ignite.App().PushLayer(new ExampleLayer);
+	ignite.App().PushLayer(new TangentTestLayer);
 
 	ignite.App().Start(1920, 1080);
 

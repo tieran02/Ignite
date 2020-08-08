@@ -26,13 +26,19 @@ layout(location = 4) out vec4 Tangent;
 
 void main() 
 {
+    vec3 world_col0 = model.model[0].xyz;
+    vec3 world_col1 = model.model[1].xyz;
+    vec3 world_col2 = model.model[2].xyz;
+    vec3 world_col3 = model.model[3].xyz;
+
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
 
-    mat4 normalMatrix = transpose(inverse(model.model));
-    Normal = normalize(vec3(normalMatrix * vec4(inNormal, 0.0)));
-    Tangent = normalize(normalMatrix * inTangent);
-    Tangent.w = inTangent.w;
+    mat3 NormalTransform = transpose(inverse( mat3(world_col0, world_col1, world_col2)));
+    Normal = normalize(NormalTransform * inNormal);
+    Tangent = vec4(normalize(NormalTransform * inTangent.xyz), inTangent.w);
+
+
     ViewPos = scene.viewPosition;
 
     gl_Position = scene.proj * scene.view * vec4(FragPos, 1.0);
