@@ -102,8 +102,7 @@ vec3 CalculatePointLight(Light light, vec3 normal, vec3 viewDir)
     vec3 specularPhong = SpecularPhong(LightDirection, normal, viewDir);
 
     // attenuation
-    //float attenuation = smoothstep(light.attenuation, light.attenuation/2, Distance);
-    float attenuation = smoothstep(light.attenuation, light.attenuation, Distance);
+    float attenuation = smoothstep(light.attenuation, light.attenuation/2, Distance);
 
     return (light.intensities * (diffusePhong + specularPhong)) * attenuation;
 }
@@ -117,6 +116,7 @@ vec3 CalculateLight(Light light, vec3 normal, vec3 viewDir)
     }
     return CalculatePointLight(light,normal,viewDir);
 }
+
 
 void main() 
 {
