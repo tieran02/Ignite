@@ -40,8 +40,9 @@ namespace Ignite
         std::string warn, err;
 
         std::string fullPath = path + "/" + file;
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullPath.c_str(), path.c_str())) {
-            throw std::runtime_error(warn + err);
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullPath.c_str(), path.c_str()))
+        {
+            CORE_ASSERT(false, warn + err);
         }
 
         for (const auto& shape : shapes)

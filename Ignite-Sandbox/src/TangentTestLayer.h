@@ -22,6 +22,7 @@ public:
 private:
 	std::shared_ptr<Ignite::IPipeline> pipeline;
 	std::shared_ptr<Ignite::IPipeline> normalPipeline;
+	std::shared_ptr<Ignite::IPipeline> normalMappingPipeline;
 	std::shared_ptr<Ignite::IPipeline> debugNormalPipeline;
 
 	std::shared_ptr<Ignite::Model> tangentModel;

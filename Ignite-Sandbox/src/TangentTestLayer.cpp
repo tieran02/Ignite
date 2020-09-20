@@ -13,6 +13,9 @@ void TangentTestLayer::OnAttach()
 	pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
 	normalPipeline = Ignite::IPipeline::Create("normal", layout, "resources/shaders/normalVert.spv",
 	                                           "resources/shaders/normalFrag.spv");
+	normalMappingPipeline = Ignite::IPipeline::Create("normalMapping", layout, "resources/shaders/normalMappingVert.spv",
+		"resources/shaders/normalMappingFrag.spv");
+
 	debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
 			"resources/shaders/debugNormalVert.spv",
 			"resources/shaders/debugNormalFrag.spv",
@@ -27,6 +30,10 @@ void TangentTestLayer::OnAttach()
 
 	//directional light
 	lights.emplace_back(Ignite::Light{glm::normalize(glm::vec4(0.6f, 1, 0, 0)), glm::vec3(.8, .4, .4)});
+
+	camera.Yaw() = -90.0f;
+	camera.Pitch() = -90.0f;
+	camera.Position() = glm::vec3(0, 150, 50);
 }
 
 void TangentTestLayer::OnDetach()
@@ -77,6 +84,16 @@ void TangentTestLayer::OnUpdate()
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
 	Ignite::Renderer::Submit(normalPipeline.get(), tangentModel.get(), model);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(50.0f, 0.0f, 50.0f));
+	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
+	Ignite::Renderer::Submit(normalMappingPipeline.get(), tangentModel.get(), model);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(-50.0f, 0.0f, 50.0f));
+	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
+	Ignite::Renderer::Submit(normalMappingPipeline.get(), tangentModel.get(), model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 100.0f));

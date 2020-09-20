@@ -57,13 +57,11 @@ vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec4 tangent, float sig
 {
     vec3 N = normalize(normal);
 	//N.y = -N.y;
-	vec3 T = normalize(tangent.rgb);
-	vec3 B = tangent.w * cross(N,T);
+	vec3 T = normalize(tangent.xyz);
+	vec3 B = normalize(cross(N, T) * tangent.w);
+	mat3 TBN = mat3(T, B, N);
 
-    vec2 tangent_space = texture(NormalSampler, TexCoords).xy * 2.0 - 1.0;
-
-	vec3 tnorm = normalize(mat3(T, B, N) * two_component_normal(tangent_space));
-    return tnorm;
+    return TBN * FetchNormalVector(texcoord);
 }
 
 vec3 SpecularPhong(vec3 LightDirectionTangent, vec3 normal,vec3 ViewDirectionTangent)

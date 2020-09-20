@@ -30,6 +30,7 @@ namespace  Ignite
 
 		void createTextureSampler();
 
+		VkFormat m_format;
 		uint32_t m_mipLevels;
 		VkImage m_textureImage;
 		VkDeviceMemory m_textureImageMemory;

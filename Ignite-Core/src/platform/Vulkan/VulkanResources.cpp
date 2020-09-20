@@ -199,10 +199,10 @@ void Ignite::VulkanResources::TransitionImageLayout(VkDevice device, VkCommandPo
 }
 
 void Ignite::VulkanResources::CopyBufferToImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue,
-	VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t mipmapLevels)
+	VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t mipmapLevels, VkFormat ImageFormat)
 {
 	TransitionImageLayout(device, commandPool, graphicsQueue,
-	                      image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipmapLevels);
+	                      image, ImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipmapLevels);
 
 	VkCommandBuffer commandBuffer = BeginSingleTimeCommands(device, commandPool);
 
@@ -235,7 +235,7 @@ void Ignite::VulkanResources::CopyBufferToImage(VkDevice device, VkPhysicalDevic
 	EndSingleTimeCommands(device, commandPool, graphicsQueue, commandBuffer);
 
 	//TransitionImageLayout(device, commandPool,graphicsQueue, image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipmapLevels);
-	GenerateMipmaps(device,physicalDevice,commandPool,graphicsQueue, image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mipmapLevels);
+	GenerateMipmaps(device,physicalDevice,commandPool,graphicsQueue, image, ImageFormat, width, height, mipmapLevels);
 }
 
 VkImageView Ignite::VulkanResources::CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels)
