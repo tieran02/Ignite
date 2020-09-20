@@ -24,7 +24,6 @@ layout(location = 2) out vec3 ViewPos;
 layout(location = 3) out vec3 Normal;
 layout(location = 4) out vec4 Tangent;
 
-
 void main() 
 {
     vec3 world_col0 = model.model[0].xyz;
@@ -35,7 +34,7 @@ void main()
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
 
-    mat3 NormalTransform = mat3(world_col0, world_col1, world_col2);
+    mat3 NormalTransform = transpose(inverse( mat3(world_col0, world_col1, world_col2)));
     Normal = normalize(NormalTransform * inNormal);
     Tangent = vec4(normalize(NormalTransform * inTangent.xyz), inTangent.w);
 

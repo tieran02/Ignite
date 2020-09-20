@@ -23,7 +23,7 @@ layout(location = 1) out vec2 TexCoords;
 layout(location = 2) out vec3 ViewPos;
 layout(location = 3) out vec3 Normal;
 layout(location = 4) out vec4 Tangent;
-
+//layout(location = 5) out mat3 TBN;
 
 void main() 
 {
@@ -35,9 +35,13 @@ void main()
     FragPos = vec3(model.model * vec4(inPosition, 1.0));
     TexCoords = inTexCoord;
 
-    mat3 NormalTransform = mat3(world_col0, world_col1, world_col2);
+    mat3 NormalTransform = transpose(inverse(mat3(model.model)));
     Normal = normalize(NormalTransform * inNormal);
-    Tangent = vec4(normalize(NormalTransform * inTangent.xyz), inTangent.w);
+    vec3 T = vec3(normalize(NormalTransform * inTangent.xyz));
+    Tangent = vec4(T, inTangent.w);
+//    vec3 B =  normalize(cross(Normal, Tangent) * inTangent.w);
+//
+//    TBN = mat3(Tangent,B,Normal);
 
 
     ViewPos = scene.viewPosition;

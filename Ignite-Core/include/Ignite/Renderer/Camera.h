@@ -21,8 +21,16 @@ namespace Ignite
 		void MousePosition(double xpos, double ypos);
 
 		glm::mat4 GetViewMatrix() const;
+
+		glm::vec3& Position();
 		const glm::vec3& Position() const;
 		const glm::vec3& Front() const;
+
+		float& Yaw();
+		const float& Yaw() const;
+
+		float& Pitch();
+		const float& Pitch() const;
 	private:
 		float m_speed;
 		glm::vec3 m_position;

@@ -31,28 +31,37 @@ layout(push_constant) uniform Material
 	float opacity;
 } material;
 
+
 layout(location = 0) in vec3 FragPos;
 layout(location = 1) in vec2 TexCoords;
-layout(location = 3) in vec3 ViewPos;
-layout(location = 4) in vec3 Normal;
-layout(location = 5) in vec3 Tangent;
-
+layout(location = 2) in vec3 ViewPos;
+layout(location = 3) in vec3 Normal;
+layout(location = 4) in vec4 Tangent;
 
 layout(location = 0) out vec4 outColor;
 
 vec3 FetchNormalVector(vec2 texCoord)
 {
-    vec2 m = texture(NormalSampler, TexCoords).xy;
-    return vec3(m ,sqrt(1.0 - m.x * m.x - m.y * m.y));
+    vec3 m = texture(NormalSampler, TexCoords).xyz;
+    vec3 normal = vec3((2.0 * m) - 1.0);
+    return normal.xyz;
 }
 
-vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec3 tangent, float sigma)
+vec3 two_component_normal(vec2 N)
 {
-    vec3 m = FetchNormalVector(texcoord);
-    vec3 n = normalize(normal);
-    vec3 t = normalize(tangent - n * dot(tangent,n));
-    vec3 b = cross(normal, tangent) * sigma;
-    return (t * m.x + b * m.y + n * m.z);
+	return vec3(N, sqrt(max(1.0 - dot(N, N), 0.0)));
+}
+
+
+vec3 FetchObjectNormalVector(vec2 texcoord, vec3 normal, vec4 tangent, float sigma)
+{
+    vec3 N = normalize(normal);
+	//N.y = -N.y;
+	vec3 T = normalize(tangent.xyz);
+	vec3 B = normalize(cross(N, T) * tangent.w);
+	mat3 TBN = mat3(T, B, N);
+
+    return TBN * FetchNormalVector(texcoord);
 }
 
 vec3 SpecularPhong(vec3 LightDirectionTangent, vec3 normal,vec3 ViewDirectionTangent)
@@ -108,6 +117,7 @@ vec3 CalculateLight(Light light, vec3 normal, vec3 viewDir)
     return CalculatePointLight(light,normal,viewDir);
 }
 
+
 void main() 
 {
     if(texture(AlphaSampler, TexCoords).r == 0)
@@ -115,6 +125,16 @@ void main()
 
      // obtain normal from normal map in range [0,1] in world space
     vec3 normTexture = FetchObjectNormalVector(TexCoords,Normal,Tangent,1.0);
+    //vec3 normTexture = Normal;
+
+    //vec3 N = normalize(Normal);
+	//N.y = -N.y;
+	//vec3 T = normalize(Tangent);
+	//vec3 B = cross(N, T);
+	//mat3 TBN = mat3(T, B, N);
+	//vec3 tnorm = TBN * normalize(texture(NormalSampler, TexCoords).xyz * 2.0 - vec3(1.0));
+	//vec3 normTexture = tnorm;
+
 
     vec3 viewDirectionTangent = normalize(ViewPos - FragPos);
 

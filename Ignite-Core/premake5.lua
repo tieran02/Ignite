@@ -19,6 +19,9 @@ project "Ignite-Core"
 		"src/**.cpp",
 		"vendor/glm/glm/**.hpp",
 		"vendor/glm/glm/**.inl",
+		"vendor/tinyobjloader/tiny_obj_loader.h",
+		"vendor/mikktspace/mikktspace.h",
+		"vendor/mikktspace/mikktspace.c"
 	}
 
 	defines
@@ -32,9 +35,10 @@ project "Ignite-Core"
 		"$(VULKAN_SDK)/include",
 		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.ASSIMP}",
 		"%{IncludeDir.GLM}",
-		"vendor/stb/include"
+		"vendor/stb/include",
+		"vendor/tinyobjloader",
+		"vendor/mikktspace"
 	}
 
 	links 
@@ -56,26 +60,8 @@ project "Ignite-Core"
 		defines "IGCORE_DEBUG"
 		runtime "Debug"
 		symbols "on"
-		libdirs { "vendor/assimp/debug" }
-		postbuildcommands
-		{
-		  ("{COPY} %{prj.location}/vendor/assimp/debug ../bin/" .. outputdir .. "/Ignite-Sandbox")
-		}
-		links
-		{
-			"assimpd"
-		}
 
 	filter "configurations:Release"
 		defines "IGCORE_RELEASE"
 		runtime "Release"
 		optimize "on"
-		libdirs { "vendor/assimp/release" }
-		postbuildcommands
-		{
-		  ("{COPY} %{prj.location}/vendor/assimp/release ../bin/" .. outputdir .. "/Ignite-Sandbox")
-		}
-				links
-		{
-			"assimp"
-		}

@@ -7,3 +7,6 @@
 [submodule "Ignite-Core/vendor/glfw"]
 	path = Ignite-Core/vendor/glfw
 	url = https://github.com/TheCherno/glfw.git
+[submodule "Ignite-Core/vendor/tinyobjloader"]
+	path = Ignite-Core/vendor/tinyobjloader
+	url = https://github.com/tinyobjloader/tinyobjloader

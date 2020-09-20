@@ -11,6 +11,10 @@ namespace Ignite
 {
 	VulkanTexture2D::VulkanTexture2D(const std::string& name, const std::string& path, TextureType textureType) : ITexture2D(name, path, textureType)
 	{
+		m_format = VK_FORMAT_R8G8B8A8_SRGB;
+		if (m_type == TextureType::eNORMAL)
+			m_format = VK_FORMAT_R8G8B8A8_UNORM;
+		
 		Init(path);
 	}
 
@@ -55,7 +59,7 @@ namespace Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 		
-		textureImageView = VulkanResources::CreateImageView(vulkanContext->Device().LogicalDevice(), m_textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
+		textureImageView = VulkanResources::CreateImageView(vulkanContext->Device().LogicalDevice(), m_textureImage, m_format, VK_IMAGE_ASPECT_COLOR_BIT, m_mipLevels);
 	}
 	void VulkanTexture2D::createTextureSampler()
 	{
@@ -117,11 +121,11 @@ namespace Ignite
 		stbi_image_free(pixels);
 
 		VulkanResources::CreateImage(vulkanContext->Device().LogicalDevice(), vulkanContext->Device().PhysicalDevice(),
-		                             m_width, m_height, m_mipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+		                             m_width, m_height, m_mipLevels, m_format, VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_SRC_BIT |VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
 		VulkanResources::CopyBufferToImage(vulkanContext->Device().LogicalDevice(), vulkanContext->Device().PhysicalDevice(), vulkanContext->CommandPool(),
-		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_width),static_cast<uint32_t>(m_height), m_mipLevels);
+		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_width),static_cast<uint32_t>(m_height), m_mipLevels, m_format);
 		
 		imageBuffer.Free();
 

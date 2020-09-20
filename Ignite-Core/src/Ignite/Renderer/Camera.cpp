@@ -72,4 +72,29 @@ namespace Ignite
 	{
 		return m_front;
 	}
+
+	glm::vec3& Camera::Position()
+	{
+		return m_position;
+	}
+
+	float& Camera::Yaw()
+	{
+		return yaw;
+	}
+
+	const float& Camera::Yaw() const
+	{
+		return yaw;
+	}
+
+	float& Camera::Pitch()
+	{
+		return pitch;
+	}
+
+	const float& Camera::Pitch() const
+	{
+		return pitch;
+	}
 }

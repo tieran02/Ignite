@@ -24,7 +24,7 @@ namespace Ignite
 
 		static void CopyBufferToImage(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkBuffer buffer, VkImage
 		                              image, uint32_t width, uint32_t
-		                              height, uint32_t mipmapLevels);
+		                              height, uint32_t mipmapLevels, VkFormat ImageFormat);
 
 		static VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 

@@ -16,7 +16,7 @@ newmtl leaf
 	map_Kd textures\sponza_thorn_diff.png
 	map_d textures\sponza_thorn_mask.png
 	map_bump textures\sponza_thorn_ddn.png
-	norm textures\sponza_thorn_ddn.png
+	bump textures\sponza_thorn_ddn.png
 
 newmtl vase_round
 	Ns 10.0000
@@ -32,7 +32,7 @@ newmtl vase_round
 	map_Ka textures\vase_round.png
 	map_Kd textures\vase_round.png
 	map_bump textures\vase_round_ddn.png
-	norm textures\vase_round_ddn.png
+	bump textures\vase_round_ddn.png
 
 newmtl VasePlant
 	Ns 10.0000
@@ -49,7 +49,7 @@ newmtl VasePlant
 	map_Kd textures\vase_plant.png
 	map_d textures\vase_plant_mask.png
 	map_bump textures\vase_plant_NRM.png
-	norm textures\vase_plant_NRM.png
+	bump textures\vase_plant_NRM.png
 
 newmtl Material__57
 	Ns 10.0000
@@ -80,7 +80,7 @@ newmtl Material__298
 	map_Ka textures\background.png
 	map_Kd textures\background.png
 	map_bump textures\background_ddn.png
-	norm textures\background_ddn.png
+	bump textures\background_ddn.png
 
 newmtl 16___Default
 	Ns 10.0000
@@ -110,7 +110,7 @@ newmtl bricks
 	map_Ka textures\spnza_bricks_a_diff.png
 	map_Kd textures\spnza_bricks_a_diff.png
 	map_bump textures\spnza_bricks_a_ddn.png
-	norm textures\spnza_bricks_a_ddn.png
+	bump textures\spnza_bricks_a_ddn.png
 
 newmtl arch
 	Ns 10.0000
@@ -126,7 +126,7 @@ newmtl arch
 	map_Ka textures\sponza_arch_diff.png
 	map_Kd textures\sponza_arch_diff.png
 	map_bump textures\sponza_arch_diff_NRM.png
-	norm textures\sponza_arch_diff_NRM.png
+	bump textures\sponza_arch_diff_NRM.png
 
 newmtl ceiling
 	Ns 10.0000
@@ -142,7 +142,7 @@ newmtl ceiling
 	map_Ka textures\sponza_ceiling_a_diff.png
 	map_Kd textures\sponza_ceiling_a_diff.png
 	map_bump textures\sponza_ceiling_a_diff_NRM.png
-	norm textures\sponza_ceiling_a_diff_NRM.png
+	bump textures\sponza_ceiling_a_diff_NRM.png
 
 newmtl column_a
 	Ns 10.0000
@@ -158,7 +158,7 @@ newmtl column_a
 	map_Ka textures\sponza_column_a_diff.png
 	map_Kd textures\sponza_column_a_diff.png
 	map_bump textures\sponza_column_a_ddn.png
-	norm textures\sponza_column_a_ddn.png
+	bump textures\sponza_column_a_ddn.png
 
 newmtl floor
 	Ns 10.0000
@@ -174,7 +174,7 @@ newmtl floor
 	map_Ka textures\sponza_floor_a_diff.png
 	map_Kd textures\sponza_floor_a_diff.png
 	map_bump textures\sponza_floor_a_diff_NRM.png
-	norm textures\sponza_floor_a_diff_NRM.png
+	bump textures\sponza_floor_a_diff_NRM.png
 
 newmtl column_c
 	Ns 10.0000
@@ -190,7 +190,7 @@ newmtl column_c
 	map_Ka textures\sponza_column_c_diff.png
 	map_Kd textures\sponza_column_c_diff.png
 	map_bump textures\sponza_column_c_ddn.png
-	norm textures\sponza_column_c_ddn.png
+	bump textures\sponza_column_c_ddn.png
 
 newmtl details
 	Ns 10.0000
@@ -220,7 +220,7 @@ newmtl column_b
 	map_Ka textures\sponza_column_b_diff.png
 	map_Kd textures\sponza_column_b_diff.png
 	map_bump textures\sponza_column_b_ddn.png
-	norm textures\sponza_column_b_ddn.png
+	bump textures\sponza_column_b_ddn.png
 
 newmtl Material__47
 	Ns 10.0000
@@ -248,7 +248,7 @@ newmtl flagpole
 	map_Ka textures\sponza_flagpole_diff.png
 	map_Kd textures\sponza_flagpole_diff.png
 	map_bump textures\sponza_flagpole_diff_NRM.png
-	norm textures\sponza_flagpole_diff_NRM.png
+	bump textures\sponza_flagpole_diff_NRM.png
 
 newmtl fabric_e
 	Ns 10.0000
@@ -264,7 +264,7 @@ newmtl fabric_e
 	map_Ka textures\sponza_fabric_green_diff.png
 	map_Kd textures\sponza_fabric_green_diff.png
 	map_bump textures\sponza_fabric_blue_diff_NRM.png
-	norm textures\sponza_fabric_blue_diff_NRM.png
+	bump textures\sponza_fabric_blue_diff_NRM.png
 
 newmtl fabric_d
 	Ns 10.0000
@@ -280,7 +280,7 @@ newmtl fabric_d
 	map_Ka textures\sponza_fabric_blue_diff.png
 	map_Kd textures\sponza_fabric_blue_diff.png
 	map_bump textures\sponza_fabric_blue_diff_NRM.png
-	norm textures\sponza_fabric_blue_diff_NRM.png
+	bump textures\sponza_fabric_blue_diff_NRM.png
 
 newmtl fabric_a
 	Ns 10.0000
@@ -296,7 +296,7 @@ newmtl fabric_a
 	map_Ka textures\sponza_fabric_diff.png
 	map_Kd textures\sponza_fabric_diff.png
 	map_bump textures\sponza_fabric_blue_diff_NRM.png
-	norm textures\sponza_fabric_blue_diff_NRM.png
+	bump textures\sponza_fabric_blue_diff_NRM.png
 
 newmtl fabric_g
 	Ns 10.0000
@@ -312,7 +312,7 @@ newmtl fabric_g
 	map_Ka textures\sponza_curtain_blue_diff.png
 	map_Kd textures\sponza_curtain_blue_diff.png
 	map_bump textures\sponza_fabric_blue_diff_NRM.png
-	norm textures\sponza_fabric_blue_diff_NRM.png
+	bump textures\sponza_fabric_blue_diff_NRM.png
 
 newmtl fabric_c
 	Ns 10.0000
@@ -328,7 +328,7 @@ newmtl fabric_c
 	map_Ka textures\sponza_curtain_diff.png
 	map_Kd textures\sponza_curtain_diff.png
 	map_bump textures\sponza_curtain_blue_diff_NRM.png
-	norm textures\sponza_curtain_blue_diff_NRM.png
+	bump textures\sponza_curtain_blue_diff_NRM.png
 
 newmtl fabric_f
 	Ns 10.0000
@@ -344,7 +344,7 @@ newmtl fabric_f
 	map_Ka textures\sponza_curtain_green_diff.png
 	map_Kd textures\sponza_curtain_green_diff.png
 	map_bump textures\sponza_curtain_blue_diff_NRM.png
-	norm textures\sponza_curtain_blue_diff_NRM.png
+	bump textures\sponza_curtain_blue_diff_NRM.png
 
 newmtl chain
 	Ns 10.0000
@@ -361,7 +361,7 @@ newmtl chain
 	map_Kd textures\chain_texture.png
 	map_d textures\chain_texture_mask.png
 	map_bump textures\chain_texture_ddn.png
-	norm textures\chain_texture_ddn.png
+	bump textures\chain_texture_ddn.png
 
 newmtl vase_hanging
 	Ns 10.0000
@@ -377,7 +377,7 @@ newmtl vase_hanging
 	map_Ka textures\vase_hanging.png
 	map_Kd textures\vase_hanging.png
 	map_bump textures\vase_hanging_NRM.png
-	norm textures\vase_hanging_NRM.png
+	bump textures\vase_hanging_NRM.png
 
 newmtl vase
 	Ns 10.0000
@@ -393,7 +393,7 @@ newmtl vase
 	map_Ka textures\vase_dif.png
 	map_Kd textures\vase_dif.png
 	map_bump textures\vase_ddn.png
-	norm textures\vase_ddn.png
+	bump textures\vase_ddn.png
 
 newmtl Material__25
 	Ns 10.0000
@@ -409,7 +409,7 @@ newmtl Material__25
 	map_Ka textures\lion.png
 	map_Kd textures\lion.png
 	map_bump textures\lion_ddn.png
-	norm textures\lion_ddn.png
+	bump textures\lion_ddn.png
 
 newmtl roof
 	Ns 10.0000
@@ -425,4 +425,4 @@ newmtl roof
 	map_Ka textures\sponza_roof_diff.png
 	map_Kd textures\sponza_roof_diff.png
 	map_bump textures\sponza_roof_diff_NRM.png
-	norm textures\sponza_roof_diff_NRM.png
+	bump textures\sponza_roof_diff_NRM.png
