@@ -9,13 +9,13 @@
 
 namespace Ignite
 {
-	VulkanTexture2D::VulkanTexture2D(const std::string& name, const std::string& path, TextureType textureType) : ITexture2D(name, path, textureType)
+	VulkanTexture2D::VulkanTexture2D(const Texture2DInfo& info) : ITexture2D(info)
 	{
 		m_format = VK_FORMAT_R8G8B8A8_SRGB;
-		if (m_type == TextureType::eNORMAL)
+		if (info.GetType() == TextureType::eNORMAL)
 			m_format = VK_FORMAT_R8G8B8A8_UNORM;
 		
-		Init(path);
+		Init();
 	}
 
 	VulkanTexture2D::~VulkanTexture2D()
@@ -29,9 +29,9 @@ namespace Ignite
 	}
 
 
-	void VulkanTexture2D::Init(const std::string& path)
+	void VulkanTexture2D::Init()
 	{
-		createImage(path);
+		createImage();
 		createTextureImageView();
 		createTextureSampler();
 	}
@@ -41,7 +41,7 @@ namespace Ignite
 		if (m_deleted)
 			return;
 
-		LOG_CORE_INFO("Cleaning vulkan images: " + m_name);
+		LOG_CORE_INFO("Cleaning vulkan images: " + m_Texture2DInfo.GetName());
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 
@@ -87,25 +87,26 @@ namespace Ignite
 		VK_CHECK_RESULT(vkCreateSampler(vulkanContext->Device().LogicalDevice(), &samplerInfo, nullptr, &textureSampler));
 	}
 
-	void VulkanTexture2D::createImage(const std::string& path)
+	void VulkanTexture2D::createImage()
 	{
-		LOG_CORE_INFO("Creating vulkan images: " + m_name);
+		LOG_CORE_INFO("Creating vulkan images: " + m_Texture2DInfo.GetName());
 		
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind VulkanIndexBuffer, vulkan context is null");
 
 		stbi_set_flip_vertically_on_load(true);
 		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(path.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		m_width = texWidth;
-		m_height = texHeight;
+		stbi_uc* pixels = stbi_load(m_Texture2DInfo.GetPath().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		m_Texture2DInfo.Width() = texWidth;
+		m_Texture2DInfo.Height() = texHeight;
 		CORE_ASSERT(pixels != nullptr, "failed to load texture image!");
 
 		//todo fix failed to load texture for release mode
 
 		//calculate mipmap levels
 		m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
-		VkDeviceSize imageSize = m_width * m_height * 4;
+		constexpr size_t CHANNEL_COUNT = 4;
+		VkDeviceSize imageSize = m_Texture2DInfo.GetWidth() * m_Texture2DInfo.GetWidth() * CHANNEL_COUNT;
 
 		//image staging buffer
 		VulkanBaseBuffer imageBuffer(vulkanContext);
@@ -121,11 +122,11 @@ namespace Ignite
 		stbi_image_free(pixels);
 
 		VulkanResources::CreateImage(vulkanContext->Device().LogicalDevice(), vulkanContext->Device().PhysicalDevice(),
-		                             m_width, m_height, m_mipLevels, m_format, VK_IMAGE_TILING_OPTIMAL,
+			m_Texture2DInfo.GetWidth(), m_Texture2DInfo.GetHeight(), m_mipLevels, m_format, VK_IMAGE_TILING_OPTIMAL,
 			VK_IMAGE_USAGE_TRANSFER_SRC_BIT |VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
 		VulkanResources::CopyBufferToImage(vulkanContext->Device().LogicalDevice(), vulkanContext->Device().PhysicalDevice(), vulkanContext->CommandPool(),
-		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_width),static_cast<uint32_t>(m_height), m_mipLevels, m_format);
+		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_Texture2DInfo.GetWidth()),static_cast<uint32_t>(m_Texture2DInfo.GetHeight()), m_mipLevels, m_format);
 		
 		imageBuffer.Free();
 

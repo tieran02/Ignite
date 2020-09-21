@@ -11,23 +11,48 @@ namespace Ignite
 		eNORMAL,
 		eALPHAMASK
 	};
+
+	struct Texture2DInfo
+	{
+		friend ITexture2D;
+		
+		Texture2DInfo(const std::string& m_name, const std::string& path, TextureType m_type)
+			: m_name(m_name),
+			  m_path(path),
+			  m_width(0),
+			  m_height(0),
+			  m_type(m_type)
+		{
+		}
+
+		const std::string& GetName() const { return m_name; }
+		const std::string& GetPath() const { return m_path; }
+		uint32_t GetWidth() const { return m_width; }
+		uint32_t GetHeight() const { return m_height; }
+		uint32_t& Width() { return m_width; }
+		uint32_t& Height() { return m_height; }
+		TextureType GetType() const { return m_type; }
+	private:
+		const std::string m_name;
+		const std::string m_path;
+		uint32_t m_width, m_height;
+		const TextureType m_type;
+	};
 	
 	class ITexture2D
 	{
 	protected:
-		ITexture2D(const std::string& name, const std::string& path, TextureType textureType);
-		virtual void Init(const std::string& path) = 0;
+		ITexture2D(const Texture2DInfo& info);
+		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
 		virtual ~ITexture2D() = default;
 		const IGraphicsContext* m_context;
 
 		virtual void Free() = 0;
-		static std::shared_ptr<ITexture2D> Create(const std::string& name, const std::string& path, TextureType textureType);
+		static std::shared_ptr<ITexture2D> Create(const Texture2DInfo& info);
 	protected:
-		std::string m_name;
-		uint32_t m_width, m_height;
-		TextureType m_type;
+		Texture2DInfo m_Texture2DInfo;
 		bool m_deleted;
 	};
 }

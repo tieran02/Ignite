@@ -10,11 +10,11 @@
 
 namespace Ignite
 {
-	ITexture2D::ITexture2D(const std::string& name, const std::string& path, TextureType textureType) : m_context(Renderer::GraphicsContext()), m_name(name), m_type(textureType)
+	ITexture2D::ITexture2D(const Texture2DInfo& info) : m_context(Renderer::GraphicsContext()), m_Texture2DInfo(info)
 	{
 	}
 
-	std::shared_ptr<ITexture2D> ITexture2D::Create(const std::string& name, const std::string& path, TextureType textureType)
+	std::shared_ptr<ITexture2D> ITexture2D::Create(const Texture2DInfo& info)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
@@ -22,13 +22,13 @@ namespace Ignite
 			{
 			case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
 			case IRendererAPI::API::VULKAN:
-				if (Renderer::GraphicsContext()->m_texture2Ds.find(name) == Renderer::GraphicsContext()->m_texture2Ds.end())
+				if (Renderer::GraphicsContext()->m_texture2Ds.find(info.GetName()) == Renderer::GraphicsContext()->m_texture2Ds.end())
 				{
-					std::shared_ptr<VulkanTexture2D> image = std::shared_ptr<VulkanTexture2D>(new VulkanTexture2D(name, path, textureType));
-					Renderer::GraphicsContext()->m_texture2Ds.insert(std::make_pair(name, image));
+					std::shared_ptr<VulkanTexture2D> image = std::shared_ptr<VulkanTexture2D>(new VulkanTexture2D(info));
+					Renderer::GraphicsContext()->m_texture2Ds.insert(std::make_pair(info.GetName(), image));
 					return image;
 				}
-				return Renderer::GraphicsContext()->m_texture2Ds.at(name);
+				return Renderer::GraphicsContext()->m_texture2Ds.at(info.GetName());
 			}
 
 		return nullptr;
