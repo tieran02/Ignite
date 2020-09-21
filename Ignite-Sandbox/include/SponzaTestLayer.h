@@ -1,12 +1,10 @@
 #pragma once
-#include <memory>
 #include "Ignite/Ignite.h"
-#include <chrono>
-#include "Ignite/Events/MouseEvent.h"
-class TangentTestLayer : public Ignite::Layer
+
+class SponzaTestLayer : public Ignite::Layer
 {
 public:
-	TangentTestLayer() : Layer("TangentTest") {}
+	SponzaTestLayer() : Layer("SponzaTest") {}
 
 	void OnAttach() override;
 
@@ -20,16 +18,13 @@ private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
 	std::shared_ptr<Ignite::IPipeline> pipeline;
-	std::shared_ptr<Ignite::IPipeline> normalPipeline;
-	std::shared_ptr<Ignite::IPipeline> normalMappingPipeline;
-	std::shared_ptr<Ignite::IPipeline> debugNormalPipeline;
+	std::shared_ptr<Ignite::IPipeline> unlitPipeline;
 
-	std::shared_ptr<Ignite::Model> tangentModel;
+	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;
 	std::vector<Ignite::Light> lights;
-
-	glm::vec3 lightPosition{ 50,100,-8 };
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
+	glm::vec3 lightPosition{ 50,100,-8 };
 
 	std::chrono::high_resolution_clock::time_point lastPrintTime;
 	std::chrono::high_resolution_clock::time_point lastFrameTime;
