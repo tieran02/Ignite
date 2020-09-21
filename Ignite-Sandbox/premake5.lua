@@ -17,7 +17,8 @@ project "Ignite-Sandbox"
 	includedirs
 	{
 		"../Ignite-Core/include",
-		"../Ignite-Core/%{IncludeDir.GLM}"
+		"../Ignite-Core/%{IncludeDir.GLM}",
+		"../Ignite-Sandbox/include"
 	}
 
 	links
