@@ -32,7 +32,6 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 
@@ -544,5 +543,3 @@ bin/
 Ignite.sln
 
 *.sln
-
-Ignite-Core/vendor/assimp/include/
