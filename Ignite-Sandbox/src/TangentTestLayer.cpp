@@ -10,16 +10,24 @@ void TangentTestLayer::OnAttach()
 		{Ignite::PipelineDataType::eFloat2, "a_TexCoord"}
 	};
 
-	pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
-	normalPipeline = Ignite::IPipeline::Create("normal", layout, "resources/shaders/normalVert.spv",
-	                                           "resources/shaders/normalFrag.spv");
-	normalMappingPipeline = Ignite::IPipeline::Create("normalMapping", layout, "resources/shaders/normalMappingVert.spv",
-		"resources/shaders/normalMappingFrag.spv");
-
-	debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
+	Ignite::PipelineInfo litPipelineInfo{ "shader", layout,
+		"resources/shaders/vert.spv",
+		"resources/shaders/frag.spv" };
+	Ignite::PipelineInfo normalPipelineInfo{ "normal", layout,
+		"resources/shaders/normalVert.spv",
+		"resources/shaders/normalFrag.spv" };
+	Ignite::PipelineInfo normalMappingPipelineInfo{ "normalMapping", layout,
+		"resources/shaders/normalMappingVert.spv",
+		"resources/shaders/normalMappingFrag.spv" };
+	Ignite::PipelineInfo debugNormalPipelineInfo{ "debugNormal", layout,
 			"resources/shaders/debugNormalVert.spv",
 			"resources/shaders/debugNormalFrag.spv",
-			"resources/shaders/debugNormalGeom.spv");
+			"resources/shaders/debugNormalGeom.spv" };
+	
+	pipeline = Ignite::IPipeline::Create(litPipelineInfo);
+	normalPipeline = Ignite::IPipeline::Create(normalPipelineInfo);
+	normalMappingPipeline = Ignite::IPipeline::Create(normalMappingPipelineInfo);
+	debugNormalPipeline = Ignite::IPipeline::Create(debugNormalPipelineInfo);
 
 	//load model with default texture
 	tangentModel = Ignite::Model::Load("resources/models/tangent", "NormalTangentTestPlatform.obj");

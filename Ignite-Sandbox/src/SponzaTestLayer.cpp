@@ -11,8 +11,10 @@ void SponzaTestLayer::OnAttach()
 		{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 	};
 
-	pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
-	unlitPipeline = Ignite::IPipeline::Create("unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv");
+	Ignite::PipelineInfo litPipelineInfo{ "shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv" };
+	Ignite::PipelineInfo unlitPipelineInfo{ "unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv" };
+	pipeline = Ignite::IPipeline::Create(litPipelineInfo);
+	unlitPipeline = Ignite::IPipeline::Create(unlitPipelineInfo);
 
 	//load model with default texture
 	sponzaModel = Ignite::Model::Load("resources/models/sponza", "sponza.obj");

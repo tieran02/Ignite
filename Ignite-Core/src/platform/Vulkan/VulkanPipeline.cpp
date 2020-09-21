@@ -9,8 +9,7 @@ namespace  Ignite
 {
 	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
 	
-	VulkanPipeline::VulkanPipeline(const std::string& name, const PipelineInputLayout& inputLayout, const std::string& vertexShader, const std::string& fragmentShader, const std::string& geometryShader)
-	: IPipeline(name, inputLayout, vertexShader, fragmentShader, geometryShader)
+	VulkanPipeline::VulkanPipeline(const PipelineInfo& info) : IPipeline(info)
 	{
 		Init();
 	}
@@ -35,7 +34,7 @@ namespace  Ignite
 		vkDeviceWaitIdle(vulkanContext->Device().LogicalDevice());
 	
 
-		LOG_CORE_INFO("Cleaning up Vulkan Pipeline: " + m_name);
+		LOG_CORE_INFO("Cleaning up Vulkan Pipeline: " + m_pipelineInfo.GetName());
 		vkDestroyPipeline(vulkanContext->Device().LogicalDevice(), m_pipeline, nullptr);
 		m_deleted = true;
 	}
@@ -134,17 +133,17 @@ namespace  Ignite
 	{
 		VkVertexInputBindingDescription bindingDescription = {};
 		bindingDescription.binding = 0;
-		bindingDescription.stride = m_inputLayout.GetStride();
+		bindingDescription.stride = m_pipelineInfo.GetLayout().GetStride();
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 		return bindingDescription;
 	}
 
 	std::vector<VkVertexInputAttributeDescription> VulkanPipeline::getAttributeDescriptions()
 	{
-		std::vector<VkVertexInputAttributeDescription> attributes(m_inputLayout.GetElements().size());
+		std::vector<VkVertexInputAttributeDescription> attributes(m_pipelineInfo.GetLayout().GetElements().size());
 		//convert input element to attribute description
 		int location = 0;
-		for (auto& inputElement : m_inputLayout)
+		for (auto& inputElement : m_pipelineInfo.GetLayout())
 		{
 			VkVertexInputAttributeDescription attributeDescription;
 			attributeDescription.binding = 0; //vertex data is always going to be on binding 0
@@ -202,12 +201,12 @@ namespace  Ignite
 	{
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 
-		const bool HAS_GEOMETRY_SHADER = !m_geometryShader.empty();
+		const bool HAS_GEOMETRY_SHADER = !m_pipelineInfo.GetGeometryShaderPath().empty();
 		
 		//read files
-		std::vector<char> vertShaderCode = Utils::ReadFile(m_vertexShader);
-		std::vector<char> fragShaderCode = Utils::ReadFile(m_fragmentShader);
-		std::vector<char> geometryShaderCode = HAS_GEOMETRY_SHADER ? Utils::ReadFile(m_geometryShader) : std::vector<char>();
+		std::vector<char> vertShaderCode = Utils::ReadFile(m_pipelineInfo.GetVertexShaderPath());
+		std::vector<char> fragShaderCode = Utils::ReadFile(m_pipelineInfo.GetFragmentShaderPath());
+		std::vector<char> geometryShaderCode = HAS_GEOMETRY_SHADER ? Utils::ReadFile(m_pipelineInfo.GetGeometryShaderPath()) : std::vector<char>();
 
 		///
 		///Shader modules
@@ -406,7 +405,7 @@ namespace  Ignite
 		if(HAS_GEOMETRY_SHADER)
 			vkDestroyShaderModule(vulkanContext->Device().LogicalDevice(), geometryShaderModule, nullptr);
 
-		LOG_CORE_INFO("Created Vulkan Pipeline: " + m_name);
+		LOG_CORE_INFO("Created Vulkan Pipeline: " + m_pipelineInfo.GetName());
 		m_deleted = false;
 	}
 
