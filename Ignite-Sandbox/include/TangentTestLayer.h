@@ -3,9 +3,6 @@
 #include "Ignite/Ignite.h"
 #include <chrono>
 #include "Ignite/Events/MouseEvent.h"
-
-using ms = std::chrono::duration<float, std::milli>;
-
 class TangentTestLayer : public Ignite::Layer
 {
 public:
@@ -20,6 +17,8 @@ public:
 	void OnEvent(Ignite::Event& event) override;
 
 private:
+	using ms = std::chrono::duration<float, std::milli>;
+	
 	std::shared_ptr<Ignite::IPipeline> pipeline;
 	std::shared_ptr<Ignite::IPipeline> normalPipeline;
 	std::shared_ptr<Ignite::IPipeline> normalMappingPipeline;
