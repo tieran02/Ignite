@@ -65,3 +65,6 @@ project "Ignite-Core"
 		defines "IGCORE_RELEASE"
 		runtime "Release"
 		optimize "on"
+		
+	filter "files:**.c"
+		flags {"NoPCH"}
