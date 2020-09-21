@@ -3,7 +3,7 @@
 
 namespace Ignite
 {
-	constexpr uint32_t MAX_LIGHTS{ 10 };
+	constexpr size_t MAX_LIGHTS{ 10 };
 	
 	struct Light
 	{
@@ -22,23 +22,10 @@ namespace Ignite
 		
 		///Light buffer has a limit and only the first lights before the limit would be sent to the shader
 		///Something to consider is to get the closest lights and directional lights first
-		LightBuffer(const std::vector<Light>& lights)
-		{
-			constexpr size_t MAX_LIGHTS = 10;
-			
-			LightCount = std::min(MAX_LIGHTS, lights.size());
-			//copy lights to light array
-			for (size_t i = 0; i < LightCount; i++)
-			{
-				Lights[i] = lights[i];
-			}
-		}
+		LightBuffer(const std::vector<Light>& lights);
 
-		
-		size_t Size() const
-		{
-			return sizeof(LightCount) + (sizeof(Light) * LightCount);
-		}
+
+		size_t Size() const;
 	};
 }
 
