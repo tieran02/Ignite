@@ -30,9 +30,9 @@ void TangentTestLayer::OnAttach()
 	debugNormalPipeline = Ignite::IPipeline::Create(debugNormalPipelineInfo);
 
 	//load model with default texture
-	tangentModel = Ignite::Model::Load("resources/models/tangent", "NormalTangentTestPlatform.obj");
+	tangentModel = Ignite::Model::Create(Ignite::ModelInfo{ "tangentModel","resources/models/tangent", "NormalTangentTestPlatform.obj" });
 	//cube model
-	cubeModel = Ignite::Model::Load("resources/models", "cube.obj");
+	cubeModel = Ignite::Model::Create(Ignite::ModelInfo{ "cube","resources/models", "cube.obj" });
 
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 

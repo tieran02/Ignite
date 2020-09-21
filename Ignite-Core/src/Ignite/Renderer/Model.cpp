@@ -11,16 +11,21 @@
 
 namespace Ignite
 {
-	std::unique_ptr<Model> Model::Load(const std::string& path, const std::string& file)
+    Model::Model(const ModelInfo& info) : m_modelInfo(info)
+    {
+    }
+	
+	std::unique_ptr<Model> Model::Create(const ModelInfo& info)
 	{
-        std::unique_ptr<Model> model = std::unique_ptr<Model>(new Model);
-        model->loadModel(path, file);
+        std::unique_ptr<Model> model = std::unique_ptr<Model>(new Model(info));
+        model->loadModel();
 		if(!model->m_meshes.empty())
 			return model;
 
         return std::unique_ptr<Model>();
 	}
-	
+
+
 	const std::vector<std::shared_ptr<IMesh>>& Model::Meshes() const
 	{
 		return m_meshes;
@@ -31,22 +36,22 @@ namespace Ignite
         return m_materials;
 	}
 
-    void Model::loadModel(const std::string& path, const std::string& file)
+    void Model::loadModel()
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
 
-        std::string fullPath = path + "/" + file;
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullPath.c_str(), path.c_str()))
+        std::string fullPath = m_modelInfo.GetPath() + "/" + m_modelInfo.GetFile();
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullPath.c_str(), m_modelInfo.GetPath().c_str()))
         {
             CORE_ASSERT(false, warn + err);
         }
 
         for (const auto& shape : shapes)
         {
-			m_meshes.push_back(processMesh(attrib, shape, materials, path));
+			m_meshes.push_back(processMesh(attrib, shape, materials, m_modelInfo.GetPath()));
         }
     }
 

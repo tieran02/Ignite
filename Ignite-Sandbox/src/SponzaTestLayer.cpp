@@ -17,9 +17,9 @@ void SponzaTestLayer::OnAttach()
 	unlitPipeline = Ignite::IPipeline::Create(unlitPipelineInfo);
 
 	//load model with default texture
-	sponzaModel = Ignite::Model::Load("resources/models/sponza", "sponza.obj");
+	sponzaModel = Ignite::Model::Create(Ignite::ModelInfo{ "sponza","resources/models/sponza", "sponza.obj" });
 	//cube model
-	cubeModel = Ignite::Model::Load("resources/models", "cube.obj");
+	cubeModel = Ignite::Model::Create(Ignite::ModelInfo{ "cube","resources/models", "cube.obj" });
 
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
