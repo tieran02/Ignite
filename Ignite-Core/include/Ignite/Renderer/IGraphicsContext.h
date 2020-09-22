@@ -12,11 +12,9 @@ namespace Ignite
 
 	class IGraphicsContext : NonCopyable
     {
-		friend class IPipeline;
 		friend class IBuffer;
 		friend class IVertexBuffer;
 		friend class IIndexBuffer;
-		friend class ITexture2D;
 		friend class IMesh;
 		friend class IMaterial;
 	protected:
