@@ -50,7 +50,7 @@ namespace Ignite
 		const IGraphicsContext* m_context;
 
 		virtual void Free() = 0;
-		static std::shared_ptr<ITexture2D> Create(const Texture2DCreateInfo& info);
+		static std::unique_ptr<ITexture2D> Create(const Texture2DCreateInfo& info);
 	protected:
 		Texture2DCreateInfo m_Texture2DInfo;
 		bool m_deleted;

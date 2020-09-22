@@ -5,6 +5,7 @@
 
 namespace Ignite
 {
+	struct Texture2DCreateInfo;
 	struct PipelineCreateInfo;
 	class IPipeline;
 	class IWindow;
@@ -29,6 +30,7 @@ namespace Ignite
         static std::unique_ptr<IGraphicsContext> Create();
 
 		IPipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
+		ITexture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
 		
 		const std::unordered_map<std::string, std::unique_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
 		const std::vector<std::shared_ptr<IBuffer>>& Buffers() const { return m_buffers; }

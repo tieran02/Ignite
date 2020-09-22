@@ -14,21 +14,14 @@ namespace Ignite
 	{
 	}
 
-	std::shared_ptr<ITexture2D> ITexture2D::Create(const Texture2DCreateInfo& info)
+	std::unique_ptr<ITexture2D> ITexture2D::Create(const Texture2DCreateInfo& info)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
 			switch (IRendererAPI::GetAPI())
 			{
 			case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-			case IRendererAPI::API::VULKAN:
-				if (Renderer::GraphicsContext()->m_texture2Ds.find(info.GetName()) == Renderer::GraphicsContext()->m_texture2Ds.end())
-				{
-					std::shared_ptr<VulkanTexture2D> image = std::shared_ptr<VulkanTexture2D>(new VulkanTexture2D(info));
-					Renderer::GraphicsContext()->m_texture2Ds.insert(std::make_pair(info.GetName(), image));
-					return image;
-				}
-				return Renderer::GraphicsContext()->m_texture2Ds.at(info.GetName());
+			case IRendererAPI::API::VULKAN:	 return std::unique_ptr<VulkanTexture2D>(new VulkanTexture2D(info));
 			}
 
 		return nullptr;

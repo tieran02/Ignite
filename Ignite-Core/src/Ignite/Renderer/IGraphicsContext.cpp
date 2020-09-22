@@ -4,6 +4,7 @@
 #include "Ignite/Log.h"
 #include <platform\Vulkan\VulkanContext.h>
 #include <Ignite/Renderer/IPipeline.h>
+#include <Ignite/Renderer/ITexture2D.h>
 
 namespace Ignite
 {
@@ -28,5 +29,18 @@ namespace Ignite
             return inserted.first->second.get();
         }
         return m_pipelines[pipelineInfo.GetName()].get();
+    }
+
+    ITexture2D* IGraphicsContext::CreateTexture2D(const Texture2DCreateInfo& textureInfo)
+    {
+        bool exists = m_texture2Ds.find(textureInfo.GetName()) != m_texture2Ds.end();
+        CORE_ASSERT(!exists, "Pipeline already attached to this context");
+
+        if (!exists)
+        {
+            auto inserted = m_texture2Ds.insert(std::make_pair(textureInfo.GetName(), std::move(ITexture2D::Create(textureInfo))));
+            return inserted.first->second.get();
+        }
+        return m_texture2Ds[textureInfo.GetName()].get();
     }
 }

@@ -22,9 +22,9 @@ void Ignite::Renderer::Init()
 	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
 	Texture2DCreateInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
 	
-	std::shared_ptr<ITexture2D> defaultDiffuseTexture = ITexture2D::Create(defaultDiffuseInfo);
-	std::shared_ptr<ITexture2D> defaultSpecularTexture = ITexture2D::Create(defaultSpecularInfo);
-	std::shared_ptr<ITexture2D> defaultNormalTexture = ITexture2D::Create(defaultNormalInfo);
+	ITexture2D* defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
+	ITexture2D* defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
+	ITexture2D* defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
 }
 
 void Ignite::Renderer::Shutdown()

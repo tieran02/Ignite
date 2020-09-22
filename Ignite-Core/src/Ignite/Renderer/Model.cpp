@@ -147,43 +147,43 @@ namespace Ignite
         {
             const tinyobj::material_t* mp = &materials[materialID];
 
-            std::shared_ptr<ITexture2D> diffuseTexture;
+            ITexture2D* diffuseTexture{ nullptr };
             if (mp->diffuse_texname.length() > 0)
 			{
 				std::string file = path + "/" + mp->diffuse_texname;
                 Texture2DCreateInfo textureInfo{ mp->diffuse_texname, file, TextureType::eDIFFUSE };
-				diffuseTexture = ITexture2D::Create(textureInfo);
+                diffuseTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
 			}
 
-            std::shared_ptr<ITexture2D> specularTexture;
+            ITexture2D* specularTexture{ nullptr };
             if (mp->specular_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->specular_texname;
                 Texture2DCreateInfo textureInfo{ mp->specular_texname, file, TextureType::eSPECULAR };
-                specularTexture = ITexture2D::Create(textureInfo);
+                specularTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            std::shared_ptr<ITexture2D> normalTexture;
+            ITexture2D* normalTexture{ nullptr };
             if (mp->normal_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->normal_texname;
                 Texture2DCreateInfo textureInfo{ mp->normal_texname, file, TextureType::eNORMAL };
-                normalTexture = ITexture2D::Create(textureInfo);
+                normalTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            std::shared_ptr<ITexture2D> alphaTexture;
+            ITexture2D* alphaTexture{ nullptr };
             if (mp->alpha_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->alpha_texname;
                 Texture2DCreateInfo textureInfo{ mp->alpha_texname, file, TextureType::eALPHAMASK };
-                alphaTexture = ITexture2D::Create(textureInfo);
+                alphaTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
             std::shared_ptr<IMaterial> mat = IMaterial::Create(mp->name,
-                diffuseTexture.get(),
-                specularTexture.get(),
-                normalTexture.get(),
-                alphaTexture.get());
+                diffuseTexture,
+                specularTexture,
+                normalTexture,
+                alphaTexture);
 
             mat->Properties().ambient = glm::vec4{ mp->ambient[0],mp->ambient[1],mp->ambient[2],1.0};
 			mat->Properties().diffuse = glm::vec4{ mp->diffuse[0],mp->diffuse[1],mp->diffuse[2],1.0 };
