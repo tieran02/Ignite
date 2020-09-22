@@ -11,15 +11,15 @@ void SponzaTestLayer::OnAttach()
 		{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
 	};
 
-	Ignite::PipelineInfo litPipelineInfo{ "shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv" };
-	Ignite::PipelineInfo unlitPipelineInfo{ "unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv" };
-	pipeline = Ignite::IPipeline::Create(litPipelineInfo);
-	unlitPipeline = Ignite::IPipeline::Create(unlitPipelineInfo);
+	Ignite::PipelineCreateInfo litPipelineInfo{ "shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv" };
+	Ignite::PipelineCreateInfo unlitPipelineInfo{ "unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv" };
+	pipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(litPipelineInfo);
+	unlitPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(unlitPipelineInfo);
 
 	//load model with default texture
-	sponzaModel = Ignite::Model::Create(Ignite::ModelInfo{ "sponza","resources/models/sponza", "sponza.obj" });
+	sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
 	//cube model
-	cubeModel = Ignite::Model::Create(Ignite::ModelInfo{ "cube","resources/models", "cube.obj" });
+	cubeModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "cube","resources/models", "cube.obj" });
 
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
@@ -87,10 +87,10 @@ void SponzaTestLayer::OnUpdate()
 
 	Ignite::Renderer::BeginScene(camera, lights);
 
-	Ignite::Renderer::Submit(pipeline.get(), sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+	Ignite::Renderer::Submit(pipeline, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 
 	//render light
-	Ignite::Renderer::Submit(unlitPipeline.get(), cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));
+	Ignite::Renderer::Submit(unlitPipeline, cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));
 
 	Ignite::Renderer::EndScene();
 

@@ -11,11 +11,11 @@
 
 namespace Ignite
 {
-    Model::Model(const ModelInfo& info) : m_modelInfo(info)
+    Model::Model(const ModelCreateInfo& info) : m_modelInfo(info)
     {
     }
 	
-	std::unique_ptr<Model> Model::Create(const ModelInfo& info)
+	std::unique_ptr<Model> Model::Create(const ModelCreateInfo& info)
 	{
         std::unique_ptr<Model> model = std::unique_ptr<Model>(new Model(info));
         model->loadModel();
@@ -151,7 +151,7 @@ namespace Ignite
             if (mp->diffuse_texname.length() > 0)
 			{
 				std::string file = path + "/" + mp->diffuse_texname;
-                Texture2DInfo textureInfo{ mp->diffuse_texname, file, TextureType::eDIFFUSE };
+                Texture2DCreateInfo textureInfo{ mp->diffuse_texname, file, TextureType::eDIFFUSE };
 				diffuseTexture = ITexture2D::Create(textureInfo);
 			}
 
@@ -159,7 +159,7 @@ namespace Ignite
             if (mp->specular_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->specular_texname;
-                Texture2DInfo textureInfo{ mp->specular_texname, file, TextureType::eSPECULAR };
+                Texture2DCreateInfo textureInfo{ mp->specular_texname, file, TextureType::eSPECULAR };
                 specularTexture = ITexture2D::Create(textureInfo);
             }
 
@@ -167,7 +167,7 @@ namespace Ignite
             if (mp->normal_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->normal_texname;
-                Texture2DInfo textureInfo{ mp->normal_texname, file, TextureType::eNORMAL };
+                Texture2DCreateInfo textureInfo{ mp->normal_texname, file, TextureType::eNORMAL };
                 normalTexture = ITexture2D::Create(textureInfo);
             }
 
@@ -175,7 +175,7 @@ namespace Ignite
             if (mp->alpha_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->alpha_texname;
-                Texture2DInfo textureInfo{ mp->alpha_texname, file, TextureType::eALPHAMASK };
+                Texture2DCreateInfo textureInfo{ mp->alpha_texname, file, TextureType::eALPHAMASK };
                 alphaTexture = ITexture2D::Create(textureInfo);
             }
 

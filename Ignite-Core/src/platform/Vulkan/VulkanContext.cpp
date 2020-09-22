@@ -156,7 +156,7 @@ namespace Ignite
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 		
 		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		for (auto& pipeline : m_pipelines)
 		{
 			pipeline.second->Recreate();
 		}
@@ -461,7 +461,7 @@ namespace Ignite
 		LOG_CORE_INFO("Cleaning up vulkan swapchain for recreation");
 		
 		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		for (auto& pipeline : m_pipelines)
 		{
 			pipeline.second->Free();
 		}

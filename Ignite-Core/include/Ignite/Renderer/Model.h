@@ -10,9 +10,9 @@ namespace tinyobj
 
 namespace Ignite
 {
-	struct ModelInfo
+	struct ModelCreateInfo
 	{
-		ModelInfo(const std::string& m_name, const std::string& m_path, const std::string& m_file)
+		ModelCreateInfo(const std::string& m_name, const std::string& m_path, const std::string& m_file)
 			: m_name(m_name),
 			  m_path(m_path),
 			  m_file(m_file)
@@ -32,14 +32,14 @@ namespace Ignite
     class Model
 	{
     private:
-        Model(const ModelInfo& info);
+        Model(const ModelCreateInfo& info);
     public:
-        static std::unique_ptr<Model> Create(const ModelInfo& info);
+        static std::unique_ptr<Model> Create(const ModelCreateInfo& info);
     	
         const std::vector<std::shared_ptr<IMesh>>& Meshes() const;
         const std::vector<std::shared_ptr<IMaterial>>& Materials() const;
     private:
-        const ModelInfo m_modelInfo;
+        const ModelCreateInfo m_modelInfo;
         std::vector<std::shared_ptr<IMesh>> m_meshes;
         std::vector<std::shared_ptr<IMaterial>> m_materials;
 

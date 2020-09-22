@@ -12,11 +12,11 @@ namespace Ignite
 		eALPHAMASK
 	};
 
-	struct Texture2DInfo
+	struct Texture2DCreateInfo
 	{
 		friend ITexture2D;
 		
-		Texture2DInfo(const std::string& m_name, const std::string& path, TextureType m_type)
+		Texture2DCreateInfo(const std::string& m_name, const std::string& path, TextureType m_type)
 			: m_name(m_name),
 			  m_path(path),
 			  m_width(0),
@@ -42,7 +42,7 @@ namespace Ignite
 	class ITexture2D
 	{
 	protected:
-		ITexture2D(const Texture2DInfo& info);
+		ITexture2D(const Texture2DCreateInfo& info);
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -50,9 +50,9 @@ namespace Ignite
 		const IGraphicsContext* m_context;
 
 		virtual void Free() = 0;
-		static std::shared_ptr<ITexture2D> Create(const Texture2DInfo& info);
+		static std::shared_ptr<ITexture2D> Create(const Texture2DCreateInfo& info);
 	protected:
-		Texture2DInfo m_Texture2DInfo;
+		Texture2DCreateInfo m_Texture2DInfo;
 		bool m_deleted;
 	};
 }

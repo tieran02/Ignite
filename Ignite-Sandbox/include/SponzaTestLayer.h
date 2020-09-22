@@ -17,8 +17,8 @@ public:
 private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
-	std::shared_ptr<Ignite::IPipeline> pipeline;
-	std::shared_ptr<Ignite::IPipeline> unlitPipeline;
+	Ignite::IPipeline* pipeline;
+	Ignite::IPipeline* unlitPipeline;
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;

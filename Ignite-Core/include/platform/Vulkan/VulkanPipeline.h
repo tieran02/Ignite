@@ -11,7 +11,7 @@ namespace  Ignite
 	{
 		friend class IPipeline;
 	protected:
-		VulkanPipeline(const PipelineInfo& info);
+		VulkanPipeline(const PipelineCreateInfo& info);
 	public:
 		~VulkanPipeline() override;
 	protected:

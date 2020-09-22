@@ -18,9 +18,9 @@ void Ignite::Renderer::Init()
 
 
 	//add default textures
-	Texture2DInfo defaultDiffuseInfo{ "default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE };
-	Texture2DInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
-	Texture2DInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
+	Texture2DCreateInfo defaultDiffuseInfo{ "default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE };
+	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
+	Texture2DCreateInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
 	
 	std::shared_ptr<ITexture2D> defaultDiffuseTexture = ITexture2D::Create(defaultDiffuseInfo);
 	std::shared_ptr<ITexture2D> defaultSpecularTexture = ITexture2D::Create(defaultSpecularInfo);

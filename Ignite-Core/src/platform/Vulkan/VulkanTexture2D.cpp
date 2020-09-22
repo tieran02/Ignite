@@ -9,7 +9,7 @@
 
 namespace Ignite
 {
-	VulkanTexture2D::VulkanTexture2D(const Texture2DInfo& info) : ITexture2D(info)
+	VulkanTexture2D::VulkanTexture2D(const Texture2DCreateInfo& info) : ITexture2D(info)
 	{
 		m_format = VK_FORMAT_R8G8B8A8_SRGB;
 		if (info.GetType() == TextureType::eNORMAL)
@@ -106,7 +106,7 @@ namespace Ignite
 		//calculate mipmap levels
 		m_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 		constexpr size_t CHANNEL_COUNT = 4;
-		VkDeviceSize imageSize = m_Texture2DInfo.GetWidth() * m_Texture2DInfo.GetWidth() * CHANNEL_COUNT;
+		VkDeviceSize imageSize = m_Texture2DInfo.GetWidth() * m_Texture2DInfo.GetHeight() * CHANNEL_COUNT;
 
 		//image staging buffer
 		VulkanBaseBuffer imageBuffer(vulkanContext);

@@ -9,7 +9,7 @@ namespace  Ignite
 {
 	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
 	
-	VulkanPipeline::VulkanPipeline(const PipelineInfo& info) : IPipeline(info)
+	VulkanPipeline::VulkanPipeline(const PipelineCreateInfo& info) : IPipeline(info)
 	{
 		Init();
 	}

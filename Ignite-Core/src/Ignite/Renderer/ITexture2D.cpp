@@ -10,11 +10,11 @@
 
 namespace Ignite
 {
-	ITexture2D::ITexture2D(const Texture2DInfo& info) : m_context(Renderer::GraphicsContext()), m_Texture2DInfo(info)
+	ITexture2D::ITexture2D(const Texture2DCreateInfo& info) : m_context(Renderer::GraphicsContext()), m_Texture2DInfo(info)
 	{
 	}
 
-	std::shared_ptr<ITexture2D> ITexture2D::Create(const Texture2DInfo& info)
+	std::shared_ptr<ITexture2D> ITexture2D::Create(const Texture2DCreateInfo& info)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 

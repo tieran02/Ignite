@@ -8,10 +8,10 @@ namespace Ignite
 {
 	class IGraphicsContext;
 
-	struct PipelineInfo
+	struct PipelineCreateInfo
 	{
 	public:
-		PipelineInfo(const std::string& name, PipelineInputLayout& input_layout, const std::string& vertex_shader_path,
+		PipelineCreateInfo(const std::string& name, PipelineInputLayout& input_layout, const std::string& vertex_shader_path,
 			const std::string& fragment_shader_path, const std::string& geometry_shader_path = "")
 			: m_name(name),
 			m_inputLayout(input_layout),
@@ -36,7 +36,7 @@ namespace Ignite
 	class IPipeline : NonCopyable
 	{
 	protected:
-		IPipeline(const PipelineInfo& info);
+		IPipeline(const PipelineCreateInfo& info);
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -47,11 +47,12 @@ namespace Ignite
 		virtual void Recreate() = 0;
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
-			
-		static std::shared_ptr<IPipeline> Create(const PipelineInfo& info);
+
+		const PipelineCreateInfo& PipelineInfo() const { return m_pipelineInfo; }
+		static std::unique_ptr<IPipeline> Create(const PipelineCreateInfo& info);
 		static const IPipeline* CurrentBoundPipeline() { return s_currentBoundPipeline; }
 	protected:
-		const PipelineInfo m_pipelineInfo;
+		const PipelineCreateInfo m_pipelineInfo;
 
 		bool m_deleted;
 		static IPipeline* s_currentBoundPipeline;

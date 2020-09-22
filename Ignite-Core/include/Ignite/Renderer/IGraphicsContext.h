@@ -5,6 +5,7 @@
 
 namespace Ignite
 {
+	struct PipelineCreateInfo;
 	class IPipeline;
 	class IWindow;
 
@@ -27,12 +28,14 @@ namespace Ignite
 
         static std::unique_ptr<IGraphicsContext> Create();
 
-		const std::unordered_map<std::string, std::shared_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
+		IPipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
+		
+		const std::unordered_map<std::string, std::unique_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
 		const std::vector<std::shared_ptr<IBuffer>>& Buffers() const { return m_buffers; }
 		const std::unordered_map<std::string, std::shared_ptr<ITexture2D>>& Texture2Ds() const { return m_texture2Ds; }
 		const std::vector<std::shared_ptr<IMesh>>& Models() const { return m_models; }
 	protected:
-		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
+		std::unordered_map<std::string,std::unique_ptr<IPipeline>> m_pipelines;
 		std::unordered_map<std::string, std::shared_ptr<IMaterial>> m_materials;
 		std::vector<std::shared_ptr<IBuffer>> m_buffers;
 		std::unordered_map<std::string, std::shared_ptr<ITexture2D>> m_texture2Ds;
