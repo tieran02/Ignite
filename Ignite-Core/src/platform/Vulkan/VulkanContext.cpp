@@ -168,9 +168,9 @@ namespace Ignite
 		createSceneDescriptorSets();
 		
 		//recreate model descriptor sets
-		for (size_t i = 0; i < m_models.size(); i++)
+		for (const auto& mesh : m_meshes)
 		{
-			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(m_models[i].get());
+			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(mesh.second.get());
 			vulkanModel->CreateDescriptorSet();
 		}
 

@@ -26,7 +26,7 @@ namespace Ignite
 	}
 
 
-	const std::vector<std::shared_ptr<IMesh>>& Model::Meshes() const
+	const std::vector<const IMesh*>& Model::Meshes() const
 	{
 		return m_meshes;
 	}
@@ -55,7 +55,7 @@ namespace Ignite
         }
     }
 
-    std::shared_ptr<IMesh> Model::processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path)
+    const IMesh* Model::processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path)
     {	
         std::vector<uint32_t> indices;
         std::vector<std::shared_ptr<ITexture2D>> textures;
@@ -137,7 +137,7 @@ namespace Ignite
 
         meshData.CalculateTangents();
 
-        return IMesh::Create(MeshCreateInfo{ std::move(meshData), material.get() });
+        return Renderer::GraphicsContext()->CreateMesh(MeshCreateInfo{ shape.name, std::move(meshData), material.get() });
 	}
 
 	std::shared_ptr<IMaterial> Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
@@ -147,7 +147,7 @@ namespace Ignite
         {
             const tinyobj::material_t* mp = &materials[materialID];
 
-            ITexture2D* diffuseTexture{ nullptr };
+            const ITexture2D* diffuseTexture{ nullptr };
             if (mp->diffuse_texname.length() > 0)
 			{
 				std::string file = path + "/" + mp->diffuse_texname;
@@ -155,7 +155,7 @@ namespace Ignite
                 diffuseTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
 			}
 
-            ITexture2D* specularTexture{ nullptr };
+            const ITexture2D* specularTexture{ nullptr };
             if (mp->specular_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->specular_texname;
@@ -163,7 +163,7 @@ namespace Ignite
                 specularTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            ITexture2D* normalTexture{ nullptr };
+            const ITexture2D* normalTexture{ nullptr };
             if (mp->normal_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->normal_texname;
@@ -171,7 +171,7 @@ namespace Ignite
                 normalTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            ITexture2D* alphaTexture{ nullptr };
+            const ITexture2D* alphaTexture{ nullptr };
             if (mp->alpha_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->alpha_texname;

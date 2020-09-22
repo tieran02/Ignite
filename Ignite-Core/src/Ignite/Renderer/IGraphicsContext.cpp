@@ -5,6 +5,7 @@
 #include <platform\Vulkan\VulkanContext.h>
 #include <Ignite/Renderer/IPipeline.h>
 #include <Ignite/Renderer/ITexture2D.h>
+#include <Ignite/Renderer/IMesh.h>
 
 namespace Ignite
 {
@@ -18,7 +19,7 @@ namespace Ignite
             return std::unique_ptr<IGraphicsContext>();
     }
 
-    IPipeline* IGraphicsContext::CreatePipeline(const PipelineCreateInfo& pipelineInfo)
+    const IPipeline* IGraphicsContext::CreatePipeline(const PipelineCreateInfo& pipelineInfo)
     {
         bool exists = m_pipelines.find(pipelineInfo.GetName()) != m_pipelines.end();
         CORE_ASSERT(!exists, "Pipeline already attached to this context");
@@ -31,10 +32,10 @@ namespace Ignite
         return m_pipelines[pipelineInfo.GetName()].get();
     }
 
-    ITexture2D* IGraphicsContext::CreateTexture2D(const Texture2DCreateInfo& textureInfo)
+    const ITexture2D* IGraphicsContext::CreateTexture2D(const Texture2DCreateInfo& textureInfo)
     {
         bool exists = m_texture2Ds.find(textureInfo.GetName()) != m_texture2Ds.end();
-        CORE_ASSERT(!exists, "Pipeline already attached to this context");
+        CORE_ASSERT(!exists, "Texture2D already attached to this context");
 
         if (!exists)
         {
@@ -42,5 +43,18 @@ namespace Ignite
             return inserted.first->second.get();
         }
         return m_texture2Ds[textureInfo.GetName()].get();
+    }
+
+    const IMesh* IGraphicsContext::CreateMesh(const MeshCreateInfo& meshInfo)
+    {
+        bool exists = m_meshes.find(meshInfo.GetName()) != m_meshes.end();
+        CORE_ASSERT(!exists, "Mesh already attached to this context");
+
+        if (!exists)
+        {
+            auto inserted = m_meshes.insert(std::make_pair(meshInfo.GetName(), std::move(IMesh::Create(meshInfo))));
+            return inserted.first->second.get();
+        }
+        return m_meshes[meshInfo.GetName()].get();
     }
 }

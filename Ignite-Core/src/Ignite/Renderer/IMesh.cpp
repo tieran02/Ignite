@@ -13,7 +13,7 @@ namespace Ignite
 	{
 	}
 
-	std::shared_ptr<IMesh> IMesh::Create(const MeshCreateInfo& meshInfo)
+	std::unique_ptr<IMesh> IMesh::Create(const MeshCreateInfo& meshInfo)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 			if (!meshInfo.GetMeshData().HasData())
@@ -22,10 +22,7 @@ namespace Ignite
 			switch (IRendererAPI::GetAPI())
 			{
 			case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-			case IRendererAPI::API::VULKAN:
-				std::shared_ptr<IMesh> model = std::shared_ptr<VulkanMesh>(new VulkanMesh(meshInfo));
-				Renderer::GraphicsContext()->m_models.push_back(model);
-				return model;
+			case IRendererAPI::API::VULKAN:  return std::unique_ptr<VulkanMesh>(new VulkanMesh(meshInfo));
 			}
 
 		return nullptr;

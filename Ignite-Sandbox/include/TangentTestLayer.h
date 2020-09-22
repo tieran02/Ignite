@@ -19,10 +19,10 @@ public:
 private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
-	Ignite::IPipeline* pipeline;
-	Ignite::IPipeline* normalPipeline;
-	Ignite::IPipeline* normalMappingPipeline;
-	Ignite::IPipeline* debugNormalPipeline;
+	const Ignite::IPipeline* pipeline;
+	const Ignite::IPipeline* normalPipeline;
+	const Ignite::IPipeline* normalMappingPipeline;
+	const Ignite::IPipeline* debugNormalPipeline;
 
 	std::shared_ptr<Ignite::Model> tangentModel;
 	std::shared_ptr<Ignite::Model> cubeModel;

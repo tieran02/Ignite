@@ -36,15 +36,15 @@ namespace Ignite
     public:
         static std::unique_ptr<Model> Create(const ModelCreateInfo& info);
     	
-        const std::vector<std::shared_ptr<IMesh>>& Meshes() const;
+        const std::vector<const IMesh*>& Meshes() const;
         const std::vector<std::shared_ptr<IMaterial>>& Materials() const;
     private:
         const ModelCreateInfo m_modelInfo;
-        std::vector<std::shared_ptr<IMesh>> m_meshes;
+        std::vector<const IMesh*> m_meshes;
         std::vector<std::shared_ptr<IMaterial>> m_materials;
 
         void loadModel();
-        std::shared_ptr<IMesh> processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
+        const IMesh* processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
         std::shared_ptr<IMaterial> getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
     };
 }
