@@ -32,7 +32,7 @@ namespace Ignite
 	class IMesh
 	{
 	protected:
-		IMesh(const IMaterial* material);
+		IMesh(const MeshCreateInfo& meshInfo);
 		virtual void Init(const MeshData& meshData) = 0;
 		virtual void Cleanup() = 0;
 	public:
@@ -44,12 +44,14 @@ namespace Ignite
 
 		const IVertexBuffer* VertexBuffer() const { return m_vertexBuffer.get(); }
 		const IIndexBuffer* IndexBuffer() const { return m_IndexBuffer.get(); }
-		const IMaterial* Material() const { return m_matieral; }
+		const MeshCreateInfo& MeshInfo() const { return m_meshInfo; }
+		const IMaterial* Material() const { return m_meshInfo.GetMaterial(); }
 		uint32_t IndexCount() const { return m_indexCount; }
 	protected:
 		std::shared_ptr<IVertexBuffer> m_vertexBuffer;
 		std::shared_ptr<IIndexBuffer> m_IndexBuffer;
 		uint32_t m_indexCount;
-		const IMaterial* m_matieral;
+
+		MeshCreateInfo m_meshInfo;
 	};
 }

@@ -9,7 +9,7 @@
 
 namespace Ignite
 {
-	IMesh::IMesh(const IMaterial* material) : m_context(Renderer::GraphicsContext()), m_matieral(material)
+	IMesh::IMesh(const MeshCreateInfo& meshInfo) : m_context(Renderer::GraphicsContext()), m_meshInfo(meshInfo)
 	{
 	}
 
