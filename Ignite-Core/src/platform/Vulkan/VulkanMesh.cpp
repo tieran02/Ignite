@@ -9,10 +9,10 @@
 
 namespace Ignite
 {
-	VulkanMesh::VulkanMesh(const MeshData& meshData, std::shared_ptr<IMaterial> material) : IMesh(material)
+	VulkanMesh::VulkanMesh(const MeshCreateInfo& meshInfo) : IMesh(meshInfo.GetMaterial())
 	{
-		m_indexCount = meshData.Triangles().size();
-		Init(meshData);
+		m_indexCount = meshInfo.GetMeshData().Triangles().size();
+		Init(meshInfo.GetMeshData());
 	}
 
 	void VulkanMesh::Init(const MeshData& meshData)

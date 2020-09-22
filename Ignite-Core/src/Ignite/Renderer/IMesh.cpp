@@ -9,21 +9,21 @@
 
 namespace Ignite
 {
-	IMesh::IMesh(const std::shared_ptr<IMaterial>& material) : m_context(Renderer::GraphicsContext()), m_matieral(material)
+	IMesh::IMesh(const IMaterial* material) : m_context(Renderer::GraphicsContext()), m_matieral(material)
 	{
 	}
 
-	std::shared_ptr<IMesh> IMesh::Create(const MeshData& meshData, const  std::shared_ptr<IMaterial>& material)
+	std::shared_ptr<IMesh> IMesh::Create(const MeshCreateInfo& meshInfo)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
-			if (!meshData.HasData())
+			if (!meshInfo.GetMeshData().HasData())
 				return nullptr;
 
 			switch (IRendererAPI::GetAPI())
 			{
 			case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
 			case IRendererAPI::API::VULKAN:
-				std::shared_ptr<IMesh> model = std::shared_ptr<VulkanMesh>(new VulkanMesh(meshData, material));
+				std::shared_ptr<IMesh> model = std::shared_ptr<VulkanMesh>(new VulkanMesh(meshInfo));
 				Renderer::GraphicsContext()->m_models.push_back(model);
 				return model;
 			}

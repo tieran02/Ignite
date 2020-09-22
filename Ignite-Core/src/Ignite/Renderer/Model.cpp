@@ -137,7 +137,7 @@ namespace Ignite
 
         meshData.CalculateTangents();
 
-        return IMesh::Create(meshData, material);
+        return IMesh::Create(MeshCreateInfo{ std::move(meshData), material.get() });
 	}
 
 	std::shared_ptr<IMaterial> Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
