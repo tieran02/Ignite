@@ -26,11 +26,11 @@ namespace Ignite
 	{
 		friend class IBuffer;
 	protected:
-		VulkanBuffer(const void* data, size_t size);
+		VulkanBuffer(const BufferCreateInfo& bufferInfo);
 	public:
 		~VulkanBuffer() override;
 	protected:
-		void Init(const void* data, size_t size) override;
+		void Init() override;
 		void Cleanup() override;
 	public:
 		void Free() override;
@@ -44,11 +44,11 @@ namespace Ignite
 	{
 		friend class IVertexBuffer;
 	protected:
-		VulkanVertexBuffer(const void* data, size_t size);
+		VulkanVertexBuffer(const BufferCreateInfo& bufferInfo);
 	public:
 		~VulkanVertexBuffer() override;
 	protected:
-		void Init(const void* data, size_t size) override;
+		void Init() override;
 		void Cleanup() override;
 	public:
 		void Free() override;
@@ -62,11 +62,11 @@ namespace Ignite
 	{
 		friend class IIndexBuffer;
 	protected:
-		VulkanIndexBuffer(const uint32_t* data, size_t size);
+		VulkanIndexBuffer(const BufferCreateInfo& bufferInfo);
 	public:
 		~VulkanIndexBuffer() override;
 	protected:
-		void Init(const void* data, size_t size) override;
+		void Init() override;
 		void Cleanup() override;
 	public:
 		void Free() override;

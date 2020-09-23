@@ -18,13 +18,39 @@ namespace Ignite
 		alignas(16) glm::mat4 model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	};
 
+	enum class BUFFER_TYPE
+	{
+		BUFFER,
+		VERTEX,
+		INDEX
+	};
+	
+	struct BufferCreateInfo
+	{
+	public:
+		BufferCreateInfo(BUFFER_TYPE m_type, const void* m_data, size_t m_size)
+			: m_type(m_type),
+			m_data(m_data),
+			m_size(m_size)
+		{
+		}
+		
+		BUFFER_TYPE GetBufferType() const { return m_type; }
+		const void* GetData() const { return m_data; }
+		size_t GetSize() const { return m_size; }
+	private:
+		BUFFER_TYPE m_type;
+		const void* m_data;
+		size_t m_size;
+
+	};
 	
 	class IGraphicsContext;
 	class IBuffer : NonCopyable
 	{		
 	protected:
-		IBuffer();
-		virtual void Init(const void* data, size_t size) = 0;
+		IBuffer(const BufferCreateInfo& bufferInfo);
+		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
 		virtual ~IBuffer() = default;
@@ -34,36 +60,37 @@ namespace Ignite
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static std::shared_ptr<IBuffer> Create(const void* data, size_t size);
+		static std::shared_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
 	protected:
 		bool m_deleted;
+		const BufferCreateInfo m_bufferInfo;
 	};
 
 	class IVertexBuffer :public IBuffer
 	{
 	protected:
-		IVertexBuffer();
-		void Init(const void* data, size_t size) override = 0;
+		IVertexBuffer(const BufferCreateInfo& bufferInfo);
+		void Init() override = 0;
 		void Cleanup() override = 0;
 	public:
 		virtual ~IVertexBuffer() = default;
 		void Bind() const override = 0;
 		void Unbind() const override = 0;
 
-		static std::shared_ptr<IVertexBuffer> Create(const void* data, size_t size);
+		static std::shared_ptr<IVertexBuffer> Create(const BufferCreateInfo& bufferInfo);
 	};
 
 	class IIndexBuffer :public IBuffer
 	{
 	protected:
-		IIndexBuffer();
-		void Init(const void* data, size_t size) override = 0;
+		IIndexBuffer(const BufferCreateInfo& bufferInfo);
+		void Init() override = 0;
 		void Cleanup() override = 0;
 	public:
 		virtual ~IIndexBuffer() = default;
 		void Bind() const override = 0;
 		void Unbind() const override = 0;
 
-		static std::shared_ptr<IIndexBuffer> Create(const uint32_t* data, size_t size);
+		static std::shared_ptr<IIndexBuffer> Create(const BufferCreateInfo& bufferInfo);
 	};
 }

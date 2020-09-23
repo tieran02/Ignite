@@ -59,9 +59,9 @@ namespace Ignite
 		}
 	}
 
-	VulkanBuffer::VulkanBuffer(const void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanBuffer::VulkanBuffer(const BufferCreateInfo& bufferInfo) : IBuffer(bufferInfo), m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
-		Init(data, size);
+		Init();
 	}
 
 	VulkanBuffer::~VulkanBuffer()
@@ -69,9 +69,9 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanBuffer::Init(const void* data, size_t size)
+	void VulkanBuffer::Init()
 	{
-		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		m_deleted = false;
 	}
 
@@ -104,9 +104,9 @@ namespace Ignite
 
 
 
-	VulkanVertexBuffer::VulkanVertexBuffer(const void* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanVertexBuffer::VulkanVertexBuffer(const BufferCreateInfo& bufferInfo) : IVertexBuffer(bufferInfo), m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
-		Init(data, size);
+		Init();
 	}
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
@@ -114,9 +114,9 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanVertexBuffer::Init(const void* data, size_t size)
+	void VulkanVertexBuffer::Init()
 	{
-		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 		m_deleted = false;
 	}
 
@@ -155,9 +155,9 @@ namespace Ignite
 	{
 	}
 
-	VulkanIndexBuffer::VulkanIndexBuffer(const uint32_t* data, size_t size) : m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
+	VulkanIndexBuffer::VulkanIndexBuffer(const BufferCreateInfo& bufferInfo) : IIndexBuffer(bufferInfo), m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
 	{
-		Init(data, size);
+		Init();
 	}
 
 	VulkanIndexBuffer::~VulkanIndexBuffer()
@@ -165,9 +165,9 @@ namespace Ignite
 		Cleanup();
 	}
 
-	void VulkanIndexBuffer::Init(const void* data, size_t size)
+	void VulkanIndexBuffer::Init()
 	{
-		m_baseBuffer.CreateStaged(data, size, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+		m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
 		m_deleted = false;
 	}
 

@@ -33,12 +33,14 @@ namespace Ignite
 
 	void VulkanMesh::createVBO(const std::vector<Vertex>& verts)
 	{
-		m_vertexBuffer = IVertexBuffer::Create(verts.data(), sizeof(verts[0]) * verts.size());
+		BufferCreateInfo createInfo{ BUFFER_TYPE::VERTEX, verts.data(), sizeof(verts[0]) * verts.size() };
+		m_vertexBuffer = IVertexBuffer::Create(createInfo);
 	}
 
 	void VulkanMesh::createIndices(const std::vector<uint32_t>& indices)
 	{
-		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(indices[0]) * indices.size());
+		BufferCreateInfo createInfo{ BUFFER_TYPE::INDEX, indices.data(), sizeof(indices[0]) * indices.size() };
+		m_IndexBuffer = IIndexBuffer::Create(createInfo);
 	}
 
 
