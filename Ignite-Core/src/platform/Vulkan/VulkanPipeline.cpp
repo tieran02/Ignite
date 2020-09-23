@@ -4,6 +4,7 @@
 #include "Ignite/Log.h"
 #include "Ignite/Utils.h"
 #include "Ignite/Renderer/Renderer.h"
+#include <Ignite\Renderer\IMaterial.h>
 
 namespace  Ignite
 {

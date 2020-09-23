@@ -6,6 +6,7 @@
 #include <Ignite/Renderer/IPipeline.h>
 #include <Ignite/Renderer/ITexture2D.h>
 #include <Ignite/Renderer/IMesh.h>
+#include <Ignite/Renderer/IMaterial.h>
 
 namespace Ignite
 {

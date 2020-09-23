@@ -7,6 +7,7 @@
 #include "Ignite/Log.h"
 #include "Ignite/Renderer/Renderer.h"
 #include "glm/gtc/type_ptr.inl"
+#include "Ignite/Renderer/IMaterial.h"
 #include "Ignite/Renderer/MeshData.h"
 
 namespace Ignite

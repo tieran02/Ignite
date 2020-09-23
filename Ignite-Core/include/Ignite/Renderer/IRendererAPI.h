@@ -1,11 +1,13 @@
 #pragma once
 #include "igpch.h"
-#include "Ignite/Renderer/IGraphicsContext.h"
-
 #include <glm/glm.hpp>
+#include "IGraphicsContext.h"
 #include "Light.h"
+#include "NonCopyable.h"
 
 namespace Ignite {
+	struct ModelUniformBuffer;
+    class IBuffer;
 	class Camera;
 
 	class IRendererAPI : NonCopyable

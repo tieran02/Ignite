@@ -1,23 +1,22 @@
 #pragma once
 #include "NonCopyable.h"
-#include "IBuffer.h"
-#include "IMaterial.h"
 
 namespace Ignite
 {
 	struct MeshCreateInfo;
 	struct Texture2DCreateInfo;
 	struct PipelineCreateInfo;
+	struct BufferCreateInfo;
+	struct MaterialCreateInfo;
 	class IPipeline;
 	class IWindow;
 	class IMesh;
+	class ITexture2D;
+	class IMaterial;
+	class IBuffer;
 
 	class IGraphicsContext : NonCopyable
     {
-		friend class IBuffer;
-		friend class IVertexBuffer;
-		friend class IIndexBuffer;
-		friend class IMaterial;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
