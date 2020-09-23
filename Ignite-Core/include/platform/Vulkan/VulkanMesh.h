@@ -8,7 +8,7 @@ namespace Ignite
 	{
 		friend class IMesh;
 	protected:
-		VulkanMesh(const MeshData& meshData, std::shared_ptr<IMaterial> material);
+		VulkanMesh(const MeshCreateInfo& meshInfo);
 		void Init(const MeshData& meshData) override;
 		void Cleanup() override;
 	public:

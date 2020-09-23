@@ -18,9 +18,13 @@ void Ignite::Renderer::Init()
 
 
 	//add default textures
-	std::shared_ptr<ITexture2D> defaultDiffuseTexture = ITexture2D::Create("default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE);
-	std::shared_ptr<ITexture2D> defaultSpecularTexture = ITexture2D::Create("default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR);
-	std::shared_ptr<ITexture2D> defaultNormalTexture = ITexture2D::Create("default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL);
+	Texture2DCreateInfo defaultDiffuseInfo{ "default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE };
+	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
+	Texture2DCreateInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
+	
+	const ITexture2D* defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
+	const ITexture2D* defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
+	const ITexture2D* defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
 }
 
 void Ignite::Renderer::Shutdown()
@@ -76,9 +80,9 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, con
 	
 	//bind pipeline
 	pipeline->Bind();
-		for (const std::shared_ptr<IMesh>& mesh : model->Meshes())
+		for (const IMesh* mesh : model->Meshes())
 		{
-			submitMesh(pipeline,mesh.get(),transform);
+			submitMesh(pipeline,mesh,transform);
 		}
 	pipeline->Unbind();
 }

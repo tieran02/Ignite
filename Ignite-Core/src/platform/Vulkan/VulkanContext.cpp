@@ -52,7 +52,7 @@ namespace Ignite
 		//clean buffers
 		for (auto& buffer : m_buffers)
 		{
-			buffer->Free();
+			buffer.second->Free();
 		}
 		
 		cleanupSwapchain();
@@ -156,7 +156,7 @@ namespace Ignite
 		m_renderpass = std::make_unique<VulkenRenderpass>(*this);
 		
 		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		for (auto& pipeline : m_pipelines)
 		{
 			pipeline.second->Recreate();
 		}
@@ -168,9 +168,9 @@ namespace Ignite
 		createSceneDescriptorSets();
 		
 		//recreate model descriptor sets
-		for (size_t i = 0; i < m_models.size(); i++)
+		for (const auto& mesh : m_meshes)
 		{
-			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(m_models[i].get());
+			VulkanMesh* vulkanModel = static_cast<VulkanMesh*>(mesh.second.get());
 			vulkanModel->CreateDescriptorSet();
 		}
 
@@ -199,6 +199,7 @@ namespace Ignite
 		}
 
 		LOG_CORE_FATAL("failed to find supported format!");
+		return VK_FORMAT_UNDEFINED;
 	}
 
 	void VulkanContext::createUniformBuffers()
@@ -359,7 +360,7 @@ namespace Ignite
 			descriptorWrite.pBufferInfo = &bufferInfo;
 
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
-			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+			vkUpdateDescriptorSets(Device().LogicalDevice(), static_cast<uint32_t>(write_descriptors.size()), write_descriptors.data(), 0, nullptr);
 		}
 
 		//light storage buffer
@@ -392,7 +393,7 @@ namespace Ignite
 			descriptorWrite.pBufferInfo = &bufferInfo;
 
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
-			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+			vkUpdateDescriptorSets(Device().LogicalDevice(), static_cast<uint32_t>(write_descriptors.size()), write_descriptors.data(), 0, nullptr);
 		}
 	}
 
@@ -461,7 +462,7 @@ namespace Ignite
 		LOG_CORE_INFO("Cleaning up vulkan swapchain for recreation");
 		
 		//clean pipeline
-		for (std::pair<std::string, std::shared_ptr<IPipeline>> pipeline : m_pipelines)
+		for (auto& pipeline : m_pipelines)
 		{
 			pipeline.second->Free();
 		}

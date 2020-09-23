@@ -1,8 +1,7 @@
 #include "igpch.h"
 #include "Ignite/Renderer/IRendererAPI.h"
-
-#include <assert.h>
 #include "platform/Vulkan/VulkanRendererAPI.h"
+#include "Ignite/Renderer/IGraphicsContext.h"
 #include "Ignite/Log.h"
 
 namespace Ignite {

@@ -122,8 +122,12 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
-void Ignite::VulkanRendererAPI::DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
+void Ignite::VulkanRendererAPI::DrawIndexed(const IBuffer* vertexBuffer, const IBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 {
+	//check if buffers are the correct type
+	CORE_ASSERT(vertexBuffer->GetBufferInfo().GetBufferType() == BUFFER_TYPE::VERTEX, "Vertex Buffer is not of type BUFFER_TYPE::VERTEX");
+	CORE_ASSERT(indexBuffer->GetBufferInfo().GetBufferType() == BUFFER_TYPE::INDEX, "Index Buffer is not of type BUFFER_TYPE::INDEX");
+	
 	//TODO when binding a pipeline we need to create a new command to start the render pass
 	const VulkanContext* vulkanContext = reinterpret_cast<VulkanContext*>(GetGraphicsContext());
 	CORE_ASSERT(vulkanContext, "Failed to draw index, vulkan context is null");

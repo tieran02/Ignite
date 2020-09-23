@@ -1,11 +1,13 @@
 #pragma once
 #include "igpch.h"
-#include "Ignite/Renderer/IGraphicsContext.h"
-
 #include <glm/glm.hpp>
+#include "IGraphicsContext.h"
 #include "Light.h"
+#include "NonCopyable.h"
 
 namespace Ignite {
+	struct ModelUniformBuffer;
+    class IBuffer;
 	class Camera;
 
 	class IRendererAPI : NonCopyable
@@ -33,7 +35,7 @@ namespace Ignite {
 
         virtual void Clear() = 0;
 
-        virtual void DrawIndexed(const IVertexBuffer* vertexBuffer, const IIndexBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform) = 0;
+        virtual void DrawIndexed(const IBuffer* vertexBuffer, const IBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform) = 0;
 
         virtual void SetModelUniformBufferObject(const ModelUniformBuffer& ubo) = 0;
 

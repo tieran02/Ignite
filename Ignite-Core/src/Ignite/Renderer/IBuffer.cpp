@@ -6,62 +6,18 @@
 #include "platform/Vulkan/VulkanBuffer.h"
 #include "platform/Vulkan/VulkanContext.h"
 
-Ignite::IBuffer::IBuffer() : m_context(Renderer::GraphicsContext())
+Ignite::IBuffer::IBuffer(const BufferCreateInfo& bufferInfo) : m_context(Renderer::GraphicsContext()), m_bufferInfo(bufferInfo)
 {
 }
 
-std::shared_ptr<Ignite::IBuffer> Ignite::IBuffer::Create(const void* data, size_t size)
+std::unique_ptr<Ignite::IBuffer> Ignite::IBuffer::Create(const BufferCreateInfo& bufferInfo)
 {
 	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
 		switch (IRendererAPI::GetAPI())
 		{
 		case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-		case IRendererAPI::API::VULKAN:
-			std::shared_ptr<IBuffer> buffer = std::shared_ptr<VulkanBuffer>(new VulkanBuffer(data,size));
-			Renderer::GraphicsContext()->m_buffers.push_back(buffer);
-			return buffer;
-		}
-
-	return nullptr;
-}
-
-Ignite::IVertexBuffer::IVertexBuffer() : IBuffer()
-{
-	
-}
-
-std::shared_ptr<Ignite::IVertexBuffer> Ignite::IVertexBuffer::Create(const void* data, size_t size)
-{
-	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create vertex buffer, Renderer is null")
-
-		switch (IRendererAPI::GetAPI())
-		{
-		case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-		case IRendererAPI::API::VULKAN:
-			std::shared_ptr<IVertexBuffer> buffer = std::shared_ptr<VulkanVertexBuffer>(new VulkanVertexBuffer(data,size));
-			Renderer::GraphicsContext()->m_buffers.push_back(std::static_pointer_cast<IBuffer>(buffer));
-			return buffer;
-		}
-
-	return nullptr;
-}
-
-Ignite::IIndexBuffer::IIndexBuffer() : IBuffer()
-{
-}
-
-std::shared_ptr<Ignite::IIndexBuffer> Ignite::IIndexBuffer::Create(const uint32_t* data, size_t size)
-{
-	CORE_ASSERT(Renderer::IsInitialised(), "Failed to create vertex buffer, Renderer is null")
-
-		switch (IRendererAPI::GetAPI())
-		{
-		case IRendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-		case IRendererAPI::API::VULKAN:
-			std::shared_ptr<IIndexBuffer> buffer = std::shared_ptr<IIndexBuffer>(new VulkanIndexBuffer(data, size));
-			Renderer::GraphicsContext()->m_buffers.push_back(std::static_pointer_cast<IBuffer>(buffer));
-			return buffer;
+		case IRendererAPI::API::VULKAN:  return std::unique_ptr<VulkanBuffer>(new VulkanBuffer(bufferInfo));
 		}
 
 	return nullptr;

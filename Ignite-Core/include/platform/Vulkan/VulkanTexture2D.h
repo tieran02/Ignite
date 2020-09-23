@@ -12,7 +12,7 @@ namespace  Ignite
 	{
 		friend class ITexture2D;
 	protected:
-		VulkanTexture2D(const std::string& name, const std::string& path, TextureType textureType);
+		VulkanTexture2D(const Texture2DCreateInfo& info);
 	public:
 		~VulkanTexture2D() override;
 		void Free() override;
@@ -20,11 +20,11 @@ namespace  Ignite
 		const VkImageView& ImageView()const { return textureImageView; }
 		const VkSampler& Sampler()const { return textureSampler; }
 	protected:
-		void Init(const std::string& path) override;
+		void Init() override;
 		void Cleanup() override;
 
 	private:
-		void createImage(const std::string& path);
+		void createImage();
 
 		void createTextureImageView();
 

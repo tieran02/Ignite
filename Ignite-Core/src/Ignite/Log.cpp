@@ -9,7 +9,11 @@ namespace Ignite
     {
         spdlog::set_pattern("%^[%T} %n: %v%$");
         s_CoreLogger = spdlog::stdout_color_mt("IGNITE");
+		#ifdef IGCORE_DEBUG
         s_CoreLogger->set_level(spdlog::level::trace);
+		#else
+        s_CoreLogger->set_level(spdlog::level::info);
+		#endif
     }
 
     void Log::Clean()

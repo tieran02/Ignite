@@ -18,7 +18,7 @@ namespace Ignite
 
 		void Translate(CameraDirection direction, float speed);
 
-		void MousePosition(double xpos, double ypos);
+		void MousePosition(float xpos, float ypos);
 
 		glm::mat4 GetViewMatrix() const;
 

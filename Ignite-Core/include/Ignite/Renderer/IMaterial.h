@@ -1,4 +1,7 @@
 #pragma once
+#include <utility>
+
+
 #include "glm/vec4.hpp"
 #include "NonCopyable.h"
 
@@ -13,21 +16,53 @@ namespace Ignite
 	// TODO Will be passed to the shaders using push constant 
 	struct MaterialProperties
 	{
-		glm::vec4 ambient;
-		glm::vec4 diffuse;
-		glm::vec4 specular;
-		float shininess;
-		float opacity;
+		glm::vec4 ambient{ .35f,0.35f,0.35f,1.0f };
+		glm::vec4 diffuse{ 1,1,1,1.0f };
+		glm::vec4 specular{ 0,0,0,1.0f };
+		float shininess{ 0.0f };
+		float opacity{ 0.0f };
+	};
+
+	struct MaterialCreateInfo
+	{
+		friend class IMaterial;
+	public:
+		MaterialCreateInfo(const std::string& m_name,
+			const MaterialProperties&& material_properties,
+			const ITexture2D* m_diffuse_texture  = nullptr,
+			const ITexture2D* m_specular_texture = nullptr,
+			const ITexture2D* m_normal_texture   = nullptr,
+			const ITexture2D* m_alpha_texture    = nullptr)
+			: m_name(m_name),
+			m_properties(std::move(material_properties)),
+			m_diffuseTexture(m_diffuse_texture),
+			m_specularTexture(m_specular_texture),
+			m_normalTexture(m_normal_texture),
+			m_alphaTexture(m_alpha_texture)
+		{
+		}
+
+		const std::string& GetName() const { return m_name; }
+		const MaterialProperties& GetMaterialProperties() const { return m_properties; }
+		MaterialProperties& GetMaterialProperties() { return m_properties; }
+		
+		const ITexture2D* DiffuseTexture() const { return m_diffuseTexture; }
+		const ITexture2D* SpecularTexture() const { return m_specularTexture; }
+		const ITexture2D* NormalTexture() const { return m_normalTexture; }
+		const ITexture2D* AlphaTexture() const { return m_alphaTexture; }
+	private:
+		const std::string m_name;
+		MaterialProperties m_properties;
+		const ITexture2D* m_diffuseTexture;
+		const ITexture2D* m_specularTexture;
+		const ITexture2D* m_normalTexture;
+		const ITexture2D* m_alphaTexture;
 	};
 	
 	class IMaterial : NonCopyable
 	{
 	protected:
-		IMaterial(const std::string& name,
-			const ITexture2D* diffuseTexture,
-			const ITexture2D* specularTexture,
-			const ITexture2D* normalTexture,
-			const ITexture2D* alphaTexture);
+		IMaterial(const MaterialCreateInfo& materialInfo);
 		
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
@@ -35,21 +70,13 @@ namespace Ignite
 		virtual ~IMaterial() = default;
 		virtual void Bind(const IPipeline* pipeline) const = 0;
 		virtual void Unbind(const IPipeline* pipeline) const = 0;
-		MaterialProperties& Properties() { return m_properties; }
 		
-		static std::shared_ptr<IMaterial> Create(const std::string& name,
-			const ITexture2D* diffuseTexture = nullptr,
-			const ITexture2D* specularTexture = nullptr,
-			const ITexture2D* normalTexture = nullptr,
-			const ITexture2D* alphaTexture = nullptr);
+		MaterialProperties& Properties() { return m_materialInfo.GetMaterialProperties(); }
+		
+		static std::unique_ptr<IMaterial> Create(const MaterialCreateInfo& materialInfo);
+		static const IMaterial* DefaultMaterial();
 	protected:
 		const IGraphicsContext* m_context;
-
-		std::string m_name;
-		const ITexture2D* m_diffuseTexture;
-		const ITexture2D* m_specularTexture;
-		const ITexture2D* m_normalTexture;
-		const ITexture2D* m_alphaTexture;
-		MaterialProperties m_properties;
+		MaterialCreateInfo m_materialInfo;
 	};
 }

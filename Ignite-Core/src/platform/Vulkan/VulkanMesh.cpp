@@ -6,13 +6,14 @@
 #include "platform/Vulkan/VulkanTexture2D.h"
 #include "platform/Vulkan/VulkanPipeline.h"
 #include "Ignite/Renderer/MeshData.h"
+#include "Ignite/Renderer/Renderer.h"
 
 namespace Ignite
 {
-	VulkanMesh::VulkanMesh(const MeshData& meshData, std::shared_ptr<IMaterial> material) : IMesh(material)
+	VulkanMesh::VulkanMesh(const MeshCreateInfo& meshInfo) : IMesh(meshInfo)
 	{
-		m_indexCount = meshData.Triangles().size();
-		Init(meshData);
+		m_indexCount = static_cast<uint32_t>(meshInfo.GetMeshData().Triangles().size());
+		Init(meshInfo.GetMeshData());
 	}
 
 	void VulkanMesh::Init(const MeshData& meshData)
@@ -33,12 +34,14 @@ namespace Ignite
 
 	void VulkanMesh::createVBO(const std::vector<Vertex>& verts)
 	{
-		m_vertexBuffer = IVertexBuffer::Create(verts.data(), sizeof(verts[0]) * verts.size());
+		const BufferCreateInfo createInfo{m_meshInfo.GetName() + "_VERT", BUFFER_TYPE::VERTEX, verts.data(), sizeof(verts[0]) * verts.size() };
+		m_vertexBuffer = Renderer::GraphicsContext()->CreateBuffer(createInfo);
 	}
 
 	void VulkanMesh::createIndices(const std::vector<uint32_t>& indices)
 	{
-		m_IndexBuffer = IIndexBuffer::Create(indices.data(), sizeof(indices[0]) * indices.size());
+		const BufferCreateInfo createInfo{ m_meshInfo.GetName() + "_IND", BUFFER_TYPE::INDEX, indices.data(), sizeof(indices[0]) * indices.size() };
+		m_IndexBuffer = Renderer::GraphicsContext()->CreateBuffer(createInfo);
 	}
 
 

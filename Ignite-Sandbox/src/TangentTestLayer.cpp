@@ -10,21 +10,29 @@ void TangentTestLayer::OnAttach()
 		{Ignite::PipelineDataType::eFloat2, "a_TexCoord"}
 	};
 
-	pipeline = Ignite::IPipeline::Create("shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv");
-	normalPipeline = Ignite::IPipeline::Create("normal", layout, "resources/shaders/normalVert.spv",
-	                                           "resources/shaders/normalFrag.spv");
-	normalMappingPipeline = Ignite::IPipeline::Create("normalMapping", layout, "resources/shaders/normalMappingVert.spv",
-		"resources/shaders/normalMappingFrag.spv");
-
-	debugNormalPipeline = Ignite::IPipeline::Create("debugNormal", layout, 
+	Ignite::PipelineCreateInfo litPipelineInfo{ "shader", layout,
+		"resources/shaders/vert.spv",
+		"resources/shaders/frag.spv" };
+	Ignite::PipelineCreateInfo normalPipelineInfo{ "normal", layout,
+		"resources/shaders/normalVert.spv",
+		"resources/shaders/normalFrag.spv" };
+	Ignite::PipelineCreateInfo normalMappingPipelineInfo{ "normalMapping", layout,
+		"resources/shaders/normalMappingVert.spv",
+		"resources/shaders/normalMappingFrag.spv" };
+	Ignite::PipelineCreateInfo debugNormalPipelineInfo{ "debugNormal", layout,
 			"resources/shaders/debugNormalVert.spv",
 			"resources/shaders/debugNormalFrag.spv",
-			"resources/shaders/debugNormalGeom.spv");
+			"resources/shaders/debugNormalGeom.spv" };
+	
+	pipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(litPipelineInfo);
+	normalPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(normalPipelineInfo);
+	normalMappingPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(normalMappingPipelineInfo);
+	debugNormalPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(debugNormalPipelineInfo);
 
 	//load model with default texture
-	tangentModel = Ignite::Model::Load("resources/models/tangent", "NormalTangentTestPlatform.obj");
+	tangentModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "tangentModel","resources/models/tangent", "NormalTangentTestPlatform.obj" });
 	//cube model
-	cubeModel = Ignite::Model::Load("resources/models", "cube.obj");
+	cubeModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "cube","resources/models", "cube.obj" });
 
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
@@ -78,28 +86,28 @@ void TangentTestLayer::OnUpdate()
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(pipeline.get(), tangentModel.get(), model);
+	Ignite::Renderer::Submit(pipeline, tangentModel.get(), model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalPipeline.get(), tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalPipeline, tangentModel.get(), model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(50.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalMappingPipeline.get(), tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel.get(), model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-50.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalMappingPipeline.get(), tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel.get(), model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 100.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(debugNormalPipeline.get(), tangentModel.get(), model);
-	Ignite::Renderer::Submit(pipeline.get(), tangentModel.get(), model);
+	Ignite::Renderer::Submit(debugNormalPipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(pipeline, tangentModel.get(), model);
 
 	//render light
 	//Ignite::Renderer::Submit(unlitPipeline.get(), cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));

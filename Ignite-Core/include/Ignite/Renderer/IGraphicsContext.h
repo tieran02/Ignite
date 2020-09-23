@@ -1,22 +1,22 @@
 #pragma once
 #include "NonCopyable.h"
-#include "IBuffer.h"
-#include "IMaterial.h"
 
 namespace Ignite
 {
+	struct MeshCreateInfo;
+	struct Texture2DCreateInfo;
+	struct PipelineCreateInfo;
+	struct BufferCreateInfo;
+	struct MaterialCreateInfo;
 	class IPipeline;
 	class IWindow;
+	class IMesh;
+	class ITexture2D;
+	class IMaterial;
+	class IBuffer;
 
 	class IGraphicsContext : NonCopyable
     {
-		friend class IPipeline;
-		friend class IBuffer;
-		friend class IVertexBuffer;
-		friend class IIndexBuffer;
-		friend class ITexture2D;
-		friend class IMesh;
-		friend class IMaterial;
 	protected:
 		IGraphicsContext() = default;
 		virtual void Init() = 0;
@@ -27,15 +27,22 @@ namespace Ignite
 
         static std::unique_ptr<IGraphicsContext> Create();
 
-		const std::unordered_map<std::string, std::shared_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
-		const std::vector<std::shared_ptr<IBuffer>>& Buffers() const { return m_buffers; }
-		const std::unordered_map<std::string, std::shared_ptr<ITexture2D>>& Texture2Ds() const { return m_texture2Ds; }
-		const std::vector<std::shared_ptr<IMesh>>& Models() const { return m_models; }
+		const IPipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
+		const ITexture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
+		const IMesh* CreateMesh(const MeshCreateInfo& meshInfo);
+		const IMaterial* CreateMaterial(const MaterialCreateInfo& materialInfo);
+		const IBuffer* CreateBuffer(const BufferCreateInfo& bufferInfo);
+		
+		const std::unordered_map<std::string, std::unique_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
+		const std::unordered_map<std::string, std::unique_ptr<IMaterial>>& Materials() const { return m_materials; }
+		const std::unordered_map<std::string, std::unique_ptr<IBuffer>>& Buffers() const { return m_buffers; }
+		const std::unordered_map<std::string, std::unique_ptr<ITexture2D>>& Texture2Ds() const { return m_texture2Ds; }
+		const std::unordered_map<std::string, std::unique_ptr<IMesh>>& Meshes() const { return m_meshes; }
 	protected:
-		std::unordered_map<std::string,std::shared_ptr<IPipeline>> m_pipelines;
-		std::unordered_map<std::string, std::shared_ptr<IMaterial>> m_materials;
-		std::vector<std::shared_ptr<IBuffer>> m_buffers;
-		std::unordered_map<std::string, std::shared_ptr<ITexture2D>> m_texture2Ds;
-		std::vector<std::shared_ptr<IMesh>> m_models;
+		std::unordered_map<std::string, std::unique_ptr<IPipeline>> m_pipelines;
+		std::unordered_map<std::string, std::unique_ptr<IMaterial>> m_materials;
+		std::unordered_map<std::string, std::unique_ptr<IBuffer>> m_buffers;
+		std::unordered_map<std::string, std::unique_ptr<ITexture2D>> m_texture2Ds;
+		std::unordered_map<std::string, std::unique_ptr<IMesh>> m_meshes;
     };
 }
