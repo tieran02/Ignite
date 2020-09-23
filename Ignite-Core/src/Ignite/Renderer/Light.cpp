@@ -8,7 +8,7 @@ Ignite::LightBuffer::LightBuffer(const std::vector<Light>& lights)
 	CORE_ASSERT(lights.size() <= MAX_LIGHTS, "Exceded max light count!");
 
 	//Cap light count incase lights exceed the max light count (only copies upto the max light count)
-	LightCount = std::min(MAX_LIGHTS, lights.size());
+	LightCount = std::min(MAX_LIGHTS, static_cast<uint32_t>(lights.size()));
 	//copy lights to light array
 	for (size_t i = 0; i < LightCount; i++)
 	{

@@ -108,9 +108,9 @@ namespace  Ignite
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-		pipelineLayoutInfo.setLayoutCount = setLayouts.size(); // Optional
+		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size()); // Optional
 		pipelineLayoutInfo.pSetLayouts = setLayouts.data(); // Optional
-		pipelineLayoutInfo.pushConstantRangeCount = pushConstants.size(); // Optional
+		pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size()); // Optional
 		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data(); // Optional
 
 		VK_CHECK_RESULT(vkCreatePipelineLayout(vulkanContext->Device().LogicalDevice(), &pipelineLayoutInfo, nullptr, &m_pipelineLayout));
@@ -149,7 +149,7 @@ namespace  Ignite
 			VkVertexInputAttributeDescription attributeDescription;
 			attributeDescription.binding = 0; //vertex data is always going to be on binding 0
 			attributeDescription.location = location;
-			attributeDescription.offset = inputElement.Offset;
+			attributeDescription.offset = static_cast<uint32_t>(inputElement.Offset);
 
 			//convert type to vulkan type
 			switch (inputElement.Type)
@@ -379,7 +379,7 @@ namespace  Ignite
 		//create pipeline
 		VkGraphicsPipelineCreateInfo pipelineInfo = {};
 		pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-		pipelineInfo.stageCount = shaderStages.size();
+		pipelineInfo.stageCount = static_cast<uint32_t>(shaderStages.size());
 		pipelineInfo.pStages = shaderStages.data();
 		
 		pipelineInfo.pVertexInputState = &vertexInputInfo;

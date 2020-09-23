@@ -12,7 +12,7 @@ namespace Ignite
 {
 	VulkanMesh::VulkanMesh(const MeshCreateInfo& meshInfo) : IMesh(meshInfo)
 	{
-		m_indexCount = meshInfo.GetMeshData().Triangles().size();
+		m_indexCount = static_cast<uint32_t>(meshInfo.GetMeshData().Triangles().size());
 		Init(meshInfo.GetMeshData());
 	}
 

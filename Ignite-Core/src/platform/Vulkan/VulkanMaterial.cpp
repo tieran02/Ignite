@@ -140,6 +140,6 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 
 		std::array<VkWriteDescriptorSet, 4> sets{ diffuseDescriptorWrite,specularDescriptorWrite,normalDescriptorWrite, alphaDescriptorWrite };
 
-		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), sets.size(), sets.data(), 0, nullptr);
+		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), static_cast<uint32_t>(sets.size()), sets.data(), 0, nullptr);
 	}
 }

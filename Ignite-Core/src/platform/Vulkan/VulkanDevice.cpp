@@ -84,7 +84,7 @@ void Ignite::VulkanDevice::createInstance()
 
 	//get m_instance extensions
 	std::vector<const char*> extensions = getRequiredExtensions();
-	createInfo.enabledExtensionCount = extensions.size();
+	createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
 	//validation layers
@@ -203,7 +203,7 @@ const std::vector<const char*> Ignite::VulkanDevice::getRequiredExtensions()
 	uint32_t glfwExtensionCount = 0;
 	const char** glfwExtensions;
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-	for (int j = 0; j < glfwExtensionCount; ++j) {
+	for (uint32_t j = 0; j < glfwExtensionCount; ++j) {
 		wantedExtensions.push_back(glfwExtensions[j]);
 	}
 

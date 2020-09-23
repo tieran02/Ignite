@@ -31,7 +31,7 @@ namespace Ignite
 		}
 	}
 
-	void Camera::MousePosition(double xpos, double ypos)
+	void Camera::MousePosition(float xpos, float ypos)
 	{
 		float xoffset = xpos - lastX;
 		float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top

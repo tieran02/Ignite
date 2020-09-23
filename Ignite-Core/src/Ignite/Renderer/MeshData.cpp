@@ -10,7 +10,7 @@ namespace Ignite
     static int mikk_get_num_faces(const SMikkTSpaceContext* context)
     {
         const MeshData* userdata = (const MeshData*)context->m_pUserData;
-        return userdata->Triangles().size() / 3;
+        return static_cast<int>(userdata->Triangles().size()) / 3;
     }
 
     static int mikk_get_num_verts_of_face(const SMikkTSpaceContext* context, const int face_num)

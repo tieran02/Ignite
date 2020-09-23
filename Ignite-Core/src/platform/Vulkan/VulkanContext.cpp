@@ -199,6 +199,7 @@ namespace Ignite
 		}
 
 		LOG_CORE_FATAL("failed to find supported format!");
+		return VK_FORMAT_UNDEFINED;
 	}
 
 	void VulkanContext::createUniformBuffers()
@@ -359,7 +360,7 @@ namespace Ignite
 			descriptorWrite.pBufferInfo = &bufferInfo;
 
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
-			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+			vkUpdateDescriptorSets(Device().LogicalDevice(), static_cast<uint32_t>(write_descriptors.size()), write_descriptors.data(), 0, nullptr);
 		}
 
 		//light storage buffer
@@ -392,7 +393,7 @@ namespace Ignite
 			descriptorWrite.pBufferInfo = &bufferInfo;
 
 			std::array<VkWriteDescriptorSet, 1> write_descriptors{ descriptorWrite };
-			vkUpdateDescriptorSets(Device().LogicalDevice(), write_descriptors.size(), write_descriptors.data(), 0, nullptr);
+			vkUpdateDescriptorSets(Device().LogicalDevice(), static_cast<uint32_t>(write_descriptors.size()), write_descriptors.data(), 0, nullptr);
 		}
 	}
 

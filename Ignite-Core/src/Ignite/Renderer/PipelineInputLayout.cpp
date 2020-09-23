@@ -48,6 +48,8 @@ uint32_t Ignite::InputElement::GetComponentCount() const
 	case PipelineDataType::eInt4:    return 4;
 	case PipelineDataType::eBool:    return 1;
 	}
+	
+	return -1;
 }
 
 Ignite::PipelineInputLayout::PipelineInputLayout(const std::initializer_list<InputElement>& elements) : m_Elements(elements)
