@@ -9,7 +9,7 @@ Ignite only supports vulkan but OpenGL and DirectX12 are planned for the furture
 - Loading models (currently OBJ)
 - Loading images
 - multiple shader pipelines
-- multiple material (also imports materials from obj models)
+- multiple materials (also imports materials from obj models)
 - camera movement
 - window / key events
 
