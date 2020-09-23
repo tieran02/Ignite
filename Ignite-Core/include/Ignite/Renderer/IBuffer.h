@@ -28,17 +28,20 @@ namespace Ignite
 	struct BufferCreateInfo
 	{
 	public:
-		BufferCreateInfo(BUFFER_TYPE m_type, const void* m_data, size_t m_size)
-			: m_type(m_type),
-			m_data(m_data),
-			m_size(m_size)
+		BufferCreateInfo(const std::string& name, BUFFER_TYPE type, const void* data, size_t size)
+			: m_name(name),
+			m_type(type),
+			m_data(data),
+			m_size(size)
 		{
 		}
-		
+
+		const std::string& GetName() const { return m_name; }
 		BUFFER_TYPE GetBufferType() const { return m_type; }
 		const void* GetData() const { return m_data; }
 		size_t GetSize() const { return m_size; }
 	private:
+		const std::string m_name;
 		BUFFER_TYPE m_type;
 		const void* m_data;
 		size_t m_size;
@@ -60,7 +63,7 @@ namespace Ignite
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static std::shared_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
+		static std::unique_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
 		
 		const BufferCreateInfo& GetBufferInfo() const { return m_bufferInfo; }
 	protected:

@@ -52,7 +52,7 @@ namespace Ignite
 		//clean buffers
 		for (auto& buffer : m_buffers)
 		{
-			buffer->Free();
+			buffer.second->Free();
 		}
 		
 		cleanupSwapchain();

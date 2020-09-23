@@ -75,4 +75,18 @@ namespace Ignite
         auto inserted = m_materials.insert(std::make_pair(materialInfo.GetName(), std::move(IMaterial::Create(materialInfo))));
         return inserted.first->second.get();
     }
+
+    const IBuffer* IGraphicsContext::CreateBuffer(const BufferCreateInfo& bufferInfo)
+    {
+        bool exists = m_buffers.find(bufferInfo.GetName()) != m_buffers.end();
+
+        if (exists)
+        {
+            LOG_CORE_TRACE(bufferInfo.GetName() + " Buffer already attached to this context, using already attached Buffer");
+            return m_buffers[bufferInfo.GetName()].get();
+        }
+
+        auto inserted = m_buffers.insert(std::make_pair(bufferInfo.GetName(), std::move(IBuffer::Create(bufferInfo))));
+        return inserted.first->second.get();
+    }
 }
