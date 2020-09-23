@@ -39,40 +39,4 @@ namespace Ignite
 	private:
 		VulkanBaseBuffer m_baseBuffer;
 	};
-
-	class VulkanVertexBuffer : public IVertexBuffer
-	{
-		friend class IVertexBuffer;
-	protected:
-		VulkanVertexBuffer(const BufferCreateInfo& bufferInfo);
-	public:
-		~VulkanVertexBuffer() override;
-	protected:
-		void Init() override;
-		void Cleanup() override;
-	public:
-		void Free() override;
-		void Bind() const override;
-		void Unbind() const override;
-	private:
-		VulkanBaseBuffer m_baseBuffer;
-	};
-
-	class VulkanIndexBuffer : public IIndexBuffer
-	{
-		friend class IIndexBuffer;
-	protected:
-		VulkanIndexBuffer(const BufferCreateInfo& bufferInfo);
-	public:
-		~VulkanIndexBuffer() override;
-	protected:
-		void Init() override;
-		void Cleanup() override;
-	public:
-		void Free() override;
-		void Bind() const override;
-		void Unbind() const override;
-	private:
-		VulkanBaseBuffer m_baseBuffer;
-	};
 }

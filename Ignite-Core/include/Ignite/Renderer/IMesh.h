@@ -42,14 +42,14 @@ namespace Ignite
 
 		static std::unique_ptr<IMesh> Create(const MeshCreateInfo& meshInfo);
 
-		const IVertexBuffer* VertexBuffer() const { return m_vertexBuffer.get(); }
-		const IIndexBuffer* IndexBuffer() const { return m_IndexBuffer.get(); }
+		const IBuffer* VertexBuffer() const { return m_vertexBuffer.get(); }
+		const IBuffer* IndexBuffer() const { return m_IndexBuffer.get(); }
 		const MeshCreateInfo& MeshInfo() const { return m_meshInfo; }
 		const IMaterial* Material() const { return m_meshInfo.GetMaterial(); }
 		uint32_t IndexCount() const { return m_indexCount; }
 	protected:
-		std::shared_ptr<IVertexBuffer> m_vertexBuffer;
-		std::shared_ptr<IIndexBuffer> m_IndexBuffer;
+		std::shared_ptr<IBuffer> m_vertexBuffer;
+		std::shared_ptr<IBuffer> m_IndexBuffer;
 		uint32_t m_indexCount;
 
 		MeshCreateInfo m_meshInfo;

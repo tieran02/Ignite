@@ -61,36 +61,10 @@ namespace Ignite
 		virtual void Unbind() const = 0;
 
 		static std::shared_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
+		
+		const BufferCreateInfo& GetBufferInfo() const { return m_bufferInfo; }
 	protected:
 		bool m_deleted;
 		const BufferCreateInfo m_bufferInfo;
-	};
-
-	class IVertexBuffer :public IBuffer
-	{
-	protected:
-		IVertexBuffer(const BufferCreateInfo& bufferInfo);
-		void Init() override = 0;
-		void Cleanup() override = 0;
-	public:
-		virtual ~IVertexBuffer() = default;
-		void Bind() const override = 0;
-		void Unbind() const override = 0;
-
-		static std::shared_ptr<IVertexBuffer> Create(const BufferCreateInfo& bufferInfo);
-	};
-
-	class IIndexBuffer :public IBuffer
-	{
-	protected:
-		IIndexBuffer(const BufferCreateInfo& bufferInfo);
-		void Init() override = 0;
-		void Cleanup() override = 0;
-	public:
-		virtual ~IIndexBuffer() = default;
-		void Bind() const override = 0;
-		void Unbind() const override = 0;
-
-		static std::shared_ptr<IIndexBuffer> Create(const BufferCreateInfo& bufferInfo);
 	};
 }
