@@ -31,6 +31,7 @@ namespace Ignite
 		const IPipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
 		const ITexture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
 		const IMesh* CreateMesh(const MeshCreateInfo& meshInfo);
+		const IMaterial* CreateMaterial(const MaterialCreateInfo& materialInfo);
 		
 		const std::unordered_map<std::string, std::unique_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
 		const std::vector<std::shared_ptr<IBuffer>>& Buffers() const { return m_buffers; }

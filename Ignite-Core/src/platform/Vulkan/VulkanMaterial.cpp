@@ -4,9 +4,7 @@
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 
-Ignite::VulkanMaterial::VulkanMaterial(const std::string& name,
-	const ITexture2D* diffuseTexture, const ITexture2D* specularTexture, 
-	const ITexture2D* normalTexture, const ITexture2D* alphaTexture) : IMaterial(name,diffuseTexture,specularTexture, normalTexture,alphaTexture)
+Ignite::VulkanMaterial::VulkanMaterial(const MaterialCreateInfo& materialInfo) : IMaterial(materialInfo)
 {
 	Init();
 }
@@ -46,7 +44,7 @@ void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 				VK_SHADER_STAGE_FRAGMENT_BIT,
 				sizeof(ModelUniformBuffer),
 				sizeof(MaterialProperties),
-				&m_properties);
+				&m_materialInfo.GetMaterialProperties());
 	}
 
 	
@@ -78,7 +76,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		VkDescriptorImageInfo diffuseImageInfo;
 		//diffuse texture
 		diffuseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanDiffuseImage = *(VulkanTexture2D*)m_diffuseTexture;
+		const VulkanTexture2D& vulkanDiffuseImage = *(VulkanTexture2D*)m_materialInfo.DiffuseTexture();
 		diffuseImageInfo.imageView = vulkanDiffuseImage.ImageView();
 		diffuseImageInfo.sampler = vulkanDiffuseImage.Sampler();
 
@@ -95,7 +93,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//specular texture
 		VkDescriptorImageInfo specularImageInfo;
 		specularImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanSpecularImage = *(VulkanTexture2D*)m_specularTexture;
+		const VulkanTexture2D& vulkanSpecularImage = *(VulkanTexture2D*)m_materialInfo.SpecularTexture();
 		specularImageInfo.imageView = vulkanSpecularImage.ImageView();
 		specularImageInfo.sampler = vulkanSpecularImage.Sampler();
 
@@ -111,7 +109,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//normal texture
 		VkDescriptorImageInfo normalImageInfo;
 		normalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanNormalImage = *(VulkanTexture2D*)m_normalTexture;
+		const VulkanTexture2D& vulkanNormalImage = *(VulkanTexture2D*)m_materialInfo.NormalTexture();
 		normalImageInfo.imageView = vulkanNormalImage.ImageView();
 		normalImageInfo.sampler = vulkanNormalImage.Sampler();
 
@@ -127,7 +125,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//alpha texture
 		VkDescriptorImageInfo alphaImageInfo;
 		alphaImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanAlphaImage = *(VulkanTexture2D*)m_alphaTexture;
+		const VulkanTexture2D& vulkanAlphaImage = *(VulkanTexture2D*)m_materialInfo.AlphaTexture();
 		alphaImageInfo.imageView = vulkanAlphaImage.ImageView();
 		alphaImageInfo.sampler = vulkanAlphaImage.Sampler();
 

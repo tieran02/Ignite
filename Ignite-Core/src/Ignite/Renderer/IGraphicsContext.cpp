@@ -57,4 +57,17 @@ namespace Ignite
         }
         return m_meshes[meshInfo.GetName()].get();
     }
+
+    const IMaterial* IGraphicsContext::CreateMaterial(const MaterialCreateInfo& materialInfo)
+    {
+        bool exists = m_materials.find(materialInfo.GetName()) != m_materials.end();
+        CORE_ASSERT(!exists, "Material already attached to this context");
+
+        if (!exists)
+        {
+            auto inserted = m_materials.insert(std::make_pair(materialInfo.GetName(), std::move(IMaterial::Create(materialInfo))));
+            return inserted.first->second.get();
+        }
+        return m_materials[materialInfo.GetName()].get();
+    }
 }

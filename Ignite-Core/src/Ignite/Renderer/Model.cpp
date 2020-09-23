@@ -31,7 +31,7 @@ namespace Ignite
 		return m_meshes;
 	}
 
-	const std::vector<std::shared_ptr<IMaterial>>& Model::Materials() const
+	const std::vector<const IMaterial*>& Model::Materials() const
 	{
         return m_materials;
 	}
@@ -121,26 +121,27 @@ namespace Ignite
         }
 
 
-        std::shared_ptr<IMaterial> material;
+        const IMaterial* material;
 
         // Vulkan viewer does not support texturing with per-face material.
         if (!shape.mesh.material_ids.empty() && shape.mesh.material_ids[0] >= 0)
         {
             material = getMaterial(materials, shape.mesh.material_ids[0], path);
-        }else
+        }
+    	else
         {
             //make default mat
-            material = IMaterial::Create("default", nullptr);
+            material = IMaterial::DefaultMaterial();
         }
         m_materials.push_back(material);
 		//finaly create mesh
 
         meshData.CalculateTangents();
 
-        return Renderer::GraphicsContext()->CreateMesh(MeshCreateInfo{ shape.name, std::move(meshData), material.get() });
+        return Renderer::GraphicsContext()->CreateMesh(MeshCreateInfo{ shape.name, std::move(meshData), material });
 	}
 
-	std::shared_ptr<IMaterial> Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
+	const IMaterial* Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
 		const std::string& path)
 	{
         if(materialID < materials.size())
@@ -179,19 +180,27 @@ namespace Ignite
                 alphaTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            std::shared_ptr<IMaterial> mat = IMaterial::Create(mp->name,
+            MaterialProperties properties
+            {
+                glm::vec4{ mp->ambient[0],mp->ambient[1],mp->ambient[2],1.0},
+                glm::vec4{ mp->diffuse[0],mp->diffuse[1],mp->diffuse[2],1.0 },
+                glm::vec4{ mp->specular[0],mp->specular[1],mp->specular[2],1.0 },
+                 mp->shininess,
+                0.0f
+            };
+        	
+            MaterialCreateInfo createInfo
+            {
+                mp->name,
+                std::move(properties),
                 diffuseTexture,
                 specularTexture,
                 normalTexture,
-                alphaTexture);
+                alphaTexture
+            };
 
-            mat->Properties().ambient = glm::vec4{ mp->ambient[0],mp->ambient[1],mp->ambient[2],1.0};
-			mat->Properties().diffuse = glm::vec4{ mp->diffuse[0],mp->diffuse[1],mp->diffuse[2],1.0 };
-			mat->Properties().specular = glm::vec4{ mp->specular[0],mp->specular[1],mp->specular[2],1.0 };
-			mat->Properties().shininess = mp->shininess;
-			mat->Properties().opacity = 0.0f;
-
-            return mat;
+            return Renderer::GraphicsContext()->CreateMaterial(createInfo);;
         }
+        return IMaterial::DefaultMaterial();;
 	}
 }

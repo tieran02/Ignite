@@ -9,8 +9,7 @@ namespace Ignite
 	{
 		friend class IMaterial;
 	protected:
-		VulkanMaterial(const std::string& name, const ITexture2D* diffuseTexture, const ITexture2D* specularTexture,
-			const ITexture2D* normalTexture, const ITexture2D* alphaTexture);
+		VulkanMaterial(const MaterialCreateInfo& materialInfo);
 		
 		void Init() override;
 		void Cleanup() override;
