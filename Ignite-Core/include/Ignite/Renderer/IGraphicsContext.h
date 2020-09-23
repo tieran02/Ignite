@@ -35,12 +35,13 @@ namespace Ignite
 		const IBuffer* CreateBuffer(const BufferCreateInfo& bufferInfo);
 		
 		const std::unordered_map<std::string, std::unique_ptr<IPipeline>>& Pipelines() const { return m_pipelines; }
+		const std::unordered_map<std::string, std::unique_ptr<IMaterial>>& Materials() const { return m_materials; }
 		const std::unordered_map<std::string, std::unique_ptr<IBuffer>>& Buffers() const { return m_buffers; }
 		const std::unordered_map<std::string, std::unique_ptr<ITexture2D>>& Texture2Ds() const { return m_texture2Ds; }
 		const std::unordered_map<std::string, std::unique_ptr<IMesh>>& Meshes() const { return m_meshes; }
 	protected:
 		std::unordered_map<std::string, std::unique_ptr<IPipeline>> m_pipelines;
-		std::unordered_map<std::string, std::shared_ptr<IMaterial>> m_materials;
+		std::unordered_map<std::string, std::unique_ptr<IMaterial>> m_materials;
 		std::unordered_map<std::string, std::unique_ptr<IBuffer>> m_buffers;
 		std::unordered_map<std::string, std::unique_ptr<ITexture2D>> m_texture2Ds;
 		std::unordered_map<std::string, std::unique_ptr<IMesh>> m_meshes;
