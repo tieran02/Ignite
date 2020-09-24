@@ -258,8 +258,20 @@ VkImageView Ignite::VulkanResources::CreateImageView(VkDevice device, VkImage im
 	return imageView;
 }
 
+VkShaderModule Ignite::VulkanResources::CreateShaderModule(VkDevice device, const std::vector<char>& shaderCode, VkShaderStageFlagBits stages)
+{
+	VkShaderModuleCreateInfo createInfo = {};
+	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.codeSize = shaderCode.size();
+	createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
+
+	VkShaderModule shaderModule;
+	VK_CHECK_RESULT(vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule));
+	return shaderModule;
+}
+
 void Ignite::VulkanResources::GenerateMipmaps(VkDevice device, VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image,
-	VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
+                                              VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels)
 {
 	// Check if image format supports linear blitting
 	VkFormatProperties formatProperties;

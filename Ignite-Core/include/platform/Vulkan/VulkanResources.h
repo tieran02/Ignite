@@ -28,6 +28,8 @@ namespace Ignite
 
 		static VkImageView CreateImageView(VkDevice device, VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
+		static VkShaderModule CreateShaderModule(VkDevice device, const std::vector<char>& shaderCode, VkShaderStageFlagBits stages);
+
 	private:
 		static void GenerateMipmaps(VkDevice device,VkPhysicalDevice physicalDevice, VkCommandPool commandPool, VkQueue graphicsQueue, VkImage image, VkFormat imageFormat, int32_t
 		                            texWidth, int32_t texHeight, uint32_t
