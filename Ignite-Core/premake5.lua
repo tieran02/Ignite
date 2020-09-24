@@ -36,6 +36,7 @@ project "Ignite-Core"
 		"vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLM}",
+		"%{IncludeDir.IMGUI}",
 		"vendor/stb/include",
 		"vendor/tinyobjloader",
 		"vendor/mikktspace"
@@ -44,7 +45,8 @@ project "Ignite-Core"
 	links 
 	{ 
 		"$(VULKAN_SDK)/lib/vulkan-1.lib",
-		"GLFW"
+		"GLFW",
+		"ImGui"
 	}
 
 	filter "system:windows"

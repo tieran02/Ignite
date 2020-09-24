@@ -10,3 +10,6 @@
 [submodule "Ignite-Core/vendor/tinyobjloader"]
 	path = Ignite-Core/vendor/tinyobjloader
 	url = https://github.com/tinyobjloader/tinyobjloader
+[submodule "Ignite-Core/vendor/imgui"]
+	path = Ignite-Core/vendor/imgui
+	url = https://github.com/ocornut/imgui

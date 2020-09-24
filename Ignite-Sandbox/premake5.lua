@@ -18,12 +18,14 @@ project "Ignite-Sandbox"
 	{
 		"../Ignite-Core/include",
 		"../Ignite-Core/%{IncludeDir.GLM}",
+		"../Ignite-Core/%{IncludeDir.IMGUI}",
 		"../Ignite-Sandbox/include"
 	}
 
 	links
 	{
-		"Ignite-Core"
+		"Ignite-Core",
+		"ImGui"
 	}
 
 	filter "system:windows"
