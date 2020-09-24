@@ -22,7 +22,10 @@ namespace Ignite
 	{
 		BUFFER,
 		VERTEX,
-		INDEX
+		INDEX,
+		UNIFORM,
+		STORAGE,
+		TRANSFER
 	};
 
 	enum class BUFFER_VISIBILITY
@@ -65,16 +68,23 @@ namespace Ignite
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
+		IBuffer(IBuffer&& other) noexcept
+			: m_deleted(other.m_deleted),
+			  m_bufferInfo(std::move(other.m_bufferInfo))
+		{
+		}
+
 		virtual ~IBuffer() = default;
-		const IGraphicsContext* m_context;
 
 		virtual void Free() = 0;
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void Map() = 0;
-		virtual void Unmap() = 0;
-		virtual void Flush() = 0;
+		virtual void* Map() const = 0;
+		virtual void Unmap() const = 0;
+		virtual void Flush() const = 0;
+
+		virtual void CopyToBuffer(void* data, size_t size) = 0;
 
 		static std::unique_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
 		
@@ -82,6 +92,5 @@ namespace Ignite
 	protected:
 		bool m_deleted;
 		const BufferCreateInfo m_bufferInfo;
-		void* m_mappedData;
 	};
 }

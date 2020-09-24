@@ -75,10 +75,10 @@ void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vect
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 0, 1,
 			&vulkanContext->SceneDescriptorSets()[i], 0, nullptr);
 
-		void* sceneData;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory(), 0, sizeof(Renderer::SceneUBO()), 0, &sceneData);
-		memcpy(sceneData, &Renderer::SceneUBO(), sizeof(Renderer::SceneUBO()));
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->SceneUniformBuffers()[i]->DeviceMemory());
+
+		void* data = vulkanContext->SceneUniformBuffers()[i].Map();
+		memcpy(data, &Renderer::SceneUBO(), sizeof(Renderer::SceneUBO()));
+		vulkanContext->SceneUniformBuffers()[i].Unmap();
 		
 		//upload lights
 		vkCmdBindDescriptorSets(vulkanContext->CommandBuffers()[i], VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanPipeline::PipelineLayout(), 2, 1,
@@ -87,11 +87,9 @@ void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vect
 		LightBuffer lightBuffer{ lights };
 		size_t sizeofLight = sizeof(LightBuffer);
 		
-		void* lightData;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory(), 0, sizeofLight, 0, &lightData);
-		memcpy(lightData, &lightBuffer, sizeofLight);
-
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), vulkanContext->LightStorageBuffers()[i]->DeviceMemory());
+		data = vulkanContext->LightStorageBuffers()[i].Map();
+		memcpy(data, &lightBuffer, sizeofLight);
+		vulkanContext->LightStorageBuffers()[i].Unmap();
 
 	}
 }	

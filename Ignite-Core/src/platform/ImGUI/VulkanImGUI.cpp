@@ -241,15 +241,15 @@ void VulkanImGUI::initResources(VkRenderPass renderPass, VkQueue copyQueue, cons
 		VK_IMAGE_ASPECT_COLOR_BIT,
 		1);
 
+	Ignite::BufferCreateInfo imageBufferInfo{ "imGUI_font", Ignite::BUFFER_TYPE::TRANSFER, Ignite::BUFFER_VISIBILITY::HOST, fontData,uploadSize };
+	
 	//image staging buffer
-	Ignite::VulkanBaseBuffer imageBuffer(context);
-	imageBuffer.Create(fontData, uploadSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, Ignite::BUFFER_VISIBILITY::HOST);
+	Ignite::VulkanBuffer imageBuffer = Ignite::VulkanBuffer(imageBufferInfo,*context);
 
-	//copy data to the buffer
-	void* data;
-	vkMapMemory(device->LogicalDevice(), imageBuffer.DeviceMemory(), 0, uploadSize, 0, &data);
+    //copy data to the buffer
+    void* data = imageBuffer.Map();
 	memcpy(data, fontData, static_cast<size_t>(uploadSize));
-	vkUnmapMemory(device->LogicalDevice(), imageBuffer.DeviceMemory());
+	imageBuffer.Unmap();
 
 	Ignite::VulkanResources::CopyBufferToImage(device->LogicalDevice(),
 		device->PhysicalDevice(),

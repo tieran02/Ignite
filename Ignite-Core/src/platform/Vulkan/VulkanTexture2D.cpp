@@ -109,14 +109,13 @@ namespace Ignite
 		VkDeviceSize imageSize = m_Texture2DInfo.GetWidth() * m_Texture2DInfo.GetHeight() * CHANNEL_COUNT;
 
 		//image staging buffer
-		VulkanBaseBuffer imageBuffer(vulkanContext);
-		imageBuffer.Create(pixels, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, BUFFER_VISIBILITY::HOST);
+		BufferCreateInfo imageBufferInfo{ "tempTextureBuffer", BUFFER_TYPE::TRANSFER, BUFFER_VISIBILITY::HOST, pixels,imageSize };
+		VulkanBuffer imageBuffer = VulkanBuffer(imageBufferInfo, *vulkanContext);
 
 		//copy data to the buffer
-		void* data;
-		vkMapMemory(vulkanContext->Device().LogicalDevice(), imageBuffer.DeviceMemory(), 0, imageSize, 0, &data);
-			memcpy(data, pixels, static_cast<size_t>(imageSize));
-		vkUnmapMemory(vulkanContext->Device().LogicalDevice(), imageBuffer.DeviceMemory());
+		void* data = imageBuffer.Map();
+		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		imageBuffer.Unmap();
 
 		//TODO abstract to image class
 		stbi_image_free(pixels);

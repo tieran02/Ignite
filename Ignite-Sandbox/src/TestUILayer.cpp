@@ -28,6 +28,11 @@ void TestUILayer::OnUpdate()
 	Ignite::Renderer::EndScene();
 
 	Ignite::Renderer::SwapBuffers();
+
+	if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))
+	{
+		Ignite::Application::Instance().Close();
+	}
 }
 
 void TestUILayer::OnEvent(Ignite::Event& event)
