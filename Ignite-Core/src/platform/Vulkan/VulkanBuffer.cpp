@@ -10,6 +10,21 @@ namespace Ignite
 	VulkanBaseBuffer::VulkanBaseBuffer(const VulkanContext* context) : m_context(context)
 	{}
 
+	void VulkanBaseBuffer::Create(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, BUFFER_VISIBILITY visibility)
+	{
+		switch (visibility)
+		{
+		case BUFFER_VISIBILITY::HOST:
+			CreateHostVisable(data, size, usage);
+			break;
+		case BUFFER_VISIBILITY::STAGED:
+			CreateStaged(data, size, usage);
+			break;
+		default: 
+			CORE_ASSERT(false, "INVALID BUFFER_VISIBILITY for Vulkan buffer");
+		}
+	}
+
 	void VulkanBaseBuffer::CreateStaged(const void* data, VkDeviceSize size, VkBufferUsageFlags usage)
 	{
 		//staging buffer
@@ -74,13 +89,13 @@ namespace Ignite
 		switch (m_bufferInfo.GetBufferType())
 		{
 		case BUFFER_TYPE::BUFFER:
-			m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			m_baseBuffer.Create(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, m_bufferInfo.GetBufferVisibility());
 			break;
 		case BUFFER_TYPE::VERTEX:
-			m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+			m_baseBuffer.Create(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, m_bufferInfo.GetBufferVisibility());
 			break;
 		case BUFFER_TYPE::INDEX:
-			m_baseBuffer.CreateStaged(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
+			m_baseBuffer.Create(m_bufferInfo.GetData(), m_bufferInfo.GetSize(), VK_BUFFER_USAGE_INDEX_BUFFER_BIT, m_bufferInfo.GetBufferVisibility());
 			break;
 		default: ;
 		}
@@ -137,5 +152,17 @@ namespace Ignite
 	void VulkanBuffer::Unbind() const
 	{
 		//TODO IMPLEMENT UNBIND BUFFER
+	}
+
+	void VulkanBuffer::Map() const
+	{
+	}
+
+	void VulkanBuffer::Unmap() const
+	{
+	}
+
+	void VulkanBuffer::Flush() const
+	{
 	}
 }

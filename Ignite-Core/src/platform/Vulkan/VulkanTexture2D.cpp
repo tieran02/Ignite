@@ -110,7 +110,7 @@ namespace Ignite
 
 		//image staging buffer
 		VulkanBaseBuffer imageBuffer(vulkanContext);
-		imageBuffer.CreateHostVisable(pixels, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+		imageBuffer.Create(pixels, imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, BUFFER_VISIBILITY::HOST);
 
 		//copy data to the buffer
 		void* data;

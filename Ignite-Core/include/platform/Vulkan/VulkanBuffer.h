@@ -11,8 +11,7 @@ namespace Ignite
 	{
 	public:
 		VulkanBaseBuffer(const VulkanContext* context);
-		void CreateStaged(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
-		void CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void Create(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, BUFFER_VISIBILITY visibility);
 		void Free();
 		const VkBuffer& Buffer() const { return m_vkBuffer; }
 		const VkDeviceMemory& DeviceMemory() const { return m_vkBufferMemory; }
@@ -20,6 +19,9 @@ namespace Ignite
 		const VulkanContext* m_context;
 		VkBuffer m_vkBuffer = nullptr;
 		VkDeviceMemory m_vkBufferMemory = nullptr;
+
+		void CreateStaged(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
+		void CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
 	};
 	
 	class VulkanBuffer : public IBuffer
@@ -36,6 +38,9 @@ namespace Ignite
 		void Free() override;
 		void Bind() const override;
 		void Unbind() const override;
+		void Map() const override;
+		void Unmap() const override;
+		void Flush() const override;
 	private:
 		VulkanBaseBuffer m_baseBuffer;
 	};

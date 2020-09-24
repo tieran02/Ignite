@@ -243,7 +243,7 @@ void VulkanImGUI::initResources(VkRenderPass renderPass, VkQueue copyQueue, cons
 
 	//image staging buffer
 	Ignite::VulkanBaseBuffer imageBuffer(context);
-	imageBuffer.CreateHostVisable(fontData, uploadSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	imageBuffer.Create(fontData, uploadSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, Ignite::BUFFER_VISIBILITY::HOST);
 
 	//copy data to the buffer
 	void* data;

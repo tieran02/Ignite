@@ -213,12 +213,12 @@ namespace Ignite
 			//Create scene unform buffers (Camera projection/view and lights)
 			m_sceneUniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
 			SceneUniformBuffer sceneUBO{};
-			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			m_sceneUniformBuffers[i]->Create(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, BUFFER_VISIBILITY::HOST);
 
 			//create light storage buffers
 			size_t lightBufferSize = sizeof(LightBuffer);
 			m_lightStorageBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
-			m_lightStorageBuffers[i]->CreateHostVisable(nullptr, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			m_lightStorageBuffers[i]->Create(nullptr, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, BUFFER_VISIBILITY::HOST);
 			
 		}
 	}
