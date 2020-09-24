@@ -12,6 +12,8 @@ namespace Ignite
 
 	void VulkanBaseBuffer::Create(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, BUFFER_VISIBILITY visibility)
 	{
+		m_size = size;
+		
 		switch (visibility)
 		{
 		case BUFFER_VISIBILITY::HOST:
@@ -72,6 +74,28 @@ namespace Ignite
 			vkFreeMemory(m_context->Device().LogicalDevice(), m_vkBufferMemory, nullptr);
 			m_vkBufferMemory = nullptr;
 		}
+	}
+
+	void* VulkanBaseBuffer::Map()
+	{
+		void* mappedData;
+		vkMapMemory(m_context->Device().LogicalDevice(), m_vkBufferMemory, 0, m_size, 0, &mappedData);
+		return mappedData;
+	}
+
+	void VulkanBaseBuffer::Unmap()
+	{
+		vkUnmapMemory(m_context->Device().LogicalDevice(), m_vkBufferMemory);
+	}
+
+	void VulkanBaseBuffer::Flush()
+	{
+		VkMappedMemoryRange vertexMappedRange = {};
+		vertexMappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		vertexMappedRange.memory = m_vkBufferMemory;
+		vertexMappedRange.offset = 0;
+		vertexMappedRange.size = VK_WHOLE_SIZE;
+		vkFlushMappedMemoryRanges(m_context->Device().LogicalDevice(), 1, &vertexMappedRange);
 	}
 
 	VulkanBuffer::VulkanBuffer(const BufferCreateInfo& bufferInfo) : IBuffer(bufferInfo), m_baseBuffer(VulkanBaseBuffer(reinterpret_cast<const VulkanContext*>(m_context)))
@@ -154,15 +178,41 @@ namespace Ignite
 		//TODO IMPLEMENT UNBIND BUFFER
 	}
 
-	void VulkanBuffer::Map() const
+	void VulkanBuffer::Map()
 	{
+		if(m_bufferInfo.GetBufferVisibility() == BUFFER_VISIBILITY::HOST)
+		{
+			const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
+			m_mappedData = m_baseBuffer.Map();
+		}
+		else
+		{
+			LOG_CORE_ERROR("Can't map to a buffer that is not host visible");
+		}
 	}
 
-	void VulkanBuffer::Unmap() const
+	void VulkanBuffer::Unmap()
 	{
+		if (m_bufferInfo.GetBufferVisibility() == BUFFER_VISIBILITY::HOST && m_mappedData)
+		{
+			m_baseBuffer.Unmap();
+			m_mappedData = nullptr;
+		}
+		else
+		{
+			LOG_CORE_ERROR("Can't map to a buffer that is not host visible");
+		}
 	}
 
-	void VulkanBuffer::Flush() const
+	void VulkanBuffer::Flush()
 	{
+		if (m_bufferInfo.GetBufferVisibility() == BUFFER_VISIBILITY::HOST)
+		{
+			m_baseBuffer.Flush();
+		}
+		else
+		{
+			LOG_CORE_ERROR("Can't map to a buffer that is not host visible");
+		}
 	}
 }

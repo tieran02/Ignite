@@ -23,6 +23,7 @@ namespace Ignite
 		void Init() override;
 		void Cleanup() override;
 	public:
+		VulkanDevice& Device() { return *m_vulkanDevice; }
 		const VulkanDevice& Device() const { return *m_vulkanDevice; }
 		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
 		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }

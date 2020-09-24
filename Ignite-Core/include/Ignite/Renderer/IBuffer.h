@@ -72,9 +72,9 @@ namespace Ignite
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void Map() const = 0;
-		virtual void Unmap() const = 0;
-		virtual void Flush() const = 0;
+		virtual void Map() = 0;
+		virtual void Unmap() = 0;
+		virtual void Flush() = 0;
 
 		static std::unique_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
 		
