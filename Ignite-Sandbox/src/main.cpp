@@ -7,7 +7,7 @@ int main()
 {
 	Ignite::Ignite ignite;
 	ignite.App().PushLayer(new TestUILayer);
-	ignite.App().PushLayer(new SponzaTestLayer);
+	//ignite.App().PushLayer(new SponzaTestLayer);
 
 	ignite.App().Start(1920, 1080);
 

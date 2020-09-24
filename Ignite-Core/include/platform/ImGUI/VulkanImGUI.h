@@ -23,14 +23,21 @@ public:
 	~VulkanImGUI() override;
 
 	void Init(float width, float height) override;
+	void NewFrame(bool updateFrameGraph) override;
+	void UpdateBuffers() override;
+	void DrawFrame() override;
 protected:
 	VulkanImGUI();
 private:
 	// Vulkan resources for rendering the UI
 	VkSampler sampler;
 	
-	Ignite::VulkanBuffer* vertexBuffer;
-	Ignite::VulkanBuffer* indexBuffer;
+	VkBuffer vertexBuffer = VK_NULL_HANDLE;
+	VkBuffer indexBuffer = VK_NULL_HANDLE;
+	VkDeviceMemory vertexMemory = VK_NULL_HANDLE;
+	VkDeviceMemory indexMemory = VK_NULL_HANDLE;
+	void* vertexMapped{nullptr};
+	void* indexMapped{ nullptr };
 	
 	int32_t vertexCount = 0;
 	int32_t indexCount = 0;

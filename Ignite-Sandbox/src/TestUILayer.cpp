@@ -9,10 +9,25 @@ void TestUILayer::OnAttach()
 
 void TestUILayer::OnDetach()
 {
+	imGUI.reset();
 }
 
 void TestUILayer::OnUpdate()
 {
+	//start scene
+	Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
+
+	Ignite::Renderer::BeginScene(camera, lights);
+	
+	imGUI->NewFrame(true);
+
+	imGUI->UpdateBuffers();
+
+	imGUI->DrawFrame();
+
+	Ignite::Renderer::EndScene();
+
+	Ignite::Renderer::SwapBuffers();
 }
 
 void TestUILayer::OnEvent(Ignite::Event& event)
