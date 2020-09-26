@@ -22,28 +22,40 @@ namespace Ignite
 	{
 		BUFFER,
 		VERTEX,
-		INDEX
+		INDEX,
+		UNIFORM,
+		STORAGE,
+		TRANSFER
+	};
+
+	enum class BUFFER_VISIBILITY
+	{
+		HOST,
+		STAGED
 	};
 	
 	struct BufferCreateInfo
 	{
 	public:
-		BufferCreateInfo(const std::string& name, BUFFER_TYPE type, const void* data, size_t size)
+		BufferCreateInfo(const std::string& name, BUFFER_TYPE type, BUFFER_VISIBILITY visibility, const void* sourceData, size_t size)
 			: m_name(name),
 			m_type(type),
-			m_data(data),
+			m_visibility(visibility),
+			m_sourceData(sourceData),
 			m_size(size)
 		{
 		}
 
 		const std::string& GetName() const { return m_name; }
 		BUFFER_TYPE GetBufferType() const { return m_type; }
-		const void* GetData() const { return m_data; }
+		BUFFER_VISIBILITY GetBufferVisibility() const { return m_visibility; }
+		const void* GetData() const { return m_sourceData; }
 		size_t GetSize() const { return m_size; }
 	private:
 		const std::string m_name;
 		BUFFER_TYPE m_type;
-		const void* m_data;
+		BUFFER_VISIBILITY m_visibility;
+		const void* m_sourceData;
 		size_t m_size;
 
 	};
@@ -56,12 +68,23 @@ namespace Ignite
 		virtual void Init() = 0;
 		virtual void Cleanup() = 0;
 	public:
+		IBuffer(IBuffer&& other) noexcept
+			: m_deleted(other.m_deleted),
+			  m_bufferInfo(std::move(other.m_bufferInfo))
+		{
+		}
+
 		virtual ~IBuffer() = default;
-		const IGraphicsContext* m_context;
 
 		virtual void Free() = 0;
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
+
+		virtual void* Map() const = 0;
+		virtual void Unmap() const = 0;
+		virtual void Flush() const = 0;
+
+		virtual void CopyToBuffer(void* data, size_t size) = 0;
 
 		static std::unique_ptr<IBuffer> Create(const BufferCreateInfo& bufferInfo);
 		
