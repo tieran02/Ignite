@@ -466,6 +466,9 @@ namespace Ignite
 		{
 			pipeline.second->Free();
 		}
+
+		m_sceneUniformBuffers.clear();
+		m_lightStorageBuffers.clear();
 		
 		//free command buffers
 		vkFreeCommandBuffers(m_vulkanDevice->LogicalDevice(), m_commandPool, static_cast<uint32_t>(m_commandBuffers.size()), m_commandBuffers.data());
