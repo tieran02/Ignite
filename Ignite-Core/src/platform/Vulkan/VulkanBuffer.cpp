@@ -199,7 +199,10 @@ namespace Ignite
 	{
 		if (m_bufferInfo.GetBufferVisibility() == BUFFER_VISIBILITY::HOST)
 		{
-			
+			void* dst_data;
+			vkMapMemory(m_vulkanContext.Device().LogicalDevice(), m_vkBufferMemory, 0, m_size, 0, &dst_data);
+			memcpy(dst_data, data, size);
+			vkUnmapMemory(m_vulkanContext.Device().LogicalDevice(), m_vkBufferMemory);
 		}
 		else
 		{
