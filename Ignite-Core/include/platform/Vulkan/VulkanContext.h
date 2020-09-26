@@ -23,13 +23,14 @@ namespace Ignite
 		void Init() override;
 		void Cleanup() override;
 	public:
+		VulkanDevice& Device() { return *m_vulkanDevice; }
 		const VulkanDevice& Device() const { return *m_vulkanDevice; }
 		const VulkanSwapChain& Swapchain() const { return *m_vulkanSwapchain; }
 		const VulkenRenderpass& Renderpass() const { return *m_renderpass; }
 		const VkCommandPool& CommandPool() const { return  m_commandPool; }
 		const std::vector<VkCommandBuffer>& CommandBuffers() const { return m_commandBuffers; }
-		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& SceneUniformBuffers() const { return m_sceneUniformBuffers; }
-		const std::vector<std::unique_ptr<VulkanBaseBuffer>>& LightStorageBuffers() const { return m_lightStorageBuffers; }
+		const std::vector<VulkanBuffer>& SceneUniformBuffers() const { return m_sceneUniformBuffers; }
+		const std::vector<VulkanBuffer>& LightStorageBuffers() const { return m_lightStorageBuffers; }
 		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
 		const VkDescriptorSetLayout& SceneDescriptorSetLayout() const { return m_sceneDescriptorSetLayout; }
 		const VkDescriptorSetLayout& MaterialDescriptorSetLayout() const { return m_materialDescriptorSetLayout; }
@@ -54,8 +55,9 @@ namespace Ignite
 		std::unique_ptr<VulkenRenderpass> m_renderpass;
 
     	//uniform buffers
-		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_sceneUniformBuffers;
-		std::vector<std::unique_ptr<VulkanBaseBuffer>> m_lightStorageBuffers;
+		std::vector<VulkanBuffer> m_sceneUniformBuffers;
+		std::vector<VulkanBuffer> m_lightStorageBuffers;
+    	
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
 		VkDescriptorSetLayout m_materialDescriptorSetLayout;

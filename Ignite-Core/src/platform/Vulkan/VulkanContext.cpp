@@ -204,21 +204,21 @@ namespace Ignite
 
 	void VulkanContext::createUniformBuffers()
 	{
-		m_sceneUniformBuffers.resize(m_vulkanSwapchain->ImageViews().size());
-		m_lightStorageBuffers.resize(m_vulkanSwapchain->ImageViews().size());
+		m_sceneUniformBuffers.reserve(m_vulkanSwapchain->ImageViews().size());
+		m_lightStorageBuffers.reserve(m_vulkanSwapchain->ImageViews().size());
 		
 		//create a ubo for each swapcahin image
 		for (size_t i = 0; i < m_vulkanSwapchain->ImageViews().size(); i++) 
 		{
-			//Create scene unform buffers (Camera projection/view and lights)
-			m_sceneUniformBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
 			SceneUniformBuffer sceneUBO{};
-			m_sceneUniformBuffers[i]->CreateHostVisable(&sceneUBO, sizeof(SceneUniformBuffer), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			BufferCreateInfo sceneUniformCreateInfo{ "scene_UBO", BUFFER_TYPE::UNIFORM, BUFFER_VISIBILITY::HOST, static_cast<void*>(&sceneUBO),sizeof(SceneUniformBuffer) };
+			
+			//Create scene unform buffers (Camera projection/view and lights)
+			m_sceneUniformBuffers.emplace_back(VulkanBuffer(sceneUniformCreateInfo, *this));
 
 			//create light storage buffers
-			size_t lightBufferSize = sizeof(LightBuffer);
-			m_lightStorageBuffers[i] = std::unique_ptr<VulkanBaseBuffer>(new VulkanBaseBuffer(this));
-			m_lightStorageBuffers[i]->CreateHostVisable(nullptr, lightBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+			BufferCreateInfo lightStorageCreateInfo{ "light_Storage", BUFFER_TYPE::STORAGE, BUFFER_VISIBILITY::HOST, nullptr,sizeof(LightBuffer)};
+			m_lightStorageBuffers.emplace_back(VulkanBuffer(lightStorageCreateInfo, *this));
 			
 		}
 	}
@@ -346,7 +346,7 @@ namespace Ignite
 		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = SceneUniformBuffers()[i]->Buffer();
+			bufferInfo.buffer = SceneUniformBuffers()[i].Buffer();
 			bufferInfo.offset = 0;
 			bufferInfo.range = sizeof(SceneUniformBuffer);
 
@@ -379,7 +379,7 @@ namespace Ignite
 		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = m_lightStorageBuffers[i]->Buffer();
+			bufferInfo.buffer = m_lightStorageBuffers[i].Buffer();
 			bufferInfo.offset = 0;
 			bufferInfo.range = lightBufferSize;
 
@@ -475,8 +475,8 @@ namespace Ignite
 		LOG_CORE_INFO("Cleaning up vulkan uniform buffers");
 		for (size_t i = 0; i < m_sceneUniformBuffers.size(); i++)
 		{
-			m_sceneUniformBuffers[i]->Free();
-			m_lightStorageBuffers[i]->Free();
+			m_sceneUniformBuffers[i].Free();
+			m_lightStorageBuffers[i].Free();
 		}
 		
 		LOG_CORE_INFO("Cleaning up vulkan Descriptor Pool");
