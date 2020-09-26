@@ -12,4 +12,4 @@
 	url = https://github.com/tinyobjloader/tinyobjloader
 [submodule "Ignite-Core/vendor/imgui"]
 	path = Ignite-Core/vendor/imgui
-	url = https://github.com/ocornut/imgui
+	url = https://github.com/tieran02/imgui
