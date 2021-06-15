@@ -18,6 +18,6 @@ public:
 private:
 	std::unique_ptr<ImGUI> imGUI;
 
-	std::vector<Ignite::Light> lights;
+	std::vector<Ignite::LightData> lights;
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 };

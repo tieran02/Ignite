@@ -37,7 +37,7 @@ void TangentTestLayer::OnAttach()
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
 	//directional light
-	lights.emplace_back(Ignite::Light{glm::normalize(glm::vec4(0.6f, 1, 0, 0)), glm::vec3(.8, .4, .4)});
+	lights.emplace_back(Ignite::LightData{glm::normalize(glm::vec4(0.6f, 1, 0, 0)), glm::vec3(.8, .4, .4)});
 
 	camera.Yaw() = -90.0f;
 	camera.Pitch() = -90.0f;

@@ -18,11 +18,12 @@ private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
 	const Ignite::IPipeline* pipeline{ nullptr };
+	const Ignite::IPipeline* geom{ nullptr };
 	const Ignite::IPipeline* unlitPipeline{ nullptr };
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;
-	std::vector<Ignite::Light> lights;
+	std::vector<Ignite::LightData> lights;
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 	glm::vec3 lightPosition{ 50,100,-8 };
 

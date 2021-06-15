@@ -26,7 +26,7 @@ Ignite::VulkanRendererAPI::~VulkanRendererAPI()
 	Cleanup();
 }
 
-void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vector<Light>& lights)
+void Ignite::VulkanRendererAPI::BeginScene(const Camera& camera, const std::vector<LightData>& lights)
 {
 	//TODO start recording command buffers
 	//free command buffers

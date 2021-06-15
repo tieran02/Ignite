@@ -61,9 +61,6 @@ void main()
 
     // get diffuse color
     vec3 color = texture(DiffuseSampler, TexCoords).rgb;
-     // normal in object space
-    vec3 tnorm = FetchObjectNormalVector(TexCoords,Normal,Tangent,1.0);
-    //vec3 tnorm = Normal;
     
-    outColor = vec4(normalize(tnorm), 1.0);
+    outColor = vec4(color, 1.0);
 }

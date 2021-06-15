@@ -5,7 +5,8 @@
 namespace Ignite
 {
 	Camera::Camera(const glm::vec3& origin)
-		: m_speed(5.5f),
+		: SceneObject(SceneObjectType::CAMERA),
+		m_speed(5.5f),
 		m_position(origin),
 		m_front(0.0f, 0.0f, -1.0f),
 		m_up(0.0f, 1.0f, 0.0f)

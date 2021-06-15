@@ -12,8 +12,10 @@ void SponzaTestLayer::OnAttach()
 	};
 
 	Ignite::PipelineCreateInfo litPipelineInfo{ "shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv" };
+	Ignite::PipelineCreateInfo GeomPipelineInfo{ "geom", layout, "resources/shaders/debugNormalVert.spv", "resources/shaders/debugNormalFrag.spv", "resources/shaders/debugNormalGeom.spv" };
 	Ignite::PipelineCreateInfo unlitPipelineInfo{ "unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv" };
 	pipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(litPipelineInfo);
+	geom = Ignite::Renderer::GraphicsContext()->CreatePipeline(GeomPipelineInfo);
 	unlitPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(unlitPipelineInfo);
 
 	//load model with default texture
@@ -24,11 +26,11 @@ void SponzaTestLayer::OnAttach()
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
 	//directional light
-	lights.emplace_back(Ignite::Light{ glm::normalize(glm::vec4(0.6f,1,0,0)) , glm::vec3(.8,.4,.4) });
+	lights.emplace_back(Ignite::LightData{ glm::normalize(glm::vec4(0.4f,1,0.4f,0)) , glm::vec3(1.2f,.8f,.8f) });
 	//point light
-	lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500, });
-	lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z - 500,1) , glm::vec3(5.0,.25f,.25f) ,glm::vec3(0),500, });
-	lights.emplace_back(Ignite::Light{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z + 500,1) , glm::vec3(.25f,5.0f,.25f) ,glm::vec3(0),500, });
+	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500, });
+	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z - 500,1) , glm::vec3(5.0,.25f,.25f) ,glm::vec3(0),500, });
+	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z + 500,1) , glm::vec3(.25f,5.0f,.25f) ,glm::vec3(0),500, });
 }
 
 void SponzaTestLayer::OnDetach()
@@ -76,6 +78,7 @@ void SponzaTestLayer::OnUpdate()
 	Ignite::Renderer::BeginScene(camera, lights);
 
 	Ignite::Renderer::Submit(pipeline, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+	//Ignite::Renderer::Submit(geom, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 
 	//render light
 	Ignite::Renderer::Submit(unlitPipeline, cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));

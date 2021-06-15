@@ -1,5 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
+#include "Ignite/SceneObject.h"
 
 namespace Ignite
 {
@@ -11,7 +12,7 @@ namespace Ignite
 		eRIGHT
 	};
 	
-	class Camera
+	class Camera : public SceneObject
 	{
 	public:
 		Camera(const glm::vec3& origin);

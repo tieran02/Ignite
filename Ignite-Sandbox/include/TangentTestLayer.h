@@ -26,7 +26,7 @@ private:
 
 	std::shared_ptr<Ignite::Model> tangentModel;
 	std::shared_ptr<Ignite::Model> cubeModel;
-	std::vector<Ignite::Light> lights;
+	std::vector<Ignite::LightData> lights;
 
 	glm::vec3 lightPosition{ 50,100,-8 };
 	Ignite::Camera camera{ glm::vec3(0,0,0) };

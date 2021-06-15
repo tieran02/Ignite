@@ -37,7 +37,7 @@ bool Ignite::Renderer::IsInitialised()
 	return RenderCommand::s_renderer != nullptr;
 }
 
-void Ignite::Renderer::BeginScene(const Camera& camera, const std::vector<Light>& lights)
+void Ignite::Renderer::BeginScene(const Camera& camera, const std::vector<LightData>& lights)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;

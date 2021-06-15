@@ -3,7 +3,7 @@
 
 #include "Ignite/Log.h"
 
-Ignite::LightBuffer::LightBuffer(const std::vector<Light>& lights)
+Ignite::LightBuffer::LightBuffer(const std::vector<LightData>& lights)
 {
 	CORE_ASSERT(lights.size() <= MAX_LIGHTS, "Exceded max light count!");
 
@@ -18,5 +18,25 @@ Ignite::LightBuffer::LightBuffer(const std::vector<Light>& lights)
 
 size_t Ignite::LightBuffer::Size() const
 {
-	return sizeof(LightCount) + (sizeof(Light) * LightCount);
+	return sizeof(LightCount) + (sizeof(LightData) * LightCount);
+}
+
+Ignite::Light::Light(LightType type, const glm::vec3& origin, const glm::vec3& color) : SceneObject(SceneObjectType::LIGHT)
+{
+	switch (type)
+	{
+	case LightType::DIRECTIONAL:
+		m_lightData.Position = glm::vec4(origin, 0.0f);
+		break;
+	case LightType::POINT:
+		m_lightData.Position = glm::vec4(origin, 1.0f);
+		break;
+	case LightType::SPOT:
+		m_lightData.Position = glm::vec4(origin, 1.0f);
+		break;
+	default: 
+		m_lightData.Position = glm::vec4(origin, 1.0f);;
+	}
+
+	m_lightData.Intensity = color;
 }
