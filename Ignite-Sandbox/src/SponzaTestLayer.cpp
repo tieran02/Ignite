@@ -18,19 +18,25 @@ void SponzaTestLayer::OnAttach()
 	geom = Ignite::Renderer::GraphicsContext()->CreatePipeline(GeomPipelineInfo);
 	unlitPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(unlitPipelineInfo);
 
-	//load model with default texture
-	sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
-	//cube model
-	cubeModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "cube","resources/models", "cube.obj" });
+	////load model with default texture
+	//sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
+	////cube model
+	//cubeModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "cube","resources/models", "cube.obj" });
 
 	lastPrintTime = std::chrono::high_resolution_clock::now();
 
-	//directional light
-	lights.emplace_back(Ignite::LightData{ glm::normalize(glm::vec4(0.4f,1,0.4f,0)) , glm::vec3(1.2f,.8f,.8f) });
-	//point light
-	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500, });
-	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z - 500,1) , glm::vec3(5.0,.25f,.25f) ,glm::vec3(0),500, });
-	lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z + 500,1) , glm::vec3(.25f,5.0f,.25f) ,glm::vec3(0),500, });
+	////directional light
+	//lights.emplace_back(Ignite::LightData{ glm::normalize(glm::vec4(0.4f,1,0.4f,0)) , glm::vec3(1.2f,.8f,.8f) });
+	////point light
+	//lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition,1) , glm::vec3(.25f,.25f,5.0f) ,glm::vec3(0),500, });
+	//lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z - 500,1) , glm::vec3(5.0,.25f,.25f) ,glm::vec3(0),500, });
+	//lights.emplace_back(Ignite::LightData{ glm::vec4(lightPosition.x,lightPosition.y,lightPosition.z + 500,1) , glm::vec3(.25f,5.0f,.25f) ,glm::vec3(0),500, });
+
+	auto directionalLight= m_sceneGraph.AddNode("DirectionalLight", Ignite::LightSceneObjectCreateInfo(Ignite::LightType::DIRECTIONAL));
+	directionalLight->Transform.SetPosition(glm::vec3(0.4f, 1, 0.4f));
+
+	m_sceneGraph.AddNode("sponza", Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
+
 }
 
 void SponzaTestLayer::OnDetach()
@@ -54,38 +60,27 @@ void SponzaTestLayer::OnUpdate()
 		lastPrintTime = currentTime;
 	}
 
-	lightPosition.x = 1200 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
-	lights[1].Position.x = lightPosition.x;
-	//lights[2].Position.x = lightPosition.x;
-	//lights[3].Position.x = lightPosition.x;
+	//lightPosition.x = 1200 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
+	//lights[1].Position.x = lightPosition.x;
+	////lights[2].Position.x = lightPosition.x;
+	////lights[3].Position.x = lightPosition.x;
 
 	constexpr float CAMERA_SPEED = 0.5f;
 	//camera
-	if (Ignite::Input::IsKeyPressed(IG_KEY_W))
-		camera.Translate(Ignite::CameraDirection::eFORWARD, CAMERA_SPEED * deltaTime);
-	if (Ignite::Input::IsKeyPressed(IG_KEY_S))
-		camera.Translate(Ignite::CameraDirection::eBACKWARD, CAMERA_SPEED * deltaTime);
-	if (Ignite::Input::IsKeyPressed(IG_KEY_A))
-		camera.Translate(Ignite::CameraDirection::eLEFT, CAMERA_SPEED * deltaTime);
-	if (Ignite::Input::IsKeyPressed(IG_KEY_D))
-		camera.Translate(Ignite::CameraDirection::eRIGHT, CAMERA_SPEED * deltaTime);
+	if (m_sceneGraph.GetMainCamera()) {
+		if (Ignite::Input::IsKeyPressed(IG_KEY_W))
+			m_sceneGraph.GetMainCamera()->Translate(Ignite::CameraDirection::eFORWARD, CAMERA_SPEED * deltaTime);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_S))
+			m_sceneGraph.GetMainCamera()->Translate(Ignite::CameraDirection::eBACKWARD, CAMERA_SPEED * deltaTime);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_A))
+			m_sceneGraph.GetMainCamera()->Translate(Ignite::CameraDirection::eLEFT, CAMERA_SPEED * deltaTime);
+		if (Ignite::Input::IsKeyPressed(IG_KEY_D))
+			m_sceneGraph.GetMainCamera()->Translate(Ignite::CameraDirection::eRIGHT, CAMERA_SPEED * deltaTime);
 
-	camera.MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
-
-	//start scene
-	Ignite::RenderCommand::SetClearColor(glm::vec4{ .5f,.2f,.2f,1.0f });
-
-	Ignite::Renderer::BeginScene(camera, lights);
-
-	Ignite::Renderer::Submit(pipeline, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
-	//Ignite::Renderer::Submit(geom, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
-
-	//render light
-	Ignite::Renderer::Submit(unlitPipeline, cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));
-
-	Ignite::Renderer::EndScene();
-
-	Ignite::Renderer::SwapBuffers();
+		m_sceneGraph.GetMainCamera()->MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
+	}
+	
+	m_sceneGraph.Render(*pipeline);
 
 	//FL_LOG_INFO("ExampleLayer::Update");
 	if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))

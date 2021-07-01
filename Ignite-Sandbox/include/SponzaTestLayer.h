@@ -1,5 +1,6 @@
 #pragma once
 #include "Ignite/Ignite.h"
+#include "Ignite/SceneGraph.h"
 
 class SponzaTestLayer : public Ignite::Layer
 {
@@ -26,6 +27,8 @@ private:
 	std::vector<Ignite::LightData> lights;
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 	glm::vec3 lightPosition{ 50,100,-8 };
+
+	Ignite::SceneGraph m_sceneGraph;
 
 	std::chrono::high_resolution_clock::time_point lastPrintTime;
 	std::chrono::high_resolution_clock::time_point lastFrameTime;

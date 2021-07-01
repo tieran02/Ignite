@@ -4,6 +4,7 @@
 
 namespace Ignite
 {
+	class IPipeline;
 	class Camera;
 
 	struct SceneNode
@@ -19,12 +20,14 @@ namespace Ignite
 	class SceneGraph
 	{
 		public:
-			
-			void AddObject(const std::string& name, SceneObject& object, Transform transform = Transform{});
+			SceneGraph();
 
-			void Render();
+			SceneNode* AddNode(const std::string& name, const SceneObjectCreateInfo& create_info, Transform transform = Transform{});
+			Camera* GetMainCamera() const;
+		
+			void Render(const IPipeline& pipeline);
 		private:
 			std::unordered_map<std::string ,SceneNode> m_sceneNodes;
-			Camera& m_mainCamera;
+			Camera* m_mainCamera;
 	};
 }

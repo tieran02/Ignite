@@ -9,7 +9,10 @@
 
 namespace Ignite
 {
-	IMesh::IMesh(const MeshCreateInfo& meshInfo) : m_context(Renderer::GraphicsContext()), m_meshInfo(meshInfo)
+	IMesh::IMesh(const MeshCreateInfo& meshInfo) :
+		SceneObject(SceneObjectType::MESH),
+		m_context(Renderer::GraphicsContext()),
+		m_meshInfo(meshInfo)
 	{
 	}
 

@@ -12,7 +12,9 @@
 
 namespace Ignite
 {
-    Model::Model(const ModelCreateInfo& info) : m_modelInfo(info)
+    Model::Model(const ModelCreateInfo& info) :
+		SceneObject(SceneObjectType::MODEL),
+		m_modelInfo(info)
     {
     }
 	

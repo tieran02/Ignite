@@ -21,22 +21,22 @@ size_t Ignite::LightBuffer::Size() const
 	return sizeof(LightCount) + (sizeof(LightData) * LightCount);
 }
 
-Ignite::Light::Light(LightType type, const glm::vec3& origin, const glm::vec3& color) : SceneObject(SceneObjectType::LIGHT)
+Ignite::LightType Ignite::Light::GetLightType()
 {
-	switch (type)
-	{
-	case LightType::DIRECTIONAL:
+	return m_lightType;
+}
+
+Ignite::LightData& Ignite::Light::GetLightData()
+{
+	return m_lightData;
+}
+
+Ignite::Light::Light(LightType type, const glm::vec3& origin, const glm::vec3& color) : SceneObject(SceneObjectType::LIGHT), m_lightType(type)
+{
+	if(type == LightType::DIRECTIONAL)
 		m_lightData.Position = glm::vec4(origin, 0.0f);
-		break;
-	case LightType::POINT:
+	else
 		m_lightData.Position = glm::vec4(origin, 1.0f);
-		break;
-	case LightType::SPOT:
-		m_lightData.Position = glm::vec4(origin, 1.0f);
-		break;
-	default: 
-		m_lightData.Position = glm::vec4(origin, 1.0f);;
-	}
 
 	m_lightData.Intensity = color;
 }

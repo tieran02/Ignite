@@ -1,7 +1,9 @@
 #include "igpch.h"
 #include "Ignite/SceneObject.h"
 #include "Ignite/Renderer/Camera.h"
+#include "Ignite/Renderer/IMesh.h"
 #include "Ignite/Renderer/Light.h"
+#include "Ignite/Renderer/Model.h"
 
 namespace Ignite
 {
@@ -30,22 +32,28 @@ namespace Ignite
 		return m_objectType;
 	}
 
-	std::unique_ptr<SceneObject> SceneObject::CreateObject(SceneObjectCreateInfo createInfo)
+	std::unique_ptr<SceneObject> SceneObject::CreateObject(const SceneObjectCreateInfo* createInfo)
 	{
-		switch (createInfo.ObjectType())
+		switch (createInfo->ObjectType())
 		{
 		case SceneObjectType::MESH:
-			break;
+		{
+			const auto meshCreateInfo = reinterpret_cast<const MeshCreateInfo*>(createInfo);
+			return IMesh::Create(*meshCreateInfo);
+		}
 		case SceneObjectType::MODEL:
-			break;
+		{
+			const auto modelCreateInfo = reinterpret_cast<const ModelCreateInfo*>(createInfo);
+			return Model::Create(*modelCreateInfo);
+		}
 		case SceneObjectType::LIGHT:
 		{
-			auto lightCreateInfo = reinterpret_cast<LightSceneObjectCreateInfo*>(&createInfo);
+			const auto lightCreateInfo = reinterpret_cast<const LightSceneObjectCreateInfo*>(createInfo);
 			return std::make_unique<Light>(lightCreateInfo->LightType, lightCreateInfo->ObjectTransfrom.Position(), lightCreateInfo->Color);
 		}
 		case SceneObjectType::CAMERA:
 		{
-			auto cameraCreateInfo = reinterpret_cast<CameraSceneObjectCreateInfo*>(&createInfo);
+			const auto cameraCreateInfo = reinterpret_cast<const CameraSceneObjectCreateInfo*>(createInfo);
 			return std::make_unique<Camera>(cameraCreateInfo->ObjectTransfrom.Position());
 		}
 		case SceneObjectType::UNDEFINED:

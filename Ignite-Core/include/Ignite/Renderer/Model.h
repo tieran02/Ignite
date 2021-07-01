@@ -10,10 +10,11 @@ namespace tinyobj
 
 namespace Ignite
 {
-	struct ModelCreateInfo
+	struct ModelCreateInfo : SceneObjectCreateInfo
 	{
 		ModelCreateInfo(const std::string& m_name, const std::string& m_path, const std::string& m_file)
-			: m_name(m_name),
+			: SceneObjectCreateInfo(SceneObjectType::MODEL),
+              m_name(m_name),
 			  m_path(m_path),
 			  m_file(m_file)
 		{
@@ -29,7 +30,7 @@ namespace Ignite
         const std::string m_file;
 	};
 	
-    class Model
+    class Model : public SceneObject
 	{
     private:
         Model(const ModelCreateInfo& info);

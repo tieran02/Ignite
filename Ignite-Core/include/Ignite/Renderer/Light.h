@@ -40,6 +40,8 @@ namespace Ignite
 	{
 	public:
 		Light(LightType type, const glm::vec3& origin, const glm::vec3& color);
+		LightType GetLightType();
+		LightData& GetLightData();
 	private:
 		LightType m_lightType;
 		LightData m_lightData;

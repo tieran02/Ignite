@@ -3,17 +3,19 @@
 #include "ITexture2D.h"
 #include "MeshData.h"
 #include "Vertex.h"
+#include "Ignite/SceneObject.h"
 
 namespace Ignite
 {
 	struct MeshData;
 	class PipelineInputLayout;
 
-	struct MeshCreateInfo
+	struct MeshCreateInfo : SceneObjectCreateInfo
 	{
 	public:
 		MeshCreateInfo(const std::string& name,MeshData&& mesh_data, const IMaterial* material)
-			: m_name(name),
+			: SceneObjectCreateInfo(SceneObjectType::MESH),
+			m_name(name),
 			m_meshData(std::move(mesh_data)),
 			m_material(material)
 		{
@@ -29,7 +31,7 @@ namespace Ignite
 		const IMaterial* m_material;
 	};
 	
-	class IMesh
+	class IMesh : public SceneObject
 	{
 	protected:
 		IMesh(const MeshCreateInfo& meshInfo);
