@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <functional>
+#include <unordered_map>
+
 
 namespace Ignite
 {
@@ -12,7 +14,8 @@ namespace Ignite
 		WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved, WindowMinimezed,
 		AppTick, AppUpdate, AppRender,
 		KeyPressed, KeyReleased, KeyTyped,
-		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+		ValueChanged
 	};
 
 	enum EventCategory
@@ -60,6 +63,42 @@ namespace Ignite
 		}
 	private:
 		Event& m_event;
+	};
+
+	template<typename T>
+	class EventHandler
+	{
+		using EventFn = std::function<void(T&)>;
+	public:
+		static_assert(std::is_base_of<Event, T>::value, "T must inherit from Event");
+
+		void Subscribe(const std::string& name, const EventFn& func)
+		{
+			if (m_eventfunctions.find(name) == m_eventfunctions.end())
+				m_eventfunctions.insert(std::make_pair(name, func));
+		}
+
+		void Unsubscribe(const std::string& name)
+		{
+			if (m_eventfunctions.find(name) != m_eventfunctions.end())
+				m_eventfunctions.erase(name);
+		}
+
+		EventHandler& operator()(Event& event)
+		{
+			for (auto& func : m_eventfunctions)
+			{
+				if (event.GetEventType() == T::GetStaticType())
+				{
+					func.second(*(T*)&event);
+				}
+			}
+			
+			return *this;
+		}
+
+	private:
+		std::unordered_map<std::string, EventFn> m_eventfunctions;
 	};
 
 	inline std::ostream& operator<<(std::ostream& os, const Event& e)

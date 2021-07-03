@@ -2,6 +2,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
+#include "Events/Event.h"
+#include "Events/ValueChangedEvent.h"
+
 namespace Ignite
 {
 	class Transform
@@ -23,9 +26,13 @@ namespace Ignite
 		const glm::quat& Rotation() const;
 
 		glm::mat4 ModelMatrix() const;
+
+		EventHandler<ValueChangedEvent<Transform>>& TransformChangedEventHandler();
 	private:
 		glm::vec3 m_position;
 		glm::vec3 m_scale;
 		glm::quat m_rotation;
+
+		EventHandler<ValueChangedEvent<Transform>> m_transformChangedEventHandler;
 	};
 }

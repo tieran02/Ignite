@@ -26,15 +26,6 @@ namespace Ignite
 		if (m_sceneNodes.find(name) != m_sceneNodes.end())
 			return nullptr;
 
-		SceneNode sceneNode
-		{
-			name,
-			true,
-			transform,
-			SceneObject::CreateObject(&createInfo),
-			nullptr
-		};
-
 		if (!m_sceneNodes.insert(std::make_pair(name, 
 			SceneNode
 			{
@@ -46,6 +37,17 @@ namespace Ignite
 			})).second)
 			return nullptr;
 
+		//If light, Subscribe to the transform changed to update the light data that gets sent to the GPU
+		if(createInfo.ObjectType() == SceneObjectType::LIGHT)
+		{
+			auto& node = m_sceneNodes[name];
+			node.Transform.TransformChangedEventHandler().Subscribe("LightPosition", [&node](ValueChangedEvent<Transform>& event)
+			{
+				Light* light = reinterpret_cast<Light*>(node.Object.get());
+				light->GetLightData().Position = glm::vec4(node.Transform.Position(), light->GetLightData().Position.w);
+			});
+		}
+		
 		return &m_sceneNodes[name];
 	}
 
@@ -74,14 +76,7 @@ namespace Ignite
 			}
 			case SceneObjectType::LIGHT:
 			{
-				Light* light = reinterpret_cast<Light*>(node.second.Object.get());
-
-				//set position in light data struct to match the node transform
-				if (light->GetLightType() == LightType::DIRECTIONAL)
-					light->GetLightData().Position = glm::vec4(node.second.Transform.Position(), 0.0f);
-				else
-					light->GetLightData().Position = glm::vec4(node.second.Transform.Position(), 1.0f);
-					
+				Light* light = reinterpret_cast<Light*>(node.second.Object.get());	
 				lightData.push_back(light->GetLightData());
 				break;
 			}

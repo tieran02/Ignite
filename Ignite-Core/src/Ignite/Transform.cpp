@@ -8,7 +8,6 @@ namespace Ignite
 		m_scale(glm::vec3(1)),
 		m_rotation(glm::quat())
 	{
-
 	}
 
 	Transform::Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale) :
@@ -22,21 +21,25 @@ namespace Ignite
 	void Transform::SetPosition(const glm::vec3& position)
 	{
 		m_position = position;
+		m_transformChangedEventHandler(ValueChangedEvent(*this));
 	}
 
 	void Transform::SetRotation(const glm::quat& rotation)
 	{
 		m_rotation = rotation;
+		m_transformChangedEventHandler(ValueChangedEvent(*this));
 	}
 
 	void Transform::SetRotation(const glm::vec3& axis, float angle)
 	{
 		m_rotation = glm::angleAxis(angle, axis);
+		m_transformChangedEventHandler(ValueChangedEvent(*this));
 	}
 
 	void Transform::SetScale(const glm::vec3& scale)
 	{
 		m_scale = scale;
+		m_transformChangedEventHandler(ValueChangedEvent(*this));
 	}
 
 	glm::vec3& Transform::Position()
@@ -79,5 +82,10 @@ namespace Ignite
 		modelMatrix *= rotationMatrix;
 
 		return modelMatrix;
+	}
+
+	EventHandler<ValueChangedEvent<Transform>>& Transform::TransformChangedEventHandler()
+	{
+		return m_transformChangedEventHandler;
 	}
 }
