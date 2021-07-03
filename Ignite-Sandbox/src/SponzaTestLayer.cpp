@@ -35,6 +35,10 @@ void SponzaTestLayer::OnAttach()
 	auto directionalLight= m_sceneGraph.AddNode("DirectionalLight", Ignite::LightSceneObjectCreateInfo(Ignite::LightType::DIRECTIONAL));
 	directionalLight->Transform.SetPosition(glm::vec3(0.4f, 1, 0.4f));
 
+	auto pointLight = m_sceneGraph.AddNode("PointLight", Ignite::LightSceneObjectCreateInfo(Ignite::LightType::POINT, glm::vec3(2.0f,0.0f,0.0f)));
+	pointLight->Transform.SetPosition(lightPosition);
+	lights.push_back(pointLight);
+
 	m_sceneGraph.AddNode("sponza", Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
 
 }
@@ -60,8 +64,8 @@ void SponzaTestLayer::OnUpdate()
 		lastPrintTime = currentTime;
 	}
 
-	//lightPosition.x = 1200 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
-	//lights[1].Position.x = lightPosition.x;
+	lightPosition.x = 1200 * sin(std::chrono::duration_cast<ms>(currentTime.time_since_epoch()).count() / 1000);
+	lights[0]->Transform.SetPosition(lightPosition);
 	////lights[2].Position.x = lightPosition.x;
 	////lights[3].Position.x = lightPosition.x;
 

@@ -39,4 +39,5 @@ Ignite::Light::Light(LightType type, const glm::vec3& origin, const glm::vec3& c
 		m_lightData.Position = glm::vec4(origin, 1.0f);
 
 	m_lightData.Intensity = color;
+	m_lightData.Attenuation = 500.0f;
 }

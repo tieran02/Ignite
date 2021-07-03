@@ -24,7 +24,7 @@ private:
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;
-	std::vector<Ignite::LightData> lights;
+	std::vector<Ignite::SceneNode*> lights;
 	Ignite::Camera camera{ glm::vec3(0,0,0) };
 	glm::vec3 lightPosition{ 50,100,-8 };
 
