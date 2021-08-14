@@ -1,13 +1,13 @@
 #pragma once
-#include "Ignite/Renderer/IMaterial.h"
+#include "Ignite/Renderer/Material.h"
 #include "VulkanPipeline.h"
 #include "VulkanBuffer.h"
 
 namespace Ignite
 {
-	class VulkanMaterial : public IMaterial
+	class VulkanMaterial : public Material
 	{
-		friend class IMaterial;
+		friend class Material;
 	protected:
 		VulkanMaterial(const MaterialCreateInfo& materialInfo);
 		
@@ -15,8 +15,8 @@ namespace Ignite
 		void Cleanup() override;
 	public:
 		~VulkanMaterial() override;
-		void Bind(const IPipeline* pipeline) const override;
-		void Unbind(const IPipeline* pipeline) const override;
+		void Bind(const Pipeline* pipeline) const override;
+		void Unbind(const Pipeline* pipeline) const override;
 
 		void CreateDescriptorSets();
 	private:

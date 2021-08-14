@@ -9,7 +9,7 @@
 
 namespace Ignite
 {
-	VulkanTexture2D::VulkanTexture2D(const Texture2DCreateInfo& info) : ITexture2D(info)
+	VulkanTexture2D::VulkanTexture2D(const Texture2DCreateInfo& info) : Texture2D(info)
 	{
 		m_format = VK_FORMAT_R8G8B8A8_SRGB;
 		if (info.GetType() == TextureType::eNORMAL)
@@ -125,7 +125,7 @@ namespace Ignite
 			VK_IMAGE_USAGE_TRANSFER_SRC_BIT |VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_textureImage, m_textureImageMemory);
 
 		VulkanResources::CopyBufferToImage(vulkanContext->Device().LogicalDevice(), vulkanContext->Device().PhysicalDevice(), vulkanContext->CommandPool(),
-		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.Buffer(), m_textureImage, static_cast<uint32_t>(m_Texture2DInfo.GetWidth()),static_cast<uint32_t>(m_Texture2DInfo.GetHeight()), m_mipLevels, m_format);
+		                                   vulkanContext->Device().GraphicsQueue(), imageBuffer.PlatformBuffer(), m_textureImage, static_cast<uint32_t>(m_Texture2DInfo.GetWidth()),static_cast<uint32_t>(m_Texture2DInfo.GetHeight()), m_mipLevels, m_format);
 		
 		imageBuffer.Free();
 

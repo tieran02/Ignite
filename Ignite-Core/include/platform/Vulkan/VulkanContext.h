@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Ignite/Renderer/IGraphicsContext.h>
+#include <Ignite/Renderer/GraphicsContext.h>
 #include <platform\Vulkan\VulkanDevice.h>
 #include "VulkanSwapChain.h"
 #include "VulkenRenderpass.h"
@@ -14,9 +14,9 @@
 
 namespace Ignite
 {
-    class VulkanContext : public IGraphicsContext
+    class VulkanContext : public GraphicsContext
     {
-	friend class IGraphicsContext;
+	friend class GraphicsContext;
     protected:
         VulkanContext();
 

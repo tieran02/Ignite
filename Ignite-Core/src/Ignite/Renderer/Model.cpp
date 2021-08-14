@@ -7,7 +7,7 @@
 #include "Ignite/Log.h"
 #include "Ignite/Renderer/Renderer.h"
 #include "glm/gtc/type_ptr.inl"
-#include "Ignite/Renderer/IMaterial.h"
+#include "Ignite/Renderer/Material.h"
 #include "Ignite/Renderer/MeshData.h"
 
 namespace Ignite
@@ -29,12 +29,12 @@ namespace Ignite
 	}
 
 
-	const std::vector<const IMesh*>& Model::Meshes() const
+	const std::vector<const Mesh*>& Model::Meshes() const
 	{
 		return m_meshes;
 	}
 
-	const std::vector<const IMaterial*>& Model::Materials() const
+	const std::vector<const Material*>& Model::Materials() const
 	{
         return m_materials;
 	}
@@ -58,10 +58,10 @@ namespace Ignite
         }
     }
 
-    const IMesh* Model::processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path)
+    const Mesh* Model::processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path)
     {	
         std::vector<uint32_t> indices;
-        std::vector<std::shared_ptr<ITexture2D>> textures;
+        std::vector<std::shared_ptr<Texture2D>> textures;
 
         MeshData meshData;
         Vertex vertex{};
@@ -124,7 +124,7 @@ namespace Ignite
         }
 
 
-        const IMaterial* material;
+        const Material* material;
 
         // Vulkan viewer does not support texturing with per-face material.
         if (!shape.mesh.material_ids.empty() && shape.mesh.material_ids[0] >= 0)
@@ -134,7 +134,7 @@ namespace Ignite
     	else
         {
             //make default mat
-            material = IMaterial::DefaultMaterial();
+            material = Material::DefaultMaterial();
         }
         m_materials.push_back(material);
 		//finaly create mesh
@@ -144,14 +144,14 @@ namespace Ignite
         return Renderer::GraphicsContext()->CreateMesh(MeshCreateInfo{ shape.name, std::move(meshData), material });
 	}
 
-	const IMaterial* Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
+	const Material* Model::getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID,
 		const std::string& path)
 	{
         if(materialID < materials.size())
         {
             const tinyobj::material_t* mp = &materials[materialID];
 
-            const ITexture2D* diffuseTexture{ nullptr };
+            const Texture2D* diffuseTexture{ nullptr };
             if (mp->diffuse_texname.length() > 0)
 			{
 				std::string file = path + "/" + mp->diffuse_texname;
@@ -159,7 +159,7 @@ namespace Ignite
                 diffuseTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
 			}
 
-            const ITexture2D* specularTexture{ nullptr };
+            const Texture2D* specularTexture{ nullptr };
             if (mp->specular_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->specular_texname;
@@ -167,7 +167,7 @@ namespace Ignite
                 specularTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            const ITexture2D* normalTexture{ nullptr };
+            const Texture2D* normalTexture{ nullptr };
             if (mp->normal_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->normal_texname;
@@ -175,7 +175,7 @@ namespace Ignite
                 normalTexture = Renderer::GraphicsContext()->CreateTexture2D(textureInfo);
             }
 
-            const ITexture2D* alphaTexture{ nullptr };
+            const Texture2D* alphaTexture{ nullptr };
             if (mp->alpha_texname.length() > 0)
             {
                 std::string file = path + "/" + mp->alpha_texname;
@@ -204,6 +204,6 @@ namespace Ignite
 
             return Renderer::GraphicsContext()->CreateMaterial(createInfo);;
         }
-        return IMaterial::DefaultMaterial();;
+        return Material::DefaultMaterial();;
 	}
 }

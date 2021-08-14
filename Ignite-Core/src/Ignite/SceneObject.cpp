@@ -1,7 +1,7 @@
 #include "igpch.h"
 #include "Ignite/SceneObject.h"
 #include "Ignite/Renderer/Camera.h"
-#include "Ignite/Renderer/IMesh.h"
+#include "Ignite/Renderer/Mesh.h"
 #include "Ignite/Renderer/Light.h"
 #include "Ignite/Renderer/Model.h"
 
@@ -39,7 +39,7 @@ namespace Ignite
 		case SceneObjectType::MESH:
 		{
 			const auto meshCreateInfo = reinterpret_cast<const MeshCreateInfo*>(createInfo);
-			return IMesh::Create(*meshCreateInfo);
+			return Mesh::Create(*meshCreateInfo);
 		}
 		case SceneObjectType::MODEL:
 		{
@@ -59,5 +59,6 @@ namespace Ignite
 		case SceneObjectType::UNDEFINED:
 			break;
 		}
+		return nullptr;
 	}
 }

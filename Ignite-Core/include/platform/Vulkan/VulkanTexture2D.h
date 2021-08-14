@@ -1,16 +1,16 @@
 #pragma once
 
 #include <vulkan/vulkan_core.h>
-#include "Ignite/Renderer/ITexture2D.h"
+#include "Ignite/Renderer/Texture2D.h"
 
 namespace  Ignite
 {
 	class VulkanDevice;
 	class VulkanContext;
 
-	class VulkanTexture2D : public ITexture2D
+	class VulkanTexture2D : public Texture2D
 	{
-		friend class ITexture2D;
+		friend class Texture2D;
 	protected:
 		VulkanTexture2D(const Texture2DCreateInfo& info);
 	public:

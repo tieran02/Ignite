@@ -3,8 +3,8 @@
 #include "platform/Vulkan/VulkanContext.h"
 #include <Ignite/IWindow.h>
 #include "Ignite/Application.h"
-#include "Ignite/Renderer/IPipeline.h"
-#include "Ignite/Renderer/ITexture2D.h"
+#include "Ignite/Renderer/Pipeline.h"
+#include "Ignite/Renderer/Texture2D.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 #include "platform/Vulkan/VulkanMesh.h"
 #include "platform/Vulkan/VulkanMaterial.h"
@@ -12,7 +12,7 @@
 
 namespace Ignite
 {
-	VulkanContext::VulkanContext() :IGraphicsContext()
+	VulkanContext::VulkanContext() :GraphicsContext()
     {
         Init();
     }
@@ -346,7 +346,7 @@ namespace Ignite
 		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = SceneUniformBuffers()[i].Buffer();
+			bufferInfo.buffer = SceneUniformBuffers()[i].PlatformBuffer();
 			bufferInfo.offset = 0;
 			bufferInfo.range = sizeof(SceneUniformBuffer);
 
@@ -379,7 +379,7 @@ namespace Ignite
 		for (size_t i = 0; i < Swapchain().ImageViews().size(); i++)
 		{
 			VkDescriptorBufferInfo bufferInfo = {};
-			bufferInfo.buffer = m_lightStorageBuffers[i].Buffer();
+			bufferInfo.buffer = m_lightStorageBuffers[i].PlatformBuffer();
 			bufferInfo.offset = 0;
 			bufferInfo.range = lightBufferSize;
 

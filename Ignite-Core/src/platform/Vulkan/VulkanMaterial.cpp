@@ -4,7 +4,7 @@
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanTexture2D.h"
 
-Ignite::VulkanMaterial::VulkanMaterial(const MaterialCreateInfo& materialInfo) : IMaterial(materialInfo)
+Ignite::VulkanMaterial::VulkanMaterial(const MaterialCreateInfo& materialInfo) : Material(materialInfo)
 {
 	Init();
 }
@@ -24,7 +24,7 @@ Ignite::VulkanMaterial::~VulkanMaterial()
 	Cleanup();
 }
 
-void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
+void Ignite::VulkanMaterial::Bind(const Pipeline* pipeline) const
 {
 	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 	CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");
@@ -50,7 +50,7 @@ void Ignite::VulkanMaterial::Bind(const IPipeline* pipeline) const
 	
 }
 
-void Ignite::VulkanMaterial::Unbind(const IPipeline* pipeline) const
+void Ignite::VulkanMaterial::Unbind(const Pipeline* pipeline) const
 {
 }
 

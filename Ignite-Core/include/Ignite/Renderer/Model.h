@@ -1,5 +1,5 @@
 #pragma once
-#include "IMesh.h"
+#include "Mesh.h"
 
 namespace tinyobj
 {
@@ -37,15 +37,15 @@ namespace Ignite
     public:
         static std::unique_ptr<Model> Create(const ModelCreateInfo& info);
     	
-        const std::vector<const IMesh*>& Meshes() const;
-        const std::vector<const IMaterial*>& Materials() const;
+        const std::vector<const Mesh*>& Meshes() const;
+        const std::vector<const Material*>& Materials() const;
     private:
         const ModelCreateInfo m_modelInfo;
-        std::vector<const IMesh*> m_meshes;
-        std::vector<const IMaterial*> m_materials;
+        std::vector<const Mesh*> m_meshes;
+        std::vector<const Material*> m_materials;
 
         void loadModel();
-        const IMesh* processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
-        const IMaterial* getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
+        const Mesh* processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
+        const Material* getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
     };
 }

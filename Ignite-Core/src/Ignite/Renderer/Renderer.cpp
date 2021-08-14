@@ -1,11 +1,11 @@
 #include "igpch.h"
 #include "Ignite/Renderer/Renderer.h"
 #include "Ignite/Renderer/RenderCommand.h"
-#include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Renderer/Pipeline.h"
 #include "Ignite/Application.h"
-#include "Ignite/Renderer/IMesh.h"
+#include "Ignite/Renderer/Mesh.h"
 #include "Ignite/Renderer/Model.h"
-#include "Ignite/Renderer/IMaterial.h"
+#include "Ignite/Renderer/Material.h"
 #include "Ignite/Renderer/Camera.h"
 #include "glm/gtx/associated_min_max.hpp"
 
@@ -22,9 +22,9 @@ void Ignite::Renderer::Init()
 	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
 	Texture2DCreateInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
 	
-	const ITexture2D* defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
-	const ITexture2D* defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
-	const ITexture2D* defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
+	const Texture2D* defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
+	const Texture2D* defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
+	const Texture2D* defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
 }
 
 void Ignite::Renderer::Shutdown()
@@ -62,7 +62,7 @@ void Ignite::Renderer::EndScene()
 	RenderCommand::s_renderer->EndScene();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh,const glm::mat4& transform)
+void Ignite::Renderer::Submit(const Pipeline* pipeline, const Mesh* mesh,const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
@@ -73,14 +73,14 @@ void Ignite::Renderer::Submit(const IPipeline* pipeline, const IMesh* mesh,const
 	pipeline->Unbind();
 }
 
-void Ignite::Renderer::Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const Pipeline* pipeline, const Model* model, const glm::mat4& transform)
 {
 	if(!model)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
-		for (const IMesh* mesh : model->Meshes())
+		for (const Mesh* mesh : model->Meshes())
 		{
 			submitMesh(pipeline,mesh,transform);
 		}
@@ -96,7 +96,7 @@ void Ignite::Renderer::SwapBuffers()
 	GraphicsContext()->SwapBuffers();
 }
 
-Ignite::IGraphicsContext* Ignite::Renderer::GraphicsContext()
+Ignite::GraphicsContext* Ignite::Renderer::GraphicsContext()
 {
 	return RenderCommand::s_renderer->GetGraphicsContext();
 }
@@ -106,7 +106,7 @@ Ignite::SceneUniformBuffer& Ignite::Renderer::SceneUBO()
 	return m_sceneUBO;
 }
 
-void Ignite::Renderer::submitMesh(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform)
+void Ignite::Renderer::submitMesh(const Pipeline* pipeline, const Mesh* mesh, const glm::mat4& transform)
 {
 	if (mesh != nullptr)
 	{

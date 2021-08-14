@@ -1,5 +1,5 @@
 #pragma once
-#include "Ignite/Renderer/IPipeline.h"
+#include "Ignite/Renderer/Pipeline.h"
 #include <vulkan/vulkan_core.h>
 
 namespace  Ignite
@@ -7,9 +7,9 @@ namespace  Ignite
 	class VulkanDevice;
 	class VulkanContext;
 	
-	class VulkanPipeline : public IPipeline
+	class VulkanPipeline : public Pipeline
 	{
-		friend class IPipeline;
+		friend class Pipeline;
 	protected:
 		VulkanPipeline(const PipelineCreateInfo& info);
 	public:

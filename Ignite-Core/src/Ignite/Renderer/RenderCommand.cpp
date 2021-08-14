@@ -6,11 +6,11 @@
 
 namespace Ignite
 {
-	std::unique_ptr<IRendererAPI> RenderCommand::s_renderer = nullptr;
+	std::unique_ptr<RendererAPI> RenderCommand::s_renderer = nullptr;
 	
 	void RenderCommand::Init()
 	{
-		s_renderer = IRendererAPI::Create();
+		s_renderer = RendererAPI::Create();
 		CORE_ASSERT(s_renderer, "Renderer is null");
 	}
 
@@ -28,7 +28,7 @@ namespace Ignite
 	{
 	}
 
-	void RenderCommand::DrawIndexed(const IBuffer* vertexBuffer, const IBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
+	void RenderCommand::DrawIndexed(const Buffer* vertexBuffer, const Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 	{
 		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount, transform);
 	}

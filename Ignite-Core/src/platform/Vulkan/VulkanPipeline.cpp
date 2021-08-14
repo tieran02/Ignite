@@ -4,13 +4,13 @@
 #include "Ignite/Log.h"
 #include "Ignite/Utils.h"
 #include "Ignite/Renderer/Renderer.h"
-#include <Ignite\Renderer\IMaterial.h>
+#include <Ignite\Renderer\Material.h>
 
 namespace  Ignite
 {
 	VkPipelineLayout VulkanPipeline::m_pipelineLayout = VK_NULL_HANDLE;
 	
-	VulkanPipeline::VulkanPipeline(const PipelineCreateInfo& info) : IPipeline(info)
+	VulkanPipeline::VulkanPipeline(const PipelineCreateInfo& info) : Pipeline(info)
 	{
 		Init();
 	}
@@ -67,7 +67,7 @@ namespace  Ignite
 			//vkCmdDraw(vulkanContext->CommandBuffers()[i], 3, 1, 0, 0);
 		}
 
-		s_currentBoundPipeline = (IPipeline*)this;
+		s_currentBoundPipeline = (Pipeline*)this;
 	}
 
 	void VulkanPipeline::Unbind() const

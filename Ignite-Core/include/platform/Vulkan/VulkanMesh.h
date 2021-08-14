@@ -1,12 +1,12 @@
 #pragma once
-#include "Ignite/Renderer/IMesh.h"
+#include "Ignite/Renderer/Mesh.h"
 #include <vulkan/vulkan.h>
 
 namespace Ignite
 {
-	class VulkanMesh : public IMesh
+	class VulkanMesh : public Mesh
 	{
-		friend class IMesh;
+		friend class Mesh;
 	protected:
 		VulkanMesh(const MeshCreateInfo& meshInfo);
 		void Init(const MeshData& meshData) override;

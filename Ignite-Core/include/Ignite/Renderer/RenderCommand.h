@@ -1,5 +1,5 @@
 #pragma once
-#include "IRendererAPI.h"
+#include "RendererAPI.h"
 
 namespace Ignite {
 	class RenderCommand
@@ -14,8 +14,8 @@ namespace Ignite {
 
 		static void Clear();
 
-		static void DrawIndexed(const ::Ignite::IBuffer* vertexBuffer, const ::Ignite::IBuffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform);
+		static void DrawIndexed(const ::Ignite::Buffer* vertexBuffer, const ::Ignite::Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform);
 	private:
-		static std::unique_ptr<IRendererAPI> s_renderer;
+		static std::unique_ptr<RendererAPI> s_renderer;
 	};
 }

@@ -1,13 +1,13 @@
 #pragma once
-#include "IGraphicsContext.h"
+#include "GraphicsContext.h"
 #include "glm/mat4x4.hpp"
-#include "IMesh.h"
+#include "Mesh.h"
 #include "Camera.h"
 #include "Light.h"
 
 namespace Ignite {
 	class Model;
-	class IPipeline;
+	class Pipeline;
 
 	class Renderer
 	{
@@ -22,18 +22,18 @@ namespace Ignite {
 		static void BeginScene(const Camera& camera, const std::vector<LightData>& lights);
 		static void EndScene();
 
-		//static void Submit(const IPipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline* pipeline, const IMesh* mesh, const glm::mat4& transform = glm::mat4(1.0f));
-		static void Submit(const IPipeline* pipeline, const Model* model, const glm::mat4& transform = glm::mat4(1.0f));
+		//static void Submit(const Pipeline& pipeline, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const Pipeline* pipeline, const Mesh* mesh, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const Pipeline* pipeline, const Model* model, const glm::mat4& transform = glm::mat4(1.0f));
 
 		static void SwapBuffers();
 
-		static IGraphicsContext* GraphicsContext();
+		static GraphicsContext* GraphicsContext();
 		static SceneUniformBuffer& SceneUBO();
 	private:
 		static bool m_recordingScene;
 		static SceneUniformBuffer m_sceneUBO;
 
-		static void submitMesh(const ::Ignite::IPipeline* pipeline, const ::Ignite::IMesh* mesh, const glm::mat4& transform);
+		static void submitMesh(const ::Ignite::Pipeline* pipeline, const ::Ignite::Mesh* mesh, const glm::mat4& transform);
 	};
 }

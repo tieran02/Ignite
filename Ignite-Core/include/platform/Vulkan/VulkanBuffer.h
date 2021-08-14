@@ -1,5 +1,5 @@
 #pragma once
-#include "Ignite/Renderer/IBuffer.h"
+#include "Ignite/Renderer/Buffer.h"
 #include "vulkan/vulkan.h"
 
 namespace Ignite
@@ -29,15 +29,15 @@ namespace Ignite
 	//	void CreateHostVisable(const void* data, VkDeviceSize size, VkBufferUsageFlags usage);
 	//};
 	
-	class VulkanBuffer : public IBuffer
+	class VulkanBuffer : public Buffer
 	{
-		friend class IBuffer;
+		friend class Buffer;
 	public:
 		VulkanBuffer(const BufferCreateInfo& bufferInfo, const VulkanContext& context);
 		~VulkanBuffer() override;
 
 		VulkanBuffer(VulkanBuffer&& other) noexcept
-			: IBuffer(std::move(other.m_bufferInfo)),
+			: Buffer(std::move(other.m_bufferInfo)),
 		      m_vulkanContext(other.m_vulkanContext),
 			  m_vkBuffer(other.m_vkBuffer),
 			  m_vkBufferMemory(other.m_vkBufferMemory),
@@ -61,7 +61,7 @@ namespace Ignite
 		void Flush() const override;
 		void CopyToBuffer(void* data, size_t size) override;
 
-		VkBuffer Buffer() const { return m_vkBuffer; }
+		VkBuffer PlatformBuffer() const { return m_vkBuffer; }
 		VkDeviceMemory DeviceMemory() const { return m_vkBufferMemory; }
 	private:
 		const VulkanContext& m_vulkanContext;

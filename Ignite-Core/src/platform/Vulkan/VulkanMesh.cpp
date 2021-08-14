@@ -1,5 +1,5 @@
 #include "igpch.h"
-#include "Ignite/Renderer/IGraphicsContext.h"
+#include "Ignite/Renderer/GraphicsContext.h"
 #include "platform/Vulkan/VulkanMesh.h"
 #include "Ignite/Log.h"
 #include "platform/Vulkan/VulkanContext.h"
@@ -10,7 +10,7 @@
 
 namespace Ignite
 {
-	VulkanMesh::VulkanMesh(const MeshCreateInfo& meshInfo) : IMesh(meshInfo)
+	VulkanMesh::VulkanMesh(const MeshCreateInfo& meshInfo) : Mesh(meshInfo)
 	{
 		m_indexCount = static_cast<uint32_t>(meshInfo.GetMeshData().Triangles().size());
 		Init(meshInfo.GetMeshData());
@@ -88,7 +88,7 @@ namespace Ignite
 		const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 		CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");
 
-		const IPipeline* pipeline = IPipeline::CurrentBoundPipeline();
+		const Pipeline* pipeline = Pipeline::CurrentBoundPipeline();
 		CORE_ASSERT(pipeline, "Failed to cleanup VulkanBuffer, vulkan context is null");
 		VkPipelineLayout layout = static_cast<const VulkanPipeline*>(pipeline)->PipelineLayout();
 

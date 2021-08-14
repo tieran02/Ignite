@@ -2,7 +2,7 @@
 #include "Ignite/SceneGraph.h"
 #include <Ignite/Renderer/Renderer.h>
 #include <Ignite/Renderer/RenderCommand.h>
-#include <Ignite/Renderer/IPipeline.h>
+#include <Ignite/Renderer/Pipeline.h>
 
 #include "Ignite/Log.h"
 
@@ -56,7 +56,7 @@ namespace Ignite
 		return m_mainCamera;
 	}
 
-	void SceneGraph::Render(const IPipeline& pipeline)
+	void SceneGraph::Render(const Pipeline& pipeline)
 	{
 		//get light data, this copied for now (needs improving later)
 		std::vector<LightData> lightData;

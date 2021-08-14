@@ -1,7 +1,7 @@
 #pragma once
 
 namespace Ignite {
-	class IGraphicsContext;
+	class GraphicsContext;
 	class Event;
 	class Layer
 	{

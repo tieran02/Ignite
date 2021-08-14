@@ -255,7 +255,7 @@ void VulkanImGUI::initResources(VkRenderPass renderPass, VkQueue copyQueue, cons
 		device->PhysicalDevice(),
 		context->CommandPool(),
 		context->Device().GraphicsQueue(),
-		imageBuffer.Buffer(),
+		imageBuffer.PlatformBuffer(),
 		fontImage, 
 		static_cast<uint32_t>(texWidth),
 		static_cast<uint32_t>(texHeight),

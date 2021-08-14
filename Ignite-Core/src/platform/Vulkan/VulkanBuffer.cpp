@@ -62,7 +62,7 @@ namespace Ignite
 
 
 
-	VulkanBuffer::VulkanBuffer(const BufferCreateInfo& bufferInfo, const VulkanContext& context) : IBuffer(bufferInfo), m_vulkanContext(context)
+	VulkanBuffer::VulkanBuffer(const BufferCreateInfo& bufferInfo, const VulkanContext& context) : Buffer(bufferInfo), m_vulkanContext(context)
 	{
 		Init();
 	}
