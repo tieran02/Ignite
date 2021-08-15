@@ -1,5 +1,6 @@
 #pragma once
 #include "NonCopyable.h"
+#include "Ignite/CreateProperties.h"
 #include "Events/Event.h"
 #include <functional>
 
@@ -7,7 +8,7 @@ namespace Ignite
 {
 	using EventCallbackFn = std::function<void(Event&)>;
 
-	struct WindowProperites
+	struct WindowProperites : public CreateProperties
 	{
 		std::string Title;
 		unsigned int Width;
@@ -17,8 +18,7 @@ namespace Ignite
 		EventCallbackFn EventCallback;
 
 		WindowProperites(const std::string& title = "Ignite Engine", unsigned int width = 1280, unsigned int height = 720)
-			: Title(title), Width(width), Height(height), VSync(false) {}
-
+			: Title(title), Width(width), Height(height), VSync(false), CreateProperties(CreatePropertyType::Window) {}
 	};
 	
 	class IWindow : NonCopyable

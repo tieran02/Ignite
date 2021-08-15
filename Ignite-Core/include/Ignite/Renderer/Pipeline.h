@@ -1,5 +1,6 @@
 #pragma once
 #include "NonCopyable.h"
+#include "Ignite/CreateProperties.h"
 #include <string>
 #include <memory>
 #include "PipelineInputLayout.h"
@@ -8,7 +9,7 @@ namespace Ignite
 {
 	class GraphicsContext;
 
-	struct PipelineCreateInfo
+	struct PipelineCreateInfo: CreateProperties
 	{
 	public:
 		PipelineCreateInfo(const std::string& name, PipelineInputLayout& input_layout, const std::string& vertex_shader_path,
@@ -17,7 +18,8 @@ namespace Ignite
 			m_inputLayout(input_layout),
 			m_vertexShaderPath(vertex_shader_path),
 			m_fragmentShaderPath(fragment_shader_path),
-			m_geometryShaderPath(geometry_shader_path)
+			m_geometryShaderPath(geometry_shader_path),
+			CreateProperties(CreatePropertyType::Pipeline)
 		{
 		}
 		const std::string& GetName() const { return m_name; }

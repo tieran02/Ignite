@@ -1,4 +1,5 @@
 #pragma once
+#include "Ignite/CreateProperties.h"
 #include "Buffer.h"
 #include "Texture2D.h"
 #include "MeshData.h"
@@ -10,11 +11,12 @@ namespace Ignite
 	struct MeshData;
 	class PipelineInputLayout;
 
-	struct MeshCreateInfo : SceneObjectCreateInfo
+	struct MeshCreateInfo : SceneObjectCreateInfo, CreateProperties
 	{
 	public:
 		MeshCreateInfo(const std::string& name,MeshData&& mesh_data, const Material* material)
 			: SceneObjectCreateInfo(SceneObjectType::MESH),
+			CreateProperties(CreatePropertyType::Mesh),
 			m_name(name),
 			m_meshData(std::move(mesh_data)),
 			m_material(material)

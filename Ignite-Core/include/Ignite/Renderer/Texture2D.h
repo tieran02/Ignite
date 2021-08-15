@@ -1,5 +1,6 @@
 #pragma once
 #include "GraphicsContext.h"
+#include "Ignite/CreateProperties.h"
 
 namespace Ignite
 {
@@ -12,7 +13,7 @@ namespace Ignite
 		eALPHAMASK
 	};
 
-	struct Texture2DCreateInfo
+	struct Texture2DCreateInfo : CreateProperties
 	{
 		friend Texture2D;
 		
@@ -21,7 +22,8 @@ namespace Ignite
 			  m_path(path),
 			  m_width(0),
 			  m_height(0),
-			  m_type(m_type)
+			  m_type(m_type),
+			  CreateProperties(CreatePropertyType::Texture2D)
 		{
 		}
 

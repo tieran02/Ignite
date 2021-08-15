@@ -1,5 +1,6 @@
 #pragma once
 #include "NonCopyable.h"
+#include "Ignite/CreateProperties.h"
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -34,7 +35,7 @@ namespace Ignite
 		STAGED
 	};
 	
-	struct BufferCreateInfo
+	struct BufferCreateInfo : public CreateProperties
 	{
 	public:
 		BufferCreateInfo(const std::string& name, BUFFER_TYPE type, BUFFER_VISIBILITY visibility, const void* sourceData, size_t size)
@@ -42,7 +43,8 @@ namespace Ignite
 			m_type(type),
 			m_visibility(visibility),
 			m_sourceData(sourceData),
-			m_size(size)
+			m_size(size),
+			CreateProperties(CreatePropertyType::Buffer)
 		{
 		}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include "Mesh.h"
+#include "Ignite/CreateProperties.h"
 
 namespace tinyobj
 {
@@ -10,10 +11,11 @@ namespace tinyobj
 
 namespace Ignite
 {
-	struct ModelCreateInfo : SceneObjectCreateInfo
+	struct ModelCreateInfo : SceneObjectCreateInfo, CreateProperties
 	{
 		ModelCreateInfo(const std::string& m_name, const std::string& m_path, const std::string& m_file)
 			: SceneObjectCreateInfo(SceneObjectType::MODEL),
+			  CreateProperties(CreatePropertyType::Model),
               m_name(m_name),
 			  m_path(m_path),
 			  m_file(m_file)

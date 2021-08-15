@@ -1,7 +1,6 @@
 #pragma once
 #include <utility>
-
-
+#include "Ignite/CreateProperties.h"
 #include "glm/vec4.hpp"
 #include "NonCopyable.h"
 
@@ -23,7 +22,7 @@ namespace Ignite
 		float opacity{ 0.0f };
 	};
 
-	struct MaterialCreateInfo
+	struct MaterialCreateInfo : public CreateProperties
 	{
 		friend class Material;
 	public:
@@ -38,7 +37,8 @@ namespace Ignite
 			m_diffuseTexture(m_diffuse_texture),
 			m_specularTexture(m_specular_texture),
 			m_normalTexture(m_normal_texture),
-			m_alphaTexture(m_alpha_texture)
+			m_alphaTexture(m_alpha_texture),
+			CreateProperties(CreatePropertyType::Material)
 		{
 		}
 
