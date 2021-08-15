@@ -10,13 +10,13 @@
 namespace Ignite 
 {
 	template<typename> struct ProperitesMap;
-	template<> struct ProperitesMap<IWindow>	{ using properties = WindowProperites;		const std::string name{ "Window" }; };
-	template<> struct ProperitesMap<Pipeline>	{ using properties = PipelineCreateInfo;	const std::string name{ "Pipeline" }; };
-	template<> struct ProperitesMap<Buffer>		{ using properties = BufferCreateInfo;		const std::string name{ "Buffer" }; };
-	template<> struct ProperitesMap<Material>	{ using properties = MaterialCreateInfo;	const std::string name{ "Material" }; };
-	template<> struct ProperitesMap<Mesh>		{ using properties = MeshCreateInfo;		const std::string name{ "Mesh" }; };
-	template<> struct ProperitesMap<Model>		{ using properties = ModelCreateInfo;		const std::string name{ "Model" }; };
-	template<> struct ProperitesMap<Texture2D>	{ using properties = Texture2DCreateInfo;	const std::string name{ "Texture2D" }; };
+	template<> struct ProperitesMap<IWindow>	{ using properties = WindowProperites;		inline static const	 std::string name{ "Window" }; };
+	template<> struct ProperitesMap<Pipeline>	{ using properties = PipelineCreateInfo;	inline static const  std::string name{ "Pipeline" }; };
+	template<> struct ProperitesMap<Buffer>		{ using properties = BufferCreateInfo;		inline static const  std::string name{ "Buffer" }; };
+	template<> struct ProperitesMap<Material>	{ using properties = MaterialCreateInfo;	inline static const  std::string name{ "Material" }; };
+	template<> struct ProperitesMap<Mesh>		{ using properties = MeshCreateInfo;		inline static const  std::string name{ "Mesh" }; };
+	template<> struct ProperitesMap<Model>		{ using properties = ModelCreateInfo;		inline static const  std::string name{ "Model" }; };
+	template<> struct ProperitesMap<Texture2D>	{ using properties = Texture2DCreateInfo;	inline static const  std::string name{ "Texture2D" }; };
 
 	class ResourceFactory
 	{
@@ -34,7 +34,7 @@ namespace Ignite
 
 			if (exists)
 			{
-				LOG_CORE_TRACE("{0}: {1} already exists within map", createProperties.GetName());
+				LOG_CORE_TRACE("{0}: {1} already exists within map", createProperties.GetName(), ProperitesMap<T>::name);
 				return map[createProperties.GetName()].get();
 			}
 
