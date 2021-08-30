@@ -24,7 +24,7 @@ VULKAN = os.getenv("VULKAN_SDK")
 
 -- Projects
 group "Dependencies"
-	include "Ignite-Core/vendor/GLFW"
+	include "Ignite-Core/vendor/glfw.lua"
 	include "Ignite-Core/vendor/imgui"
 group ""
 
