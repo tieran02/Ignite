@@ -12,7 +12,7 @@ namespace Ignite
 	struct PipelineCreateInfo: CreateProperties
 	{
 	public:
-		PipelineCreateInfo(const std::string& name, PipelineInputLayout& input_layout, const std::string& vertex_shader_path,
+		PipelineCreateInfo(const std::string& name, const PipelineInputLayout& input_layout, const std::string& vertex_shader_path,
 			const std::string& fragment_shader_path, const std::string& geometry_shader_path = "")
 			: m_name(name),
 			m_inputLayout(input_layout),

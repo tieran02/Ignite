@@ -1,4 +1,6 @@
 #include "SponzaTestLayer.h"
+#include "Ignite/Renderer/MaterialSystem.h"
+
 #include <chrono>
 
 void SponzaTestLayer::OnAttach()
@@ -17,6 +19,12 @@ void SponzaTestLayer::OnAttach()
 	pipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(litPipelineInfo);
 	geom = Ignite::Renderer::GraphicsContext()->CreatePipeline(GeomPipelineInfo);
 	unlitPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(unlitPipelineInfo);
+
+	Ignite::ShaderEffect defaultShaderEffect;
+	defaultShaderEffect.LoadShaderStage(Ignite::ShaderStage::VERTEX, "resources/shaders/vert.spv");
+	defaultShaderEffect.LoadShaderStage(Ignite::ShaderStage::FRAGMENT, "resources/shaders/frag.spv");
+
+	Ignite::ShaderPass defaultPass(*Ignite::Renderer::GraphicsContext(), defaultShaderEffect);
 
 	////load model with default texture
 	//sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
