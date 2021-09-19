@@ -1,6 +1,7 @@
 #include "igpch.h"
 #include "platform/Vulkan/VulkanPipeline.h"
 #include "platform/Vulkan/VulkanContext.h"
+#include "platform/Vulkan/VulkanResources.h"
 #include "Ignite/Log.h"
 #include "Ignite/Utils.h"
 #include "Ignite/Renderer/Renderer.h"
@@ -118,18 +119,6 @@ namespace  Ignite
 		return m_pipelineLayout;
 	}
 
-	VkShaderModule VulkanPipeline::createShaderModule(const VulkanDevice& device, const std::vector<char>& code)
-	{
-		VkShaderModuleCreateInfo createInfo = {};
-		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-		createInfo.codeSize = code.size();
-		createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-		VkShaderModule shaderModule;
-		VK_CHECK_RESULT(vkCreateShaderModule(device.LogicalDevice(), &createInfo, nullptr, &shaderModule));
-		return shaderModule;
-	}
-
 	VkVertexInputBindingDescription VulkanPipeline::getBindingDescription()
 	{
 		VkVertexInputBindingDescription bindingDescription = {};
@@ -214,9 +203,10 @@ namespace  Ignite
 		///
 
 		//create shader modules
-		VkShaderModule vertShaderModule = createShaderModule(vulkanContext->Device(), vertShaderCode);
-		VkShaderModule fragShaderModule = createShaderModule(vulkanContext->Device(), fragShaderCode);
-		VkShaderModule geometryShaderModule = HAS_GEOMETRY_SHADER ? createShaderModule(vulkanContext->Device(), geometryShaderCode) : VkShaderModule{};
+		VkShaderModule vertShaderModule = VulkanResources::CreateShaderModule(vulkanContext->Device().LogicalDevice(), vertShaderCode);
+		//VkShaderModule vertShaderModule = createShaderModule(vulkanContext->Device(), vertShaderCode);
+		VkShaderModule fragShaderModule = VulkanResources::CreateShaderModule(vulkanContext->Device().LogicalDevice(), fragShaderCode);
+		VkShaderModule geometryShaderModule = HAS_GEOMETRY_SHADER ? VulkanResources::CreateShaderModule(vulkanContext->Device().LogicalDevice(), geometryShaderCode) : VkShaderModule{};
 		
 
 		//vertex shader stage

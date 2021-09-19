@@ -258,7 +258,7 @@ VkImageView Ignite::VulkanResources::CreateImageView(VkDevice device, VkImage im
 	return imageView;
 }
 
-VkShaderModule Ignite::VulkanResources::CreateShaderModule(VkDevice device, const std::vector<char>& shaderCode, VkShaderStageFlagBits stages)
+VkShaderModule Ignite::VulkanResources::CreateShaderModule(VkDevice device, const std::vector<char>& shaderCode)
 {
 	VkShaderModuleCreateInfo createInfo = {};
 	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

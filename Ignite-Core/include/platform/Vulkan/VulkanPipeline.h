@@ -28,7 +28,6 @@ namespace  Ignite
 		static VkPipelineLayout m_pipelineLayout;
 		VkPipeline m_pipeline;
 		
-		VkShaderModule createShaderModule(const VulkanDevice& device, const std::vector<char>& code);
 		VkVertexInputBindingDescription  getBindingDescription();
 		std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
 		void createPipeline();

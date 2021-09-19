@@ -488,8 +488,8 @@ void VulkanImGUI::initResources(VkRenderPass renderPass, VkQueue copyQueue, cons
 	std::vector<char> fragShaderCode = Ignite::Utils::ReadFile(fragShaderPath);
 
 	//create shader modules
-	VkShaderModule vertShaderModule = Ignite::VulkanResources::CreateShaderModule(device->LogicalDevice(), vertShaderCode, VK_SHADER_STAGE_VERTEX_BIT);
-	VkShaderModule fragShaderModule = Ignite::VulkanResources::CreateShaderModule(device->LogicalDevice(), fragShaderCode, VK_SHADER_STAGE_FRAGMENT_BIT);
+	VkShaderModule vertShaderModule = Ignite::VulkanResources::CreateShaderModule(device->LogicalDevice(), vertShaderCode);
+	VkShaderModule fragShaderModule = Ignite::VulkanResources::CreateShaderModule(device->LogicalDevice(), fragShaderCode);
 
 	//vertex shader stage
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
