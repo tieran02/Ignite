@@ -26,6 +26,9 @@ void SponzaTestLayer::OnAttach()
 
 	Ignite::ShaderPass defaultPass(*Ignite::Renderer::GraphicsContext(), defaultShaderEffect);
 
+	Ignite::EffectTemplate effectTemplate;
+	effectTemplate.SetShaderPass(Ignite::ShaderPassType::FORWARD, &defaultPass);
+
 	////load model with default texture
 	//sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
 	////cube model

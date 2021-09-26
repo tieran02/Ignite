@@ -14,7 +14,7 @@ namespace Ignite {
 		const std::string& fragment = effect.ShaderStageCode(ShaderStage::FRAGMENT);
 		const std::string& geometry = effect.ShaderStageCode(ShaderStage::GEOMETRY);
 
-		//name is a hash of the paths
+		//TODO name is a hash of the paths, make UUID
 		std::stringstream ss;
 		ss << vertex << fragment << geometry;
 		PipelineCreateInfo createInfo(ss.str(), effect.InputLayout(), vertex, fragment, geometry);
@@ -61,5 +61,16 @@ namespace Ignite {
 		CORE_ASSERT(stage != ShaderStage::COUNT, "ShaderEffect::ShaderStageCode cannot be ShaderStage::COUNT");
 
 		return m_stages[to_underlying(stage)];
+	}
+
+	EffectTemplate::EffectTemplate()
+	{
+		std::fill(m_passShaders.begin(), m_passShaders.end(), nullptr);
+	}
+
+	void EffectTemplate::SetShaderPass(ShaderPassType passType, ShaderPass * shaderPass)
+	{
+		CORE_ASSERT(passType < ShaderPassType::COUNT, "EffectTemplate::SetShaderPass invalid passType");
+		m_passShaders[to_underlying(passType)] = shaderPass;
 	}
 }
