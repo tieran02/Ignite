@@ -5,21 +5,6 @@
 
 void SponzaTestLayer::OnAttach()
 {
-	Ignite::PipelineInputLayout layout =
-	{
-		{ Ignite::PipelineDataType::eFloat3, "a_Position" },
-		{ Ignite::PipelineDataType::eFloat3, "a_Normal" },
-		{ Ignite::PipelineDataType::eFloat4, "a_Tangent" },
-		{ Ignite::PipelineDataType::eFloat2, "a_TexCoord" }
-	};
-
-	Ignite::PipelineCreateInfo litPipelineInfo{ "shader", layout, "resources/shaders/vert.spv", "resources/shaders/frag.spv" };
-	Ignite::PipelineCreateInfo GeomPipelineInfo{ "geom", layout, "resources/shaders/debugNormalVert.spv", "resources/shaders/debugNormalFrag.spv", "resources/shaders/debugNormalGeom.spv" };
-	Ignite::PipelineCreateInfo unlitPipelineInfo{ "unlitShader", layout, "resources/shaders/unlitVert.spv", "resources/shaders/unlitFrag.spv" };
-	pipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(litPipelineInfo);
-	geom = Ignite::Renderer::GraphicsContext()->CreatePipeline(GeomPipelineInfo);
-	unlitPipeline = Ignite::Renderer::GraphicsContext()->CreatePipeline(unlitPipelineInfo);
-
 	//Create descriptor sets
 	sceneLayout = Ignite::DescriptorSetLayout(Ignite::SetType::UNIFORM_BUFFER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::VERTEX)));
 	sceneLayout.AddVariable(Ignite::PipelineDataType::eMat4);
@@ -44,13 +29,12 @@ void SponzaTestLayer::OnAttach()
 		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat); // coneAngle
 	}
 
-	Ignite::ShaderEffect defaultShaderEffect({ &sceneLayout, &textureLayout, &lightLayout });
+	defaultShaderEffect = Ignite::ShaderEffect({ &sceneLayout, &textureLayout, &lightLayout });
 	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::VERTEX, "resources/shaders/vert.spv");
 	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::FRAGMENT, "resources/shaders/frag.spv");
 
-	Ignite::ShaderPass defaultPass(*Ignite::Renderer::GraphicsContext(), defaultShaderEffect);
+	defaultPass = Ignite::ShaderPass(*Ignite::Renderer::GraphicsContext(), &defaultShaderEffect);
 
-	Ignite::EffectTemplate effectTemplate;
 	effectTemplate.SetShaderPass(Ignite::ShaderPassType::FORWARD, &defaultPass);
 
 	////load model with default texture
@@ -119,7 +103,7 @@ void SponzaTestLayer::OnUpdate()
 		m_sceneGraph.GetMainCamera()->MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 	}
 	
-	m_sceneGraph.Render(*pipeline);
+	m_sceneGraph.Render(*defaultPass.GetPipeline());
 
 	//FL_LOG_INFO("ExampleLayer::Update");
 	if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))

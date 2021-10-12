@@ -27,11 +27,11 @@ namespace Ignite
 
         static std::unique_ptr<GraphicsContext> Create();
 
-		const Pipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
-		const Texture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
-		const Mesh* CreateMesh(const MeshCreateInfo& meshInfo);
-		const Material* CreateMaterial(const MaterialCreateInfo& materialInfo);
-		const Buffer* CreateBuffer(const BufferCreateInfo& bufferInfo);
+		Pipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
+		Texture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
+		Mesh* CreateMesh(const MeshCreateInfo& meshInfo);
+		Material* CreateMaterial(const MaterialCreateInfo& materialInfo);
+		Buffer* CreateBuffer(const BufferCreateInfo& bufferInfo);
 		
 		const std::unordered_map<std::string, std::unique_ptr<Pipeline>>& Pipelines() const { return m_pipelines; }
 		const std::unordered_map<std::string, std::unique_ptr<Material>>& Materials() const { return m_materials; }

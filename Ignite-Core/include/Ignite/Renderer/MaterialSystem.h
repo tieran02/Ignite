@@ -9,10 +9,15 @@ namespace Ignite
 	class Pipeline;
 	class Texture2D;
 
-	struct ShaderEffect
+	struct ShaderEffect : NonCopyable
 	{
 	public:
+		ShaderEffect() = default;
 		ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets);
+		ShaderEffect(ShaderEffect&& other);
+		ShaderEffect& operator=(ShaderEffect&& other);
+
+
 		void LoadShaderStage(SetBindingStage stage, const std::string& path);
 
 		const PipelineInputLayout& InputLayout() const;
@@ -42,13 +47,18 @@ namespace Ignite
 	};
 
 	//The shader pass is just the built version of the shader effect that contains the built pipeline
-	struct ShaderPass
+	struct ShaderPass : NonCopyable
 	{
 	public:
-		ShaderPass(GraphicsContext& context, const ShaderEffect& effect);
+		ShaderPass() = default;
+		ShaderPass(GraphicsContext& context, ShaderEffect* effect);
+		ShaderPass(ShaderPass&& other);
+		ShaderPass& operator=(ShaderPass&& other);
+
+		const Pipeline* GetPipeline() const;
 	private:
-		const ShaderEffect m_effect;
-		const Pipeline* m_pipeline;
+		ShaderEffect* m_effect;
+		Pipeline* m_pipeline;
 	};
 
 	struct EffectTemplate 

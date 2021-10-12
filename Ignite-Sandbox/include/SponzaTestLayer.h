@@ -18,13 +18,17 @@ public:
 private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
-	const Ignite::Pipeline* pipeline{ nullptr };
-	const Ignite::Pipeline* geom{ nullptr };
-	const Ignite::Pipeline* unlitPipeline{ nullptr };
+	//const Ignite::Pipeline* pipeline{ nullptr };
+	//const Ignite::Pipeline* geom{ nullptr };
+	//const Ignite::Pipeline* unlitPipeline{ nullptr };
 
 	Ignite::DescriptorSetLayout sceneLayout;
 	Ignite::DescriptorSetLayout textureLayout;
 	Ignite::DescriptorSetLayout lightLayout;
+
+	Ignite::ShaderEffect defaultShaderEffect;
+	Ignite::ShaderPass defaultPass;
+	Ignite::EffectTemplate effectTemplate;
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;

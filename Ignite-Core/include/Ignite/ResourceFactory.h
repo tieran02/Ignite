@@ -28,7 +28,7 @@ namespace Ignite
 		}
 
 		template <typename T>
-		inline static const T* Create(const typename ProperitesMap<T>::properties& createProperties, std::unordered_map<std::string, std::unique_ptr<T>>& map)
+		inline static T* Create(const typename ProperitesMap<T>::properties& createProperties, std::unordered_map<std::string, std::unique_ptr<T>>& map)
 		{
 			bool exists = map.find(createProperties.GetName()) != map.end();
 

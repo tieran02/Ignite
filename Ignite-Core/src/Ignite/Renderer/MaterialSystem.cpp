@@ -8,16 +8,18 @@
 
 namespace Ignite {
 
-	ShaderPass::ShaderPass(GraphicsContext& context, const ShaderEffect& effect) : m_effect(effect)
+	ShaderPass::ShaderPass(GraphicsContext& context, ShaderEffect* effect) : m_effect(effect)
 	{
-		const std::string& vertex = effect.ShaderStageCode(SetBindingStage::VERTEX);
-		const std::string& fragment = effect.ShaderStageCode(SetBindingStage::FRAGMENT);
-		const std::string& geometry = effect.ShaderStageCode(SetBindingStage::GEOMETRY);
+		CORE_ASSERT(effect, "ShaderPass constructor, shader effect is a nullptr");
+
+		const std::string& vertex = effect->ShaderStageCode(SetBindingStage::VERTEX);
+		const std::string& fragment = effect->ShaderStageCode(SetBindingStage::FRAGMENT);
+		const std::string& geometry = effect->ShaderStageCode(SetBindingStage::GEOMETRY);
 
 		//TODO name is a hash of the paths, make UUID
 		std::stringstream ss;
 		ss << vertex << fragment << geometry;
-		PipelineCreateInfo createInfo(ss.str(), effect.InputLayout(), vertex, fragment, geometry);
+		PipelineCreateInfo createInfo(ss.str(), effect->InputLayout(), vertex, fragment, geometry);
 
 		switch (RendererAPI::GetAPI())
 		{
@@ -32,6 +34,27 @@ namespace Ignite {
 		CORE_ASSERT(m_pipeline, "ShaderPass::ShaderPass failed to create pipeline");
 	}
 
+	ShaderPass::ShaderPass(ShaderPass&& other) :
+		m_effect(std::move(other.m_effect)),
+		m_pipeline(std::move(other.m_pipeline))
+	{
+	}
+
+	ShaderPass & ShaderPass::operator=(ShaderPass && other)
+	{
+		if (this != &other)
+		{
+			m_effect = std::move(other.m_effect);
+			m_pipeline = std::move(other.m_pipeline);
+		}
+		return *this;
+	}
+
+	const Ignite::Pipeline* ShaderPass::GetPipeline() const
+	{
+		return m_pipeline;
+	}
+
 	ShaderEffect::ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets) :
 		m_descriptorSets(std::move(descriptorSets))
 	{
@@ -43,6 +66,25 @@ namespace Ignite {
 			{ PipelineDataType::eFloat4, "a_Tangent" },
 			{ PipelineDataType::eFloat2, "a_TexCoord" }
 		};
+	}
+
+	ShaderEffect::ShaderEffect(ShaderEffect && other) : 
+		m_pipelineLayoutInfo(std::move(other.m_pipelineLayoutInfo)),
+		m_descriptorSets(std::move(other.m_descriptorSets)),
+		m_stages(std::move(other.m_stages))
+	{
+	}
+
+	ShaderEffect & ShaderEffect::operator=(ShaderEffect && other)
+	{
+		if (this != &other)
+		{
+			m_pipelineLayoutInfo = std::move(other.m_pipelineLayoutInfo);
+			m_descriptorSets = std::move(other.m_descriptorSets);
+			m_stages = std::move(other.m_stages);
+		}
+
+		return *this;
 	}
 
 	void ShaderEffect::LoadShaderStage(SetBindingStage stage, const std::string & path)
