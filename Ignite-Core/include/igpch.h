@@ -17,6 +17,7 @@
 #include <map>
 #include <optional>
 #include <type_traits>
+#include <bitset>
 
 template <typename E>
 constexpr auto to_underlying(E e) noexcept

@@ -8,7 +8,7 @@ namespace Ignite
 		eNone = 0, eFloat, eFloat2, eFloat3, eFloat4, eMat3, eMat4, eInt, eInt2, eInt3, eInt4, eBool
 	};
 
-	static uint32_t PipelineDataTypeSize(PipelineDataType type);
+	uint32_t PipelineDataTypeSize(PipelineDataType type);
 
 	struct InputElement
 	{

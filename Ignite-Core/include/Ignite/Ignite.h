@@ -16,6 +16,7 @@
 #include "Ignite/Renderer/PipelineInputLayout.h"
 #include "Ignite/Renderer/RenderCommand.h"
 #include "Ignite/Renderer/Renderer.h"
+#include "Ignite/Renderer/DescriptorSet.h"
 
 namespace Ignite
 {

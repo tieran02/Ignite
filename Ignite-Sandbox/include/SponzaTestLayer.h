@@ -22,6 +22,10 @@ private:
 	const Ignite::Pipeline* geom{ nullptr };
 	const Ignite::Pipeline* unlitPipeline{ nullptr };
 
+	Ignite::DescriptorSetLayout sceneLayout;
+	Ignite::DescriptorSetLayout textureLayout;
+	Ignite::DescriptorSetLayout lightLayout;
+
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;
 	std::vector<Ignite::SceneNode*> lights;

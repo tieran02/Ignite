@@ -10,9 +10,9 @@ namespace Ignite {
 
 	ShaderPass::ShaderPass(GraphicsContext& context, const ShaderEffect& effect) : m_effect(effect)
 	{
-		const std::string& vertex = effect.ShaderStageCode(ShaderStage::VERTEX);
-		const std::string& fragment = effect.ShaderStageCode(ShaderStage::FRAGMENT);
-		const std::string& geometry = effect.ShaderStageCode(ShaderStage::GEOMETRY);
+		const std::string& vertex = effect.ShaderStageCode(SetBindingStage::VERTEX);
+		const std::string& fragment = effect.ShaderStageCode(SetBindingStage::FRAGMENT);
+		const std::string& geometry = effect.ShaderStageCode(SetBindingStage::GEOMETRY);
 
 		//TODO name is a hash of the paths, make UUID
 		std::stringstream ss;
@@ -32,7 +32,8 @@ namespace Ignite {
 		CORE_ASSERT(m_pipeline, "ShaderPass::ShaderPass failed to create pipeline");
 	}
 
-	ShaderEffect::ShaderEffect()
+	ShaderEffect::ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets) :
+		m_descriptorSets(std::move(descriptorSets))
 	{
 		//TODO: pass in pipeline layout, for now just use this as default
 		m_pipelineLayoutInfo = PipelineInputLayout
@@ -44,9 +45,9 @@ namespace Ignite {
 		};
 	}
 
-	void ShaderEffect::LoadShaderStage(ShaderStage stage, const std::string & path)
+	void ShaderEffect::LoadShaderStage(SetBindingStage stage, const std::string & path)
 	{
-		CORE_ASSERT(stage != ShaderStage::COUNT, "ShaderEffect::ShaderStageCode cannot be ShaderStage::COUNT");
+		CORE_ASSERT(stage != SetBindingStage::COUNT, "ShaderEffect::ShaderStageCode cannot be ShaderStage::COUNT");
 		CORE_ASSERT(m_stages[to_underlying(stage)].empty(), "ShaderEffect::ShaderStageCode stage already exists");
 
 		m_stages[to_underlying(stage)] = path;
@@ -56,9 +57,9 @@ namespace Ignite {
 	{
 		return m_pipelineLayoutInfo;
 	}
-	const std::string & ShaderEffect::ShaderStageCode(ShaderStage stage) const
+	const std::string & ShaderEffect::ShaderStageCode(SetBindingStage stage) const
 	{
-		CORE_ASSERT(stage != ShaderStage::COUNT, "ShaderEffect::ShaderStageCode cannot be ShaderStage::COUNT");
+		CORE_ASSERT(stage != SetBindingStage::COUNT, "ShaderEffect::ShaderStageCode cannot be ShaderStage::COUNT");
 
 		return m_stages[to_underlying(stage)];
 	}

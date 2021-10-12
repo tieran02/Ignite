@@ -1,6 +1,7 @@
 #pragma once
 #include "igpch.h"
 #include "Ignite/Renderer/PipelineInputLayout.h"
+#include "Ignite/Renderer/DescriptorSet.h"
 
 namespace Ignite
 {
@@ -8,56 +9,20 @@ namespace Ignite
 	class Pipeline;
 	class Texture2D;
 
-	enum class ShaderStage : uint8_t
-	{
-		VERTEX,
-		FRAGMENT,
-		GEOMETRY,
-		COUNT
-	};
-
-	//Defines what types of resources can be accesses by a given pipeline, this includes uniform buffers
-	struct DescriptorSet
-	{
-	public:
-		
-		enum class SetType : uint8_t
-		{
-			UNIFORM,
-			SAMPLER,
-			STORAGE,
-			COUNT
-		};
-
-		struct SetLayout
-		{
-		public:
-			std::vector<PipelineDataType> m_variables;
-		private:
-			SetType m_type;
-			uint8_t m_stages; //What stages to expose this set in E.G (ShaderStage::FRAGMENT | ShaderStage::VERTEX) for frag and vertex 
-		};
-
-	public:
-
-	private:
-		std::vector<SetLayout> m_layouts;
-	};
-
 	struct ShaderEffect
 	{
 	public:
-		ShaderEffect();
-		void LoadShaderStage(ShaderStage stage, const std::string& path);
+		ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets);
+		void LoadShaderStage(SetBindingStage stage, const std::string& path);
 
 		const PipelineInputLayout& InputLayout() const;
-		const std::string& ShaderStageCode(ShaderStage stage) const;
+		const std::string& ShaderStageCode(SetBindingStage stage) const;
 	private:
 		PipelineInputLayout m_pipelineLayoutInfo;
 		//This descriptor sets are only intended for data that is shared across all instances ( E.G light data/direction). 
 		//Per instance sets such as images and light settings go into the material set
-		DescriptorSet m_descriptorSets;
-		std::array<std::string, to_underlying(ShaderStage::COUNT)> m_stages;
+		std::vector<const DescriptorSetLayout*> m_descriptorSets;
+		std::array<std::string, to_underlying(SetBindingStage::COUNT)> m_stages;
 	};
 
 
@@ -101,7 +66,7 @@ namespace Ignite
 	public:
 	private:
 		EffectTemplate* m_effect;
-		std::array<DescriptorSet, to_underlying(ShaderPassType::COUNT)> m_passSets; //descriptor sets for per instance if a material, such as textures and specular settings
+		std::array<DescriptorSetLayout, to_underlying(ShaderPassType::COUNT)> m_passSets; //descriptor sets for per instance of a material, such as textures and specular settings
 		std::vector<Texture2D*> m_textures;
 	};
 }
