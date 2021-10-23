@@ -21,7 +21,7 @@ namespace Ignite
 
 	typedef std::bitset<to_underlying(SetBindingStage::COUNT)> StageBitSet;
 
-	struct DescriptorSetLayout
+	class DescriptorSetLayout
 	{
 	public:
 		DescriptorSetLayout();
