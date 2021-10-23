@@ -1,4 +1,5 @@
 #pragma once
+#include "Ignite/UUID.h"
 
 #include <iostream>
 #include <memory>

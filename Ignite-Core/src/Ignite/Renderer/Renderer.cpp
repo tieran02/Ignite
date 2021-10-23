@@ -14,9 +14,6 @@ Ignite::SceneUniformBuffer Ignite::Renderer::m_sceneUBO;
 
 void Ignite::Renderer::Init()
 {
-	RenderCommand::Init();
-
-
 	//add default textures
 	Texture2DCreateInfo defaultDiffuseInfo{ "default_diffuse", "resources/textures/default_white.jpg", TextureType::eDIFFUSE };
 	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
@@ -29,12 +26,12 @@ void Ignite::Renderer::Init()
 
 void Ignite::Renderer::Shutdown()
 {
-	RenderCommand::s_renderer.reset();
+	//RenderCommand::s_renderer.reset();
 }
 
 bool Ignite::Renderer::IsInitialised()
 {
-	return RenderCommand::s_renderer != nullptr;
+	return Application::Instance().GetRenderer() != nullptr;
 }
 
 void Ignite::Renderer::BeginScene(const Camera& camera, const std::vector<LightData>& lights)
@@ -50,7 +47,7 @@ void Ignite::Renderer::BeginScene(const Camera& camera, const std::vector<LightD
 	
 	m_recordingScene = true;
 	//get the renderer api
-	RenderCommand::s_renderer->BeginScene(camera,lights);
+	Application::Instance().GetRenderer()->BeginScene(camera,lights);
 }
 
 void Ignite::Renderer::EndScene()
@@ -59,7 +56,7 @@ void Ignite::Renderer::EndScene()
 		return;
 	
 	m_recordingScene = false;
-	RenderCommand::s_renderer->EndScene();
+	Application::Instance().GetRenderer()->EndScene();
 }
 
 void Ignite::Renderer::Submit(const Pipeline* pipeline, const Mesh* mesh,const glm::mat4& transform)
@@ -98,7 +95,7 @@ void Ignite::Renderer::SwapBuffers()
 
 Ignite::GraphicsContext* Ignite::Renderer::GraphicsContext()
 {
-	return RenderCommand::s_renderer->GetGraphicsContext();
+	return Application::Instance().GetRenderer()->GetGraphicsContext();
 }
 
 Ignite::SceneUniformBuffer& Ignite::Renderer::SceneUBO()

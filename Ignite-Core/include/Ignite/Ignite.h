@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Ignite/Application.h"
 #include "Ignite/Input.h"
+#include "Ignite/UUID.h"
 #include "Ignite/Renderer/Camera.h"
 #include "Ignite/Renderer/Buffer.h"
 #include "Ignite/Renderer/Mesh.h"

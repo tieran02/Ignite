@@ -14,6 +14,8 @@ namespace Ignite
 	class Texture2D;
 	class Material;
 	class Buffer;
+	class DescriptorSetLayout;
+	class UUID;
 
 	class GraphicsContext : NonCopyable
     {
@@ -38,11 +40,15 @@ namespace Ignite
 		const std::unordered_map<std::string, std::unique_ptr<Buffer>>& Buffers() const { return m_buffers; }
 		const std::unordered_map<std::string, std::unique_ptr<Texture2D>>& Texture2Ds() const { return m_texture2Ds; }
 		const std::unordered_map<std::string, std::unique_ptr<Mesh>>& Meshes() const { return m_meshes; }
+
+		void RegisterDescriptorSetLayout(DescriptorSetLayout& setLayout, bool unregister = false);
 	protected:
 		std::unordered_map<std::string, std::unique_ptr<Pipeline>> m_pipelines;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 		std::unordered_map<std::string, std::unique_ptr<Buffer>> m_buffers;
 		std::unordered_map<std::string, std::unique_ptr<Texture2D>> m_texture2Ds;
 		std::unordered_map<std::string, std::unique_ptr<Mesh>> m_meshes;
+
+		std::unordered_map<UUID, DescriptorSetLayout*> m_descriptorSetLayouts;
     };
 }

@@ -14,7 +14,7 @@ namespace Ignite
 	class WindowResizeEvent;
 	class Layer;
 	class Event;
-
+	class RendererAPI;
 
 	class Application
 	{
@@ -35,7 +35,7 @@ namespace Ignite
 		void PushOverlay(Layer* overlay);
 
 		const IWindow* Window() const { return m_window.get(); }
-		
+		RendererAPI* GetRenderer() const { return m_renderer.get(); }
 	private:
 		void init();
 		
@@ -45,6 +45,7 @@ namespace Ignite
 		static std::unique_ptr<Application> s_instance;
 		
 		std::unique_ptr<IWindow> m_window;
+		std::unique_ptr<RendererAPI> m_renderer;
 		bool m_running{ true };
 		LayerStack m_layerStack;
 	};

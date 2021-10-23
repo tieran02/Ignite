@@ -103,7 +103,7 @@ void SponzaTestLayer::OnUpdate()
 		m_sceneGraph.GetMainCamera()->MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 	}
 	
-	m_sceneGraph.Render(*defaultPass.GetPipeline());
+	if(defaultPass.GetPipeline()) m_sceneGraph.Render(*defaultPass.GetPipeline());
 
 	//FL_LOG_INFO("ExampleLayer::Update");
 	if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))

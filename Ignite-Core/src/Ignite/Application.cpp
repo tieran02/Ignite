@@ -51,12 +51,11 @@ namespace Ignite
 		while (m_running)
 		{
 			m_window->OnUpdate();
-			if(!m_running)
-				break;
-			
+	
 			for (Layer* layer : m_layerStack)
 			{
 				layer->OnUpdate();
+				if (!m_running) break;
 			}
 		}
 	}
@@ -73,8 +72,11 @@ namespace Ignite
 		//detach all layers
 		for (Layer* layer : m_layerStack)
 			layer->OnDetach();
+		m_layerStack.DeleteLayers();
+
 		
-		Renderer::Shutdown();
+		//Renderer::Shutdown();
+		m_renderer.reset();
 		m_window->Close();
 
 		LOG_CORE_INFO("Ignite has been extinguished");
@@ -117,6 +119,7 @@ namespace Ignite
 		m_window = IWindow::Create(window_properites);
 		m_window->SetEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
+		m_renderer = RendererAPI::Create();
 		Renderer::Init();
 
 	}

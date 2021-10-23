@@ -53,4 +53,13 @@ namespace Ignite
 			m_layers.erase(it);
 		}
 	}
+
+	void LayerStack::DeleteLayers()
+	{
+		for (Layer* layer : m_layers)
+		{
+			delete layer;
+		}
+		m_layers.clear();
+	}
 }

@@ -3,25 +3,19 @@
 #include "Ignite/Log.h"
 #include "glm/gtx/associated_min_max.hpp"
 #include "glm/gtx/associated_min_max.hpp"
+#include "Ignite/Application.h"
 
 namespace Ignite
 {
-	std::unique_ptr<RendererAPI> RenderCommand::s_renderer = nullptr;
-	
-	void RenderCommand::Init()
-	{
-		s_renderer = RendererAPI::Create();
-		CORE_ASSERT(s_renderer, "Renderer is null");
-	}
 
 	void RenderCommand::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		s_renderer->SetViewPort(x, y, width, height);
+		Application::Instance().GetRenderer()->SetViewPort(x, y, width, height);
 	}
 
 	void RenderCommand::SetClearColor(const glm::vec4& color)
 	{
-		s_renderer->SetClearColor(color);
+		Application::Instance().GetRenderer()->SetClearColor(color);
 	}
 
 	void RenderCommand::Clear()
@@ -30,6 +24,6 @@ namespace Ignite
 
 	void RenderCommand::DrawIndexed(const Buffer* vertexBuffer, const Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 	{
-		s_renderer->DrawIndexed(vertexBuffer,indexBuffer,indexCount, transform);
+		Application::Instance().GetRenderer()->DrawIndexed(vertexBuffer,indexBuffer,indexCount, transform);
 	}
 }
