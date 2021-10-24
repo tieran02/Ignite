@@ -9,6 +9,7 @@
 #include <Ignite/Renderer/Material.h>
 #include "Ignite/ResourceFactory.h"
 #include "Ignite/Renderer/DescriptorSet.h"
+#include "Ignite/Log.h"
 
 namespace Ignite
 {
@@ -46,14 +47,4 @@ namespace Ignite
     {
 		return ResourceFactory::Create<Buffer>(bufferInfo, m_buffers);
     }
-
-	void GraphicsContext::RegisterDescriptorSetLayout(DescriptorSetLayout& setLayout, bool unregister)
-	{
-		auto it = m_descriptorSetLayouts.find(setLayout.GetUUID());
-
-		if (!unregister && it == m_descriptorSetLayouts.end())
-			m_descriptorSetLayouts.insert(std::make_pair(setLayout.GetUUID(), &setLayout));
-		else if (unregister && it != m_descriptorSetLayouts.end())
-			m_descriptorSetLayouts.erase(it);
-	}
 }

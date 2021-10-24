@@ -13,6 +13,7 @@ namespace Ignite
 
 	enum class SetType : uint8_t
 	{
+		NONE,
 		UNIFORM_BUFFER,
 		SAMPLER,
 		STORAGE,
@@ -21,12 +22,15 @@ namespace Ignite
 
 	typedef std::bitset<to_underlying(SetBindingStage::COUNT)> StageBitSet;
 
-	class DescriptorSetLayout
+	class DescriptorSetLayout : public IRegister<DescriptorSetLayout>
 	{
 	public:
 		DescriptorSetLayout();
 		DescriptorSetLayout(SetType setType, StageBitSet stages = StageBitSet{}.all());
 		~DescriptorSetLayout();
+		DescriptorSetLayout(DescriptorSetLayout&& o) = default;
+		DescriptorSetLayout& operator=(DescriptorSetLayout&& other) = default;
+
 		void SetStages(StageBitSet stages);
 		bool HasStage(SetBindingStage stage) const;
 		StageBitSet GetStages() const;

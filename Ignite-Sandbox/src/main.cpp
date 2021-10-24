@@ -2,7 +2,6 @@
 #include "SponzaTestLayer.h"
 #include "TestUILayer.h"
 
-
 int main()
 {
 	Ignite::Ignite ignite;

@@ -41,7 +41,7 @@ namespace Ignite
 		const std::unordered_map<std::string, std::unique_ptr<Texture2D>>& Texture2Ds() const { return m_texture2Ds; }
 		const std::unordered_map<std::string, std::unique_ptr<Mesh>>& Meshes() const { return m_meshes; }
 
-		void RegisterDescriptorSetLayout(DescriptorSetLayout& setLayout, bool unregister = false);
+		std::unordered_map<UUID, DescriptorSetLayout*>& DescriptorSetLayouts() { return m_descriptorSetLayouts; }
 	protected:
 		std::unordered_map<std::string, std::unique_ptr<Pipeline>> m_pipelines;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;

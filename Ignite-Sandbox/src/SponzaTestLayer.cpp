@@ -6,18 +6,18 @@
 void SponzaTestLayer::OnAttach()
 {
 	//Create descriptor sets
-	sceneLayout = Ignite::DescriptorSetLayout(Ignite::SetType::UNIFORM_BUFFER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::VERTEX)));
+	sceneLayout = std::move(Ignite::DescriptorSetLayout(Ignite::SetType::UNIFORM_BUFFER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::VERTEX))));
 	sceneLayout.AddVariable(Ignite::PipelineDataType::eMat4);
 	sceneLayout.AddVariable(Ignite::PipelineDataType::eMat4);
 	sceneLayout.AddVariable(Ignite::PipelineDataType::eFloat3);
 
-	textureLayout = Ignite::DescriptorSetLayout(Ignite::SetType::SAMPLER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
+	textureLayout = std::move(Ignite::DescriptorSetLayout(Ignite::SetType::SAMPLER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT))));
 	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //diffuse
 	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Spec
 	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Normal
 	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Alpha
 
-	lightLayout = Ignite::DescriptorSetLayout(Ignite::SetType::STORAGE, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
+	lightLayout = std::move(Ignite::DescriptorSetLayout(Ignite::SetType::STORAGE, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT))));
 	lightLayout.AddVariable(Ignite::PipelineDataType::eInt); //light count
 	for (size_t i = 0; i < Ignite::MAX_LIGHTS; i++)
 	{

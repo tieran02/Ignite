@@ -2,28 +2,27 @@
 #include "Ignite\Renderer\PipelineInputLayout.h"
 #include "Ignite\Renderer\DescriptorSet.h"
 #include "Ignite\Renderer\Renderer.h"
-#include "Ignite/Log.h"
 
 namespace Ignite 
 {
-	DescriptorSetLayout::DescriptorSetLayout()
+	DescriptorSetLayout::DescriptorSetLayout() :
+		IRegister(Renderer::GraphicsContext()->DescriptorSetLayouts()),
+		m_type(SetType::NONE)
 	{
-		LOG_CORE_TRACE("Registered DescriptorSetLayout with UUID:{0}", m_uuid.Value());
-		Renderer::GraphicsContext()->RegisterDescriptorSetLayout(*this);
+		
 	}
 
 	DescriptorSetLayout::DescriptorSetLayout(SetType setType, StageBitSet stages) :
+		IRegister(Renderer::GraphicsContext()->DescriptorSetLayouts()),
 		m_type(setType),
 		m_stages(stages)
 	{
-		LOG_CORE_TRACE("Registered DescriptorSetLayout with UUID:{0}", m_uuid.Value());
-		Renderer::GraphicsContext()->RegisterDescriptorSetLayout(*this);
+		Register();
 	}
 
 	DescriptorSetLayout::~DescriptorSetLayout()
 	{
-		LOG_CORE_TRACE("Unregistered DescriptorSetLayout with UUID:{0}", m_uuid.Value());
-		Renderer::GraphicsContext()->RegisterDescriptorSetLayout(*this, true);
+		Deregister();
 	}
 
 	void DescriptorSetLayout::SetStages(StageBitSet stages)
