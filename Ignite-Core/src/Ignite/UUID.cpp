@@ -20,28 +20,6 @@ namespace Ignite
 	{
 	}
 
-	//UUID::UUID(UUID const & other)
-	//{
-	//}
-
-	//UUID & UUID::operator=(UUID other)
-	//{
-	//	// TODO: insert return statement here
-	//}
-
-	//UUID::UUID(UUID&& other)
-	//{
-	//	m_uuid = other.m_uuid;
-	//	other.m_uuid = UUID();
-	//}
-
-	//UUID& UUID::operator=(UUID&& other)
-	//{
-	//	m_uuid = other.m_uuid;
-	//	other.m_uuid = UUID();
-	//	return *this;
-	//}
-
 	uint64_t UUID::Value() const
 	{
 		return m_uuid;

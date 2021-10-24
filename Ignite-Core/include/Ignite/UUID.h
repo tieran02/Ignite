@@ -10,10 +10,6 @@ namespace Ignite
 	public:
 		UUID();
 		UUID(uint64_t uuid);
-		//UUID(UUID const& other);
-		//UUID& operator=(UUID other);
-		//UUID(UUID&& other);
-		//UUID& operator=(UUID&& other);
 
 		uint64_t Value() const;
 		operator uint64_t() const;
