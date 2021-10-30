@@ -164,6 +164,7 @@ namespace Ignite
 
 		// Descriptor set and pipeline layouts
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
+		VkDescriptorSetLayout vkDescriptorSetLayout;
 		for (const auto& setLayout : m_descriptorSetLayouts)
 		{
 			CORE_ASSERT(setLayout.second->GetSetType() != SetType::NONE, "CreateDescriptorSetLayouts, set layout type can't be NONE");
@@ -195,7 +196,9 @@ namespace Ignite
 			sceneLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
 			sceneLayoutInfo.pBindings = setLayoutBindings.data();
 
-			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &m_sceneDescriptorSetLayout));
+			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &vkDescriptorSetLayout));
+			CORE_ASSERT(m_vkDescriptorSetLayouts.find(setLayout.first) == m_vkDescriptorSetLayouts.end(), "CreateDescriptorSetLayouts vkDescriptorSetLayout already exists with UUID");
+			m_vkDescriptorSetLayouts.insert(std::make_pair(setLayout.first, vkDescriptorSetLayout));
 
 			setLayoutBindings.clear();
 		}
@@ -551,7 +554,7 @@ namespace Ignite
 	{
 		for (auto& set : m_vkDescriptorSetLayouts)
 		{
-			vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), set, nullptr);
+			vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), set.second, nullptr);
 		}
 		m_vkDescriptorSetLayouts.clear();
 	}

@@ -61,7 +61,7 @@ namespace Ignite
     	
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
-		std::vector<VkDescriptorSetLayout> m_vkDescriptorSetLayouts;
+		std::unordered_map<UUID, VkDescriptorSetLayout> m_vkDescriptorSetLayouts;
 		VkDescriptorSetLayout m_materialDescriptorSetLayout;
 		VkDescriptorSetLayout m_sceneDescriptorSetLayout;
 		VkDescriptorSetLayout m_lightDescriptorSetLayout;
