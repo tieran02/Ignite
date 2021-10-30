@@ -26,6 +26,7 @@ namespace Ignite
     public:
 		virtual ~GraphicsContext() = default;
         virtual void SwapBuffers() = 0;
+		virtual void CreateDescriptorSetLayouts() = 0;
 
         static std::unique_ptr<GraphicsContext> Create();
 

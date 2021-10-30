@@ -9,6 +9,7 @@
 #include "platform/Vulkan/VulkanMesh.h"
 #include "platform/Vulkan/VulkanMaterial.h"
 #include "Ignite/Renderer/Renderer.h"
+#include "Ignite/Renderer/DescriptorSet.h"
 
 namespace Ignite
 {
@@ -56,6 +57,7 @@ namespace Ignite
 		}
 		
 		cleanupSwapchain();
+		cleanupDescriptorSetLayouts();
 
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_sceneDescriptorSetLayout, nullptr);
 		vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), m_materialDescriptorSetLayout, nullptr);
@@ -140,6 +142,65 @@ namespace Ignite
 		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
     }
+
+	void VulkanContext::CreateDescriptorSetLayouts()
+	{
+
+		static const std::unordered_map<SetType, VkDescriptorType> s_vkSetTypeMap
+		{
+			{SetType::UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER},
+			{SetType::SAMPLER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER},
+			{SetType::STORAGE, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER},
+		};
+
+		static const std::unordered_map<SetBindingStage, VkShaderStageFlagBits> s_vkStageMap
+		{
+			{SetBindingStage::VERTEX,	VK_SHADER_STAGE_VERTEX_BIT},
+			{SetBindingStage::FRAGMENT, VK_SHADER_STAGE_FRAGMENT_BIT},
+			{SetBindingStage::GEOMETRY, VK_SHADER_STAGE_GEOMETRY_BIT},
+		};
+
+		cleanupDescriptorSetLayouts();
+
+		// Descriptor set and pipeline layouts
+		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings;
+		for (const auto& setLayout : m_descriptorSetLayouts)
+		{
+			CORE_ASSERT(setLayout.second->GetSetType() != SetType::NONE, "CreateDescriptorSetLayouts, set layout type can't be NONE");
+			CORE_ASSERT(setLayout.second->GetSetType() != SetType::COUNT, "CreateDescriptorSetLayouts, set layout type can't be COUNT");
+
+			int stageFlags = 0;
+			for (const auto& stage : s_vkStageMap)
+			{
+				if (setLayout.second->GetStages().test(to_underlying(stage.first)))
+					stageFlags |= s_vkStageMap.at(stage.first);
+			}
+
+			
+			int layoutBindingCount = setLayout.second->GetSetType() == SetType::SAMPLER ? setLayout.second->VariableCount() : 1;
+			for (int i = 0 ; i < layoutBindingCount; ++i)
+			{
+				//scene descriptors
+				VkDescriptorSetLayoutBinding sceneUBOLayoutBinding = {};
+				sceneUBOLayoutBinding.binding = i;
+				sceneUBOLayoutBinding.descriptorType = s_vkSetTypeMap.at(setLayout.second->GetSetType());
+				sceneUBOLayoutBinding.descriptorCount = 1;
+				sceneUBOLayoutBinding.stageFlags = static_cast<VkShaderStageFlagBits>(stageFlags);
+				sceneUBOLayoutBinding.pImmutableSamplers = nullptr; // Optional
+				setLayoutBindings.push_back(sceneUBOLayoutBinding);
+			}
+
+			VkDescriptorSetLayoutCreateInfo sceneLayoutInfo = {};
+			sceneLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+			sceneLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
+			sceneLayoutInfo.pBindings = setLayoutBindings.data();
+
+			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &m_sceneDescriptorSetLayout));
+
+			setLayoutBindings.clear();
+		}
+
+	}
 
 	void VulkanContext::WaitTillFree() const
 	{
@@ -484,5 +545,14 @@ namespace Ignite
 		
 		LOG_CORE_INFO("Cleaning up vulkan Descriptor Pool");
 		vkDestroyDescriptorPool(m_vulkanDevice->LogicalDevice(), descriptorPool, nullptr);
+	}
+
+	void VulkanContext::cleanupDescriptorSetLayouts()
+	{
+		for (auto& set : m_vkDescriptorSetLayouts)
+		{
+			vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), set, nullptr);
+		}
+		m_vkDescriptorSetLayouts.clear();
 	}
 }

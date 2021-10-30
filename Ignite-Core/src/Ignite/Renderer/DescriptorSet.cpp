@@ -45,6 +45,11 @@ namespace Ignite
 		m_variables.push_back(variable);
 	}
 
+	size_t DescriptorSetLayout::VariableCount() const
+	{
+		return m_variables.size();
+	}
+
 	size_t DescriptorSetLayout::Size() const
 	{
 		size_t size{ 0 };
@@ -53,6 +58,11 @@ namespace Ignite
 			size += PipelineDataTypeSize(var);
 		}
 		return size;
+	}
+
+	SetType DescriptorSetLayout::GetSetType() const
+	{
+		return m_type;
 	}
 
 	const UUID& DescriptorSetLayout::GetUUID() const

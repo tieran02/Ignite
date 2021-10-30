@@ -42,6 +42,7 @@ namespace Ignite
 		~VulkanContext();
 
 		void SwapBuffers() override;
+		void CreateDescriptorSetLayouts() override;
 		void WaitTillFree() const;
 		void RecreateSwapchain(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
@@ -60,6 +61,7 @@ namespace Ignite
     	
     	//descriptor pool/sets
 		VkDescriptorPool descriptorPool;
+		std::vector<VkDescriptorSetLayout> m_vkDescriptorSetLayouts;
 		VkDescriptorSetLayout m_materialDescriptorSetLayout;
 		VkDescriptorSetLayout m_sceneDescriptorSetLayout;
 		VkDescriptorSetLayout m_lightDescriptorSetLayout;
@@ -88,5 +90,6 @@ namespace Ignite
 		static uint32_t FindMemoryType(const VulkanContext& context, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
 		void cleanupSwapchain();
+		void cleanupDescriptorSetLayouts();
     };
 }

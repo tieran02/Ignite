@@ -29,6 +29,8 @@ void SponzaTestLayer::OnAttach()
 		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat); // coneAngle
 	}
 
+	Ignite::Renderer::GraphicsContext()->CreateDescriptorSetLayouts();
+
 	defaultShaderEffect = Ignite::ShaderEffect({ &sceneLayout, &textureLayout, &lightLayout });
 	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::VERTEX, "resources/shaders/vert.spv");
 	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::FRAGMENT, "resources/shaders/frag.spv");

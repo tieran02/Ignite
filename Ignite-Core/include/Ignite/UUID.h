@@ -34,6 +34,11 @@ namespace Ignite
 			m_register = std::move(o.m_register);
 			m_uuid = std::move(o.m_uuid);
 			o.m_final = false;
+
+			//move the object pointer in the register
+			auto it = m_register->find(o.m_uuid);
+			if (it != m_register->end())
+				it->second = reinterpret_cast<T*>(this);
 		};
 
 		IRegister& operator=(IRegister&& o)
@@ -43,6 +48,11 @@ namespace Ignite
 				m_register = std::move(o.m_register);
 				m_uuid = std::move(o.m_uuid);
 				o.m_final = false;
+
+				//move the object pointer in the register
+				auto it = m_register->find(m_uuid);
+				if(it != m_register->end()) 
+					it->second = reinterpret_cast<T*>(this);
 			}
 			return *this;
 		}

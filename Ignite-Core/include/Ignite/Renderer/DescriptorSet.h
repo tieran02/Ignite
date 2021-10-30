@@ -36,7 +36,9 @@ namespace Ignite
 		StageBitSet GetStages() const;
 
 		void AddVariable(PipelineDataType variable);
+		size_t VariableCount() const;
 		size_t Size() const;
+		SetType GetSetType() const;
 
 		const UUID& GetUUID() const;
 	private:
