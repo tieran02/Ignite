@@ -199,6 +199,7 @@ namespace Ignite
 			VK_CHECK_RESULT(vkCreateDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), &sceneLayoutInfo, nullptr, &vkDescriptorSetLayout));
 			CORE_ASSERT(m_vkDescriptorSetLayouts.find(setLayout.first) == m_vkDescriptorSetLayouts.end(), "CreateDescriptorSetLayouts vkDescriptorSetLayout already exists with UUID");
 			m_vkDescriptorSetLayouts.insert(std::make_pair(setLayout.first, vkDescriptorSetLayout));
+			LOG_CORE_INFO("Created vulkan descriptor set layout with the UUID:{0}", setLayout.first);
 
 			setLayoutBindings.clear();
 		}
@@ -555,6 +556,7 @@ namespace Ignite
 		for (auto& set : m_vkDescriptorSetLayouts)
 		{
 			vkDestroyDescriptorSetLayout(m_vulkanDevice->LogicalDevice(), set.second, nullptr);
+			LOG_CORE_INFO("Destryoing vulkan descriptor set layout with the UUID:{0}", set.first);
 		}
 		m_vkDescriptorSetLayouts.clear();
 	}
