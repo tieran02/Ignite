@@ -32,6 +32,7 @@ namespace Ignite
 		const std::vector<VulkanBuffer>& SceneUniformBuffers() const { return m_sceneUniformBuffers; }
 		const std::vector<VulkanBuffer>& LightStorageBuffers() const { return m_lightStorageBuffers; }
 		const VkDescriptorPool& DescriptorPool() const { return descriptorPool; }
+		const std::unordered_map<UUID, VkDescriptorSetLayout>& VkDescriptorSetLayouts() const {return m_vkDescriptorSetLayouts;}
 		const VkDescriptorSetLayout& SceneDescriptorSetLayout() const { return m_sceneDescriptorSetLayout; }
 		const VkDescriptorSetLayout& MaterialDescriptorSetLayout() const { return m_materialDescriptorSetLayout; }
 		const VkDescriptorSetLayout& LightDescriptorSetLayout() const { return m_lightDescriptorSetLayout; }

@@ -43,6 +43,7 @@ namespace Ignite
 		const std::unordered_map<std::string, std::unique_ptr<Mesh>>& Meshes() const { return m_meshes; }
 
 		std::unordered_map<UUID, DescriptorSetLayout*>& DescriptorSetLayouts() { return m_descriptorSetLayouts; }
+		const std::unordered_map<UUID, DescriptorSetLayout*>& DescriptorSetLayouts() const { return m_descriptorSetLayouts; }
 	protected:
 		std::unordered_map<std::string, std::unique_ptr<Pipeline>> m_pipelines;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;

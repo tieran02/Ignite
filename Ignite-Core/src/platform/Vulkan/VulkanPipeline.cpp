@@ -100,12 +100,19 @@ namespace  Ignite
 
 		std::array<VkPushConstantRange, 2> pushConstants{modelPushConstantRange,matPushConstantRange};
 
-		std::array<VkDescriptorSetLayout, 3> setLayouts =
+		std::vector<VkDescriptorSetLayout> setLayouts;
+		setLayouts.reserve(vulkanContext->DescriptorSetLayouts().size());
+		for (const auto& layout : vulkanContext->DescriptorSetLayouts())
 		{
-			vulkanContext->SceneDescriptorSetLayout(),
-			vulkanContext->MaterialDescriptorSetLayout(),
-			vulkanContext->LightDescriptorSetLayout()
-		};
+			setLayouts.emplace_back(vulkanContext->VkDescriptorSetLayouts().at(layout.first));
+		}
+
+		//std::array<VkDescriptorSetLayout, 3> setLayouts =
+		//{
+		//	vulkanContext->SceneDescriptorSetLayout(),
+		//	vulkanContext->MaterialDescriptorSetLayout(),
+		//	vulkanContext->LightDescriptorSetLayout()
+		//};
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
