@@ -107,13 +107,6 @@ namespace  Ignite
 			setLayouts.emplace_back(vulkanContext->VkDescriptorSetLayouts().at(layout.first));
 		}
 
-		//std::array<VkDescriptorSetLayout, 3> setLayouts =
-		//{
-		//	vulkanContext->SceneDescriptorSetLayout(),
-		//	vulkanContext->MaterialDescriptorSetLayout(),
-		//	vulkanContext->LightDescriptorSetLayout()
-		//};
-
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size()); // Optional

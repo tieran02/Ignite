@@ -7,6 +7,8 @@ project "Ignite-Sandbox"
 	targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("../bin-int/" .. outputdir .. "/%{prj.name}")
 	debugdir ("../bin/" .. outputdir .. "/%{prj.name}")
+	
+	defines "IG_APP"
 
 	files
 	{

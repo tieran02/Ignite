@@ -1,4 +1,6 @@
 #pragma once
+#include "Ignite/Core.h"
+
 namespace Ignite
 {
 	enum class PipelineDataType;
@@ -25,7 +27,6 @@ namespace Ignite
 	class DescriptorSetLayout : public IRegister<DescriptorSetLayout>
 	{
 	public:
-		DescriptorSetLayout();
 		DescriptorSetLayout(SetType setType, StageBitSet stages = StageBitSet{}.all());
 		~DescriptorSetLayout();
 		DescriptorSetLayout(DescriptorSetLayout&& o) = default;

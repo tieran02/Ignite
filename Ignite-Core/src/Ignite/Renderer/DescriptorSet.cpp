@@ -1,17 +1,8 @@
 #include "igpch.h"
-#include "Ignite\Renderer\PipelineInputLayout.h"
-#include "Ignite\Renderer\DescriptorSet.h"
-#include "Ignite\Renderer\Renderer.h"
+#include "Ignite/Core.h"
 
 namespace Ignite 
 {
-	DescriptorSetLayout::DescriptorSetLayout() :
-		IRegister(Renderer::GraphicsContext()->DescriptorSetLayouts()),
-		m_type(SetType::NONE)
-	{
-		
-	}
-
 	DescriptorSetLayout::DescriptorSetLayout(SetType setType, StageBitSet stages) :
 		IRegister(Renderer::GraphicsContext()->DescriptorSetLayouts()),
 		m_type(setType),

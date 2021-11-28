@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Ignite/Ignite.h"
+#include "Ignite/Core.h"
 #include "platform/ImGUI/ImGUI.h"
 
 class TestUILayer : public Ignite::Layer

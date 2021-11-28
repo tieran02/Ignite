@@ -8,7 +8,7 @@
 
 namespace Ignite {
 
-	ShaderPass::ShaderPass(GraphicsContext& context, ShaderEffect* effect) : m_effect(effect)
+	ShaderPass::ShaderPass(GraphicsContext& context, Ref<ShaderEffect> effect) : m_effect(effect)
 	{
 		CORE_ASSERT(effect, "ShaderPass constructor, shader effect is a nullptr");
 
@@ -50,12 +50,12 @@ namespace Ignite {
 		return *this;
 	}
 
-	const Ignite::Pipeline* ShaderPass::GetPipeline() const
+	const Pipeline* ShaderPass::GetPipeline() const
 	{
 		return m_pipeline;
 	}
 
-	ShaderEffect::ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets) :
+	ShaderEffect::ShaderEffect(std::vector<Ref<DescriptorSetLayout>>&& descriptorSets) :
 		m_descriptorSets(std::move(descriptorSets))
 	{
 		//TODO: pass in pipeline layout, for now just use this as default
@@ -111,7 +111,7 @@ namespace Ignite {
 		std::fill(m_passShaders.begin(), m_passShaders.end(), nullptr);
 	}
 
-	void EffectTemplate::SetShaderPass(ShaderPassType passType, ShaderPass * shaderPass)
+	void EffectTemplate::SetShaderPass(ShaderPassType passType, Ref<ShaderPass> shaderPass)
 	{
 		CORE_ASSERT(passType < ShaderPassType::COUNT, "EffectTemplate::SetShaderPass invalid passType");
 		m_passShaders[to_underlying(passType)] = shaderPass;

@@ -1,43 +1,42 @@
 #include "SponzaTestLayer.h"
-#include "Ignite/Renderer/MaterialSystem.h"
-
 #include <chrono>
 
 void SponzaTestLayer::OnAttach()
 {
 	//Create descriptor sets
-	sceneLayout = Ignite::DescriptorSetLayout(Ignite::SetType::UNIFORM_BUFFER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::VERTEX)));
-	sceneLayout.AddVariable(Ignite::PipelineDataType::eMat4);
-	sceneLayout.AddVariable(Ignite::PipelineDataType::eMat4);
-	sceneLayout.AddVariable(Ignite::PipelineDataType::eFloat3);
+	sceneLayout = Ignite::CreateRef<Ignite::DescriptorSetLayout>(Ignite::SetType::UNIFORM_BUFFER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::VERTEX)));
+	sceneLayout->AddVariable(Ignite::PipelineDataType::eMat4);
+	sceneLayout->AddVariable(Ignite::PipelineDataType::eMat4);
+	sceneLayout->AddVariable(Ignite::PipelineDataType::eFloat3);
 
-	textureLayout = Ignite::DescriptorSetLayout(Ignite::SetType::SAMPLER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
-	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //diffuse
-	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Spec
-	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Normal
-	textureLayout.AddVariable(Ignite::PipelineDataType::eInt); //Alpha
+	textureLayout = Ignite::CreateRef<Ignite::DescriptorSetLayout>(Ignite::SetType::SAMPLER, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
+	textureLayout->AddVariable(Ignite::PipelineDataType::eInt); //diffuse
+	textureLayout->AddVariable(Ignite::PipelineDataType::eInt); //Spec
+	textureLayout->AddVariable(Ignite::PipelineDataType::eInt); //Normal
+	textureLayout->AddVariable(Ignite::PipelineDataType::eInt); //Alpha
 
-	lightLayout = Ignite::DescriptorSetLayout(Ignite::SetType::STORAGE, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
-	lightLayout.AddVariable(Ignite::PipelineDataType::eInt); //light count
+	lightLayout = Ignite::CreateRef<Ignite::DescriptorSetLayout>(Ignite::SetType::STORAGE, Ignite::StageBitSet{}.set(to_underlying(Ignite::SetBindingStage::FRAGMENT)));
+	lightLayout->AddVariable(Ignite::PipelineDataType::eInt); //light count
 	for (size_t i = 0; i < Ignite::MAX_LIGHTS; i++)
 	{
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat4); // pos
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat3); // intensities
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat3); // cone dir
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat); // attenuation
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat); // ambientCoefficient
-		lightLayout.AddVariable(Ignite::PipelineDataType::eFloat); // coneAngle
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat4); // pos
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat3); // intensities
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat3); // cone dir
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat); // attenuation
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat); // ambientCoefficient
+		lightLayout->AddVariable(Ignite::PipelineDataType::eFloat); // coneAngle
 	}
 
 	Ignite::Renderer::GraphicsContext()->CreateDescriptorSetLayouts();
 
-	defaultShaderEffect = Ignite::ShaderEffect({ &sceneLayout, &textureLayout, &lightLayout });
-	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::VERTEX, "resources/shaders/vert.spv");
-	defaultShaderEffect.LoadShaderStage(Ignite::SetBindingStage::FRAGMENT, "resources/shaders/frag.spv");
+	defaultShaderEffect = Ignite::CreateRef<Ignite::ShaderEffect>(std::vector<Ignite::Ref<Ignite::DescriptorSetLayout>>{ sceneLayout, textureLayout, lightLayout});
+	defaultShaderEffect->LoadShaderStage(Ignite::SetBindingStage::VERTEX, "resources/shaders/vert.spv");
+	defaultShaderEffect->LoadShaderStage(Ignite::SetBindingStage::FRAGMENT, "resources/shaders/frag.spv");
 
-	defaultPass = Ignite::ShaderPass(*Ignite::Renderer::GraphicsContext(), &defaultShaderEffect);
+	defaultPass = Ignite::CreateRef<Ignite::ShaderPass>(*Ignite::Renderer::GraphicsContext(), defaultShaderEffect);
 
-	effectTemplate.SetShaderPass(Ignite::ShaderPassType::FORWARD, &defaultPass);
+	effectTemplate = Ignite::CreateRef<Ignite::EffectTemplate>();
+	effectTemplate->SetShaderPass(Ignite::ShaderPassType::FORWARD, defaultPass);
 
 	////load model with default texture
 	//sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
@@ -105,7 +104,7 @@ void SponzaTestLayer::OnUpdate()
 		m_sceneGraph.GetMainCamera()->MousePosition(Ignite::Input::GetMouseX(), Ignite::Input::GetMouseY());
 	}
 	
-	if(defaultPass.GetPipeline()) m_sceneGraph.Render(*defaultPass.GetPipeline());
+	if(defaultPass->GetPipeline()) m_sceneGraph.Render(*defaultPass->GetPipeline());
 
 	//FL_LOG_INFO("ExampleLayer::Update");
 	if (Ignite::Input::IsKeyPressed(IG_KEY_ESCAPE))

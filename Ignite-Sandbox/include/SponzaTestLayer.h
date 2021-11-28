@@ -1,6 +1,6 @@
 #pragma once
-#include "Ignite/Ignite.h"
-#include "Ignite/SceneGraph.h"
+#include "Ignite/Core.h"
+
 
 class SponzaTestLayer : public Ignite::Layer
 {
@@ -22,13 +22,13 @@ private:
 	//const Ignite::Pipeline* geom{ nullptr };
 	//const Ignite::Pipeline* unlitPipeline{ nullptr };
 
-	Ignite::DescriptorSetLayout sceneLayout;
-	Ignite::DescriptorSetLayout textureLayout;
-	Ignite::DescriptorSetLayout lightLayout;
+	Ignite::Ref<Ignite::DescriptorSetLayout> sceneLayout;
+	Ignite::Ref<Ignite::DescriptorSetLayout> textureLayout;
+	Ignite::Ref<Ignite::DescriptorSetLayout> lightLayout;
 
-	Ignite::ShaderEffect defaultShaderEffect;
-	Ignite::ShaderPass defaultPass;
-	Ignite::EffectTemplate effectTemplate;
+	Ignite::Ref<Ignite::ShaderEffect> defaultShaderEffect;
+	Ignite::Ref<Ignite::ShaderPass> defaultPass;
+	Ignite::Ref<Ignite::EffectTemplate> effectTemplate;
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;

@@ -1,7 +1,5 @@
 #pragma once
 #include "igpch.h"
-#include "Ignite/Renderer/PipelineInputLayout.h"
-#include "Ignite/Renderer/DescriptorSet.h"
 
 namespace Ignite
 {
@@ -12,8 +10,7 @@ namespace Ignite
 	struct ShaderEffect : NonCopyable
 	{
 	public:
-		ShaderEffect() = default;
-		ShaderEffect(std::vector<const DescriptorSetLayout*>&& descriptorSets);
+		ShaderEffect(std::vector<Ref<DescriptorSetLayout>>&& descriptorSets);
 		ShaderEffect(ShaderEffect&& other);
 		ShaderEffect& operator=(ShaderEffect&& other);
 
@@ -26,7 +23,7 @@ namespace Ignite
 		PipelineInputLayout m_pipelineLayoutInfo;
 		//This descriptor sets are only intended for data that is shared across all instances ( E.G light data/direction). 
 		//Per instance sets such as images and light settings go into the material set
-		std::vector<const DescriptorSetLayout*> m_descriptorSets;
+		std::vector<Ref<DescriptorSetLayout>> m_descriptorSets;
 		std::array<std::string, to_underlying(SetBindingStage::COUNT)> m_stages;
 	};
 
@@ -50,23 +47,22 @@ namespace Ignite
 	struct ShaderPass : NonCopyable
 	{
 	public:
-		ShaderPass() = default;
-		ShaderPass(GraphicsContext& context, ShaderEffect* effect);
+		ShaderPass(GraphicsContext& context, Ref<ShaderEffect> effect);
 		ShaderPass(ShaderPass&& other);
 		ShaderPass& operator=(ShaderPass&& other);
 
 		const Pipeline* GetPipeline() const;
 	private:
-		ShaderEffect* m_effect;
+		Ref<ShaderEffect> m_effect;
 		Pipeline* m_pipeline;
 	};
 
 	struct EffectTemplate 
 	{
 		EffectTemplate();
-		void SetShaderPass(ShaderPassType passType, ShaderPass* shaderPass);
+		void SetShaderPass(ShaderPassType passType, Ref<ShaderPass> shaderPass);
 	private:
-		std::array<ShaderPass*, to_underlying(ShaderPassType::COUNT)> m_passShaders;
+		std::array<Ref<ShaderPass>, to_underlying(ShaderPassType::COUNT)> m_passShaders;
 		//TODO default params
 		TransparencyMode m_transparencyMode;
 	};
