@@ -8,12 +8,12 @@ namespace Ignite
 		m_type(setType),
 		m_stages(stages)
 	{
-		Register();
+
 	}
 
 	DescriptorSetLayout::~DescriptorSetLayout()
 	{
-		Deregister();
+
 	}
 
 	void DescriptorSetLayout::SetStages(StageBitSet stages)

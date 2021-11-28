@@ -28,6 +28,12 @@ namespace Ignite
 			m_register(&registerMap),
 			m_final(true)
 		{
+			Register();
+		}
+
+		~IRegister()
+		{
+			Deregister();
 		}
 
 		IRegister(IRegister&& o)
