@@ -24,5 +24,12 @@ namespace Ignite
 		std::vector<VkDescriptorSet> m_descriptorSets;
 		std::vector<std::shared_ptr<VulkanBuffer>> m_propertyUniforms;
 	};
+
+	class NewVulkanMaterial : public BaseMaterial
+	{
+	public:
+
+	private:
+	};
 }
 

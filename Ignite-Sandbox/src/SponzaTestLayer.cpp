@@ -38,6 +38,13 @@ void SponzaTestLayer::OnAttach()
 	effectTemplate = Ignite::CreateRef<Ignite::EffectTemplate>();
 	effectTemplate->SetShaderPass(Ignite::ShaderPassType::FORWARD, defaultPass);
 
+	material = Ignite::BaseMaterial::Create();
+	material->SetParameter<Ignite::MaterialParameterType::DIFFUSE_COLOUR>(glm::vec3(1, 2, 3));
+
+	auto value = material->GetParameter<Ignite::MaterialParameterType::DIFFUSE_COLOUR>();
+	material->ClearParameter<Ignite::MaterialParameterType::DIFFUSE_COLOUR>();
+	value = material->GetParameter<Ignite::MaterialParameterType::DIFFUSE_COLOUR>();
+
 	////load model with default texture
 	//sponzaModel = Ignite::Model::Create(Ignite::ModelCreateInfo{ "sponza","resources/models/sponza", "sponza.obj" });
 	////cube model

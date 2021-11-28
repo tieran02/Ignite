@@ -5,6 +5,7 @@
 #include "Ignite/Renderer/RendererAPI.h"
 #include "Ignite/Renderer/GraphicsContext.h"
 #include "Ignite/Renderer/Pipeline.h"
+#include "platform/Vulkan/VulkanMaterial.h"
 
 namespace Ignite {
 
@@ -115,5 +116,28 @@ namespace Ignite {
 	{
 		CORE_ASSERT(passType < ShaderPassType::COUNT, "EffectTemplate::SetShaderPass invalid passType");
 		m_passShaders[to_underlying(passType)] = shaderPass;
+	}
+
+	Scope<BaseMaterial> BaseMaterial::Create()
+	{
+		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create material, Renderer is null")
+
+			switch (RendererAPI::GetAPI())
+			{
+			case RendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
+			case RendererAPI::API::VULKAN: return CreateScope<NewVulkanMaterial>();
+			}
+		return nullptr;
+	}
+
+	void BaseMaterial::SetTexture(MaterialTextureType textureType, Ref<Texture2D> texture2D)
+	{
+		CORE_ASSERT(textureType < MaterialTextureType::COUNT, "BaseMaterial::SetTexture invalid textureType");
+		m_textures[to_underlying(textureType)] = texture2D;
+	}
+
+	BaseMaterial::BaseMaterial() : IRegister(Renderer::GraphicsContext()->BaseMaterials())
+	{
+		
 	}
 }

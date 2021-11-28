@@ -1,7 +1,8 @@
 #pragma once
-
 #include <xhash>
 #include <unordered_map>
+#include <memory>
+
 
 namespace Ignite 
 {
@@ -21,7 +22,7 @@ namespace Ignite
 	class IRegister
 	{
 	public:
-		typedef std::unordered_map<UUID, T*> RegisterMapType;
+		typedef std::unordered_map<UUID, std::shared_ptr<T>> RegisterMapType;
 
 		IRegister(RegisterMapType& registerMap) :
 			m_register(&registerMap),
