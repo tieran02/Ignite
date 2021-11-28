@@ -25,7 +25,7 @@ namespace Ignite
 			SceneNode* AddNode(const std::string& name, const SceneObjectCreateInfo& create_info, Transform transform = Transform{});
 			Camera* GetMainCamera() const;
 		
-			void Render(const Pipeline& pipeline);
+			void Render(Ref<EffectTemplate> effectTemplate);
 		private:
 			std::unordered_map<std::string ,SceneNode> m_sceneNodes;
 			Camera* m_mainCamera;

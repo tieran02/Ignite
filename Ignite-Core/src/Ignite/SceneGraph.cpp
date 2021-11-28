@@ -56,7 +56,7 @@ namespace Ignite
 		return m_mainCamera;
 	}
 
-	void SceneGraph::Render(const Pipeline& pipeline)
+	void SceneGraph::Render(Ref<EffectTemplate> effectTemplate)
 	{
 		//get light data, this copied for now (needs improving later)
 		std::vector<LightData> lightData;
@@ -91,11 +91,21 @@ namespace Ignite
 
 		Renderer::BeginScene(*m_mainCamera, lightData);
 
-		for (const auto& model  : modelData)
+		//Render the effect template
+		//Loop through all passes and render to a frame buffer 
+		for (auto& renderPass : effectTemplate->PassShaders())
 		{
-			Renderer::Submit(&pipeline, model, glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+			if (!renderPass || !renderPass->GetPipeline()) continue;
+
+			for (const auto& model : modelData)
+			{
+				Renderer::Submit(renderPass->GetPipeline(), model, glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
+			}
+
 		}
 
+
+		
 		//Renderer::Submit(pipeline, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 		////Ignite::Renderer::Submit(geom, sponzaModel.get(), glm::translate(glm::mat4(1), glm::vec3(0, 0, 0)));
 

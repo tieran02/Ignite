@@ -61,6 +61,7 @@ namespace Ignite
 	{
 		EffectTemplate();
 		void SetShaderPass(ShaderPassType passType, Ref<ShaderPass> shaderPass);
+		const std::array<Ref<ShaderPass>, to_underlying(ShaderPassType::COUNT)>& PassShaders() { return m_passShaders; };
 	private:
 		std::array<Ref<ShaderPass>, to_underlying(ShaderPassType::COUNT)> m_passShaders;
 		//TODO default params
