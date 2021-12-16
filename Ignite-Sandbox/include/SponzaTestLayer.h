@@ -29,7 +29,7 @@ private:
 	Ignite::Ref<Ignite::ShaderEffect> defaultShaderEffect;
 	Ignite::Ref<Ignite::ShaderPass> defaultPass;
 	Ignite::Ref<Ignite::EffectTemplate> effectTemplate;
-	Ignite::Ref<Ignite::BaseMaterial> material;
+	//Ignite::Ref<Ignite::BaseMaterial> material;
 
 	std::shared_ptr<Ignite::Model> sponzaModel;
 	std::shared_ptr<Ignite::Model> cubeModel;

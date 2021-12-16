@@ -56,7 +56,7 @@ namespace Ignite
 		SceneObject(SceneObjectCreateInfo createInfo);
 		SceneObjectType ObjectType() const;
 
-		static std::unique_ptr<SceneObject> CreateObject(const SceneObjectCreateInfo* createInfo);
+		static Ref<SceneObject> CreateObject(const SceneObjectCreateInfo* createInfo);
 	private:
 		SceneObjectType m_objectType;
 	};

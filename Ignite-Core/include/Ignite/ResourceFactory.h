@@ -22,24 +22,24 @@ namespace Ignite
 	{
 	public:
 		template <typename T>
-		inline static std::unique_ptr<T> Create(const typename ProperitesMap<T>::properties& createProperties)
+		inline static Ref<T> Create(const typename ProperitesMap<T>::properties& createProperties)
 		{
 			return T::Create(createProperties);
 		}
 
 		template <typename T>
-		inline static T* Create(const typename ProperitesMap<T>::properties& createProperties, std::unordered_map<std::string, std::unique_ptr<T>>& map)
+		inline static Ref<T> Create(const typename ProperitesMap<T>::properties& createProperties, std::unordered_map<std::string, Ref<T>>& map)
 		{
 			bool exists = map.find(createProperties.GetName()) != map.end();
 
 			if (exists)
 			{
 				LOG_CORE_TRACE("{0}: {1} already exists within map", createProperties.GetName(), ProperitesMap<T>::name);
-				return map[createProperties.GetName()].get();
+				return map[createProperties.GetName()];
 			}
 
 			auto inserted = map.insert(std::make_pair(createProperties.GetName(), std::move(ResourceFactory::Create<T>(createProperties))));
-			return inserted.first->second.get();
+			return inserted.first->second;
 		}
 	};
 }

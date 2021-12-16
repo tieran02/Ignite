@@ -37,17 +37,17 @@ namespace Ignite
     private:
         Model(const ModelCreateInfo& info);
     public:
-        static std::unique_ptr<Model> Create(const ModelCreateInfo& info);
+        static Ref<Model> Create(const ModelCreateInfo& info);
     	
-        const std::vector<const Mesh*>& Meshes() const;
-        const std::vector<const Material*>& Materials() const;
+        const std::vector<Ref<Mesh>>& Meshes() const;
+        const std::vector<Ref<Material>>& Materials() const;
     private:
         const ModelCreateInfo m_modelInfo;
-        std::vector<const Mesh*> m_meshes;
-        std::vector<const Material*> m_materials;
+        std::vector<Ref<Mesh>> m_meshes;
+        std::vector<Ref<Material>> m_materials;
 
         void loadModel();
-        const Mesh* processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
-        const Material* getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
+		Ref<Mesh> processMesh(const tinyobj::attrib_t& attrib, const tinyobj::shape_t& shape, const std::vector<tinyobj::material_t>& materials, const std::string& path);
+        Ref<Material> getMaterial(const std::vector<tinyobj::material_t>& materials, int materialID, const std::string& path);
     };
 }

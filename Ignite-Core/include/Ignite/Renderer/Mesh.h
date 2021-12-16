@@ -14,7 +14,7 @@ namespace Ignite
 	struct MeshCreateInfo : SceneObjectCreateInfo, CreateProperties
 	{
 	public:
-		MeshCreateInfo(const std::string& name,MeshData&& mesh_data, const Material* material)
+		MeshCreateInfo(const std::string& name,MeshData&& mesh_data, const Ref<Material>& material)
 			: SceneObjectCreateInfo(SceneObjectType::MESH),
 			CreateProperties(CreatePropertyType::Mesh),
 			m_name(name),
@@ -25,12 +25,12 @@ namespace Ignite
 
 		const std::string& GetName() const { return m_name; }
 		const MeshData& GetMeshData() const { return m_meshData; }
-		const Material* GetMaterial() const { return m_material; }
+		const Ref<Material>& GetMaterial() const { return m_material; }
 		
 	private:
 		const std::string m_name;
 		const MeshData m_meshData;
-		const Material* m_material;
+		Ref<Material> m_material;
 	};
 	
 	class Mesh : public SceneObject
@@ -46,14 +46,14 @@ namespace Ignite
 
 		static std::unique_ptr<Mesh> Create(const MeshCreateInfo& meshInfo);
 
-		const Buffer* VertexBuffer() const { return m_vertexBuffer; }
-		const Buffer* IndexBuffer() const { return m_IndexBuffer; }
+		const Ref<Buffer>& VertexBuffer() const { return m_vertexBuffer; }
+		const Ref<Buffer>& IndexBuffer() const { return m_IndexBuffer; }
 		const MeshCreateInfo& MeshInfo() const { return m_meshInfo; }
-		const Material* Material() const { return m_meshInfo.GetMaterial(); }
+		const Ref<Material>& Material() const { return m_meshInfo.GetMaterial(); }
 		uint32_t IndexCount() const { return m_indexCount; }
 	protected:
-		const Buffer* m_vertexBuffer;
-		const Buffer* m_IndexBuffer;
+		Ref<Buffer> m_vertexBuffer;
+		Ref<Buffer> m_IndexBuffer;
 		uint32_t m_indexCount;
 
 		MeshCreateInfo m_meshInfo;

@@ -120,7 +120,7 @@ void Ignite::VulkanRendererAPI::SetViewPort(uint32_t x, uint32_t y, uint32_t wid
 	vulkanContext->RecreateSwapchain(x,y,width,height);
 }
 
-void Ignite::VulkanRendererAPI::DrawIndexed(const Buffer* vertexBuffer, const Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
+void Ignite::VulkanRendererAPI::DrawIndexed(const Ref<Buffer>& vertexBuffer, const Ref<Buffer>& indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 {
 	//check if buffers are the correct type
 	CORE_ASSERT(vertexBuffer->GetBufferInfo().GetBufferType() == BUFFER_TYPE::VERTEX, "Vertex Buffer is not of type BUFFER_TYPE::VERTEX");

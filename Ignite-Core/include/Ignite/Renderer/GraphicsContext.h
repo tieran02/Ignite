@@ -31,28 +31,28 @@ namespace Ignite
 
         static std::unique_ptr<GraphicsContext> Create();
 
-		Pipeline* CreatePipeline(const PipelineCreateInfo& pipelineInfo);
-		Texture2D* CreateTexture2D(const Texture2DCreateInfo& textureInfo);
-		Mesh* CreateMesh(const MeshCreateInfo& meshInfo);
-		Material* CreateMaterial(const MaterialCreateInfo& materialInfo);
-		Buffer* CreateBuffer(const BufferCreateInfo& bufferInfo);
+		Ref<Pipeline>	CreatePipeline(const PipelineCreateInfo& pipelineInfo);
+		Ref<Texture2D>	CreateTexture2D(const Texture2DCreateInfo& textureInfo);
+		Ref<Mesh>		CreateMesh(const MeshCreateInfo& meshInfo);
+		Ref<Material>	CreateMaterial(const MaterialCreateInfo& materialInfo);
+		Ref<Buffer>		CreateBuffer(const BufferCreateInfo& bufferInfo);
 		
-		const std::unordered_map<std::string, std::unique_ptr<Pipeline>>& Pipelines() const { return m_pipelines; }
-		const std::unordered_map<std::string, std::unique_ptr<Material>>& Materials() const { return m_materials; }
-		const std::unordered_map<std::string, std::unique_ptr<Buffer>>& Buffers() const { return m_buffers; }
-		const std::unordered_map<std::string, std::unique_ptr<Texture2D>>& Texture2Ds() const { return m_texture2Ds; }
-		const std::unordered_map<std::string, std::unique_ptr<Mesh>>& Meshes() const { return m_meshes; }
+		const std::unordered_map<std::string, Ref<Pipeline>>& Pipelines() const { return m_pipelines; }
+		const std::unordered_map<std::string, Ref<Material>>& Materials() const { return m_materials; }
+		const std::unordered_map<std::string, Ref<Buffer>>& Buffers() const { return m_buffers; }
+		const std::unordered_map<std::string, Ref<Texture2D>>& Texture2Ds() const { return m_texture2Ds; }
+		const std::unordered_map<std::string, Ref<Mesh>>& Meshes() const { return m_meshes; }
 
 		std::unordered_map<UUID, Ref<DescriptorSetLayout>>& DescriptorSetLayouts() { return m_descriptorSetLayouts; }
 		const std::unordered_map<UUID, Ref<DescriptorSetLayout>>& DescriptorSetLayouts() const { return m_descriptorSetLayouts; }
 		std::unordered_map<UUID, Ref<BaseMaterial>>& BaseMaterials() { return m_baseMaterials; }
 		const std::unordered_map<UUID, Ref<BaseMaterial>>& BaseMaterials() const { return m_baseMaterials; }
 	protected:
-		std::unordered_map<std::string, std::unique_ptr<Pipeline>> m_pipelines;
-		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
-		std::unordered_map<std::string, std::unique_ptr<Buffer>> m_buffers;
-		std::unordered_map<std::string, std::unique_ptr<Texture2D>> m_texture2Ds;
-		std::unordered_map<std::string, std::unique_ptr<Mesh>> m_meshes;
+		std::unordered_map<std::string, Ref<Pipeline>> m_pipelines;
+		std::unordered_map<std::string, Ref<Material>> m_materials;
+		std::unordered_map<std::string, Ref<Buffer>> m_buffers;
+		std::unordered_map<std::string, Ref<Texture2D>> m_texture2Ds;
+		std::unordered_map<std::string, Ref<Mesh>> m_meshes;
 
 		std::unordered_map<UUID, Ref<DescriptorSetLayout>> m_descriptorSetLayouts;
 		std::unordered_map<UUID, Ref<BaseMaterial>> m_baseMaterials;

@@ -61,7 +61,7 @@ namespace Ignite
 		//get light data, this copied for now (needs improving later)
 		std::vector<LightData> lightData;
 		
-		std::vector<Model*> modelData;
+		std::vector<Ref<Model>> modelData;
 		
 		for (const auto& node : m_sceneNodes)
 		{
@@ -70,7 +70,7 @@ namespace Ignite
 			case SceneObjectType::MESH: break;
 			case SceneObjectType::MODEL:
 			{
-				Model* model = reinterpret_cast<Model*>(node.second.Object.get());
+				const auto& model = reinterpret_cast<const Ref<Model>&>(node.second.Object);
 				modelData.push_back(model);
 				break;
 			}

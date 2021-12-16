@@ -22,7 +22,7 @@ namespace Ignite
 	{
 	}
 
-	void RenderCommand::DrawIndexed(const Buffer* vertexBuffer, const Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform)
+	void RenderCommand::DrawIndexed(const Ref<Buffer>& vertexBuffer, const Ref<Buffer>& indexBuffer, uint32_t indexCount, const glm::mat4& transform)
 	{
 		Application::Instance().GetRenderer()->DrawIndexed(vertexBuffer,indexBuffer,indexCount, transform);
 	}

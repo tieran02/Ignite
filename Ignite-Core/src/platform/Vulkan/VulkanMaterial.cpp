@@ -24,13 +24,13 @@ Ignite::VulkanMaterial::~VulkanMaterial()
 	Cleanup();
 }
 
-void Ignite::VulkanMaterial::Bind(const Pipeline* pipeline) const
+void Ignite::VulkanMaterial::Bind(const Ref<Pipeline>& pipeline) const
 {
 	const VulkanContext* vulkanContext = reinterpret_cast<const VulkanContext*>(m_context);
 	CORE_ASSERT(vulkanContext, "Failed to bind Descriptors, vulkan context is null");
 
 	CORE_ASSERT(pipeline, "Failed to bind Descriptors, m_pipeline  is null");
-	VkPipelineLayout layout = static_cast<const VulkanPipeline*>(pipeline)->PipelineLayout();
+	VkPipelineLayout layout = static_cast<const VulkanPipeline*>(pipeline.get())->PipelineLayout();
 
 	for (size_t i = 0; i < vulkanContext->CommandBuffers().size(); i++)
 	{
@@ -50,7 +50,7 @@ void Ignite::VulkanMaterial::Bind(const Pipeline* pipeline) const
 	
 }
 
-void Ignite::VulkanMaterial::Unbind(const Pipeline* pipeline) const
+void Ignite::VulkanMaterial::Unbind(const Ref<Pipeline>& pipeline) const
 {
 }
 
@@ -76,7 +76,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		VkDescriptorImageInfo diffuseImageInfo;
 		//diffuse texture
 		diffuseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanDiffuseImage = *(VulkanTexture2D*)m_materialInfo.DiffuseTexture();
+		const VulkanTexture2D& vulkanDiffuseImage = *(VulkanTexture2D*)m_materialInfo.DiffuseTexture().get();
 		diffuseImageInfo.imageView = vulkanDiffuseImage.ImageView();
 		diffuseImageInfo.sampler = vulkanDiffuseImage.Sampler();
 
@@ -93,7 +93,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//specular texture
 		VkDescriptorImageInfo specularImageInfo;
 		specularImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanSpecularImage = *(VulkanTexture2D*)m_materialInfo.SpecularTexture();
+		const VulkanTexture2D& vulkanSpecularImage = *(VulkanTexture2D*)m_materialInfo.SpecularTexture().get();
 		specularImageInfo.imageView = vulkanSpecularImage.ImageView();
 		specularImageInfo.sampler = vulkanSpecularImage.Sampler();
 
@@ -109,7 +109,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//normal texture
 		VkDescriptorImageInfo normalImageInfo;
 		normalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanNormalImage = *(VulkanTexture2D*)m_materialInfo.NormalTexture();
+		const VulkanTexture2D& vulkanNormalImage = *(VulkanTexture2D*)m_materialInfo.NormalTexture().get();
 		normalImageInfo.imageView = vulkanNormalImage.ImageView();
 		normalImageInfo.sampler = vulkanNormalImage.Sampler();
 
@@ -125,7 +125,7 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 		//alpha texture
 		VkDescriptorImageInfo alphaImageInfo;
 		alphaImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		const VulkanTexture2D& vulkanAlphaImage = *(VulkanTexture2D*)m_materialInfo.AlphaTexture();
+		const VulkanTexture2D& vulkanAlphaImage = *(VulkanTexture2D*)m_materialInfo.AlphaTexture().get();
 		alphaImageInfo.imageView = vulkanAlphaImage.ImageView();
 		alphaImageInfo.sampler = vulkanAlphaImage.Sampler();
 
@@ -142,4 +142,8 @@ void Ignite::VulkanMaterial::CreateDescriptorSets()
 
 		vkUpdateDescriptorSets(vulkanContext->Device().LogicalDevice(), static_cast<uint32_t>(sets.size()), sets.data(), 0, nullptr);
 	}
+}
+
+Ignite::NewVulkanMaterial::NewVulkanMaterial(const BaseMaterialCreateInfo & createInfo) : BaseMaterial(createInfo)
+{
 }

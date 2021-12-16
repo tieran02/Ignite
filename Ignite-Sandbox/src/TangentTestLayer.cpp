@@ -86,28 +86,28 @@ void TangentTestLayer::OnUpdate()
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(pipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(pipeline, tangentModel, model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalPipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalPipeline, tangentModel, model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(50.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel, model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-50.0f, 0.0f, 50.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(normalMappingPipeline, tangentModel, model);
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 100.0f));
 	model = glm::scale(model, glm::vec3(20.0f, 20, 20.0f));
-	Ignite::Renderer::Submit(debugNormalPipeline, tangentModel.get(), model);
-	Ignite::Renderer::Submit(pipeline, tangentModel.get(), model);
+	Ignite::Renderer::Submit(debugNormalPipeline, tangentModel, model);
+	Ignite::Renderer::Submit(pipeline, tangentModel, model);
 
 	//render light
 	//Ignite::Renderer::Submit(unlitPipeline.get(), cubeModel.get(), glm::translate(glm::mat4(1), lightPosition));

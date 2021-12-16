@@ -19,13 +19,13 @@ public:
 private:
 	using ms = std::chrono::duration<float, std::milli>;
 	
-	const Ignite::Pipeline* pipeline;
-	const Ignite::Pipeline* normalPipeline;
-	const Ignite::Pipeline* normalMappingPipeline;
-	const Ignite::Pipeline* debugNormalPipeline;
+	Ignite::Ref<Ignite::Pipeline> pipeline;
+	Ignite::Ref<Ignite::Pipeline> normalPipeline;
+	Ignite::Ref<Ignite::Pipeline> normalMappingPipeline;
+	Ignite::Ref<Ignite::Pipeline> debugNormalPipeline;
 
-	std::shared_ptr<Ignite::Model> tangentModel;
-	std::shared_ptr<Ignite::Model> cubeModel;
+	Ignite::Ref<Ignite::Model> tangentModel;
+	Ignite::Ref<Ignite::Model> cubeModel;
 	std::vector<Ignite::LightData> lights;
 
 	glm::vec3 lightPosition{ 50,100,-8 };

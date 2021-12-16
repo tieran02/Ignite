@@ -51,10 +51,10 @@ namespace Ignite
 		ShaderPass(ShaderPass&& other);
 		ShaderPass& operator=(ShaderPass&& other);
 
-		const Pipeline* GetPipeline() const;
+		const Ref<Pipeline>& GetPipeline() const;
 	private:
 		Ref<ShaderEffect> m_effect;
-		Pipeline* m_pipeline;
+		Ref<Pipeline> m_pipeline;
 	};
 
 	struct EffectTemplate 
@@ -70,6 +70,7 @@ namespace Ignite
 
 	enum class MaterialParameterType
 	{
+		AMBIENT_COLOUR,
 		DIFFUSE_COLOUR,
 		SPEC_STRENGTH,
 		NORMAL_STENGTH,
@@ -77,6 +78,7 @@ namespace Ignite
 	};
 
 	template<MaterialParameterType> struct MaterialParamaterTypeMap;
+	template<> struct MaterialParamaterTypeMap<MaterialParameterType::AMBIENT_COLOUR> { using type = glm::vec3; };
 	template<> struct MaterialParamaterTypeMap<MaterialParameterType::DIFFUSE_COLOUR>	{ using type = glm::vec3; };
 	template<> struct MaterialParamaterTypeMap<MaterialParameterType::SPEC_STRENGTH>	{ using type = float; };
 	template<> struct MaterialParamaterTypeMap<MaterialParameterType::NORMAL_STENGTH>	{ using type = float; };
@@ -84,21 +86,18 @@ namespace Ignite
 	template <MaterialParameterType T>
 	using MaterialParameter = typename MaterialParamaterTypeMap<T>::type;
 
-
-
-	enum class MaterialTextureType
+	struct BaseMaterialCreateInfo
 	{
-		DIFFUSE,
-		SPEC,
-		NORMAL,
-		ALPHA,
-		COUNT
+	public:
+		std::string Name;
+		std::array<std::string, to_underlying(TextureType::COUNT)> TextureNames;
+		//TODO include the parameters in the create info, so it can be serialized at a later date
 	};
 
 	class BaseMaterial : public IRegister<BaseMaterial>
 	{
 	public:
-		static Scope<BaseMaterial> Create();
+		static Scope<BaseMaterial> Create(const BaseMaterialCreateInfo createInfo);
 
 		template<MaterialParameterType T>
 		void SetParameter(const MaterialParameter<T>& value);
@@ -107,21 +106,22 @@ namespace Ignite
 		template<MaterialParameterType T>
 		const MaterialParameter<T>* GetParameter() const;
 
-		void SetTexture(MaterialTextureType textureType, Ref<Texture2D> texture2D);
+		void SetTexture(TextureType textureType, Ref<Texture2D> texture2D);
 	protected:
-		BaseMaterial();
+		BaseMaterial(const BaseMaterialCreateInfo createInfo);
 	private:
 		Ref<EffectTemplate> m_effect;
 		//std::array<DescriptorSetLayout, to_underlying(ShaderPassType::COUNT)> m_passSets; //descriptor sets for per instance of a material, such as textures and specular settings
-		std::array<Ref<Texture2D>, to_underlying(MaterialTextureType::COUNT)> m_textures;
-		std::array<Ref<const void>, to_underlying(MaterialParameterType::COUNT)> m_paramters;
+		std::array<Ref<Texture2D>, to_underlying(TextureType::COUNT)> m_textures;
+		std::array<Ref<void>, to_underlying(MaterialParameterType::COUNT)> m_paramters{};
 	};
 
 	template<MaterialParameterType T>
 	inline void BaseMaterial::SetParameter(const MaterialParameter<T>& value)
 	{
 		static_assert(T != MaterialParameterType::COUNT, "MaterialParameterType cannot be Count");
-		m_paramters[to_underlying(T)] = CreateRef< MaterialParameter<T>>(value);
+		ClearParameter<T>();
+		m_paramters[to_underlying(T)] = CreateRef<MaterialParameter<T>>(value);
 	}
 
 	template<MaterialParameterType T>

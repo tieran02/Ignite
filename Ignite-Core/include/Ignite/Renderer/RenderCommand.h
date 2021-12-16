@@ -11,6 +11,6 @@ namespace Ignite {
 
 		static void Clear();
 
-		static void DrawIndexed(const ::Ignite::Buffer* vertexBuffer, const ::Ignite::Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform);
+		static void DrawIndexed(const Ref<Buffer>& vertexBuffer, const Ref<Buffer>& indexBuffer, uint32_t indexCount, const glm::mat4& transform);
 	};
 }

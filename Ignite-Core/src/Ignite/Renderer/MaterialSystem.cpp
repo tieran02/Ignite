@@ -51,7 +51,7 @@ namespace Ignite {
 		return *this;
 	}
 
-	const Pipeline* ShaderPass::GetPipeline() const
+	const Ref<Pipeline>& ShaderPass::GetPipeline() const
 	{
 		return m_pipeline;
 	}
@@ -118,26 +118,39 @@ namespace Ignite {
 		m_passShaders[to_underlying(passType)] = shaderPass;
 	}
 
-	Scope<BaseMaterial> BaseMaterial::Create()
+	Scope<BaseMaterial> BaseMaterial::Create(const BaseMaterialCreateInfo createInfo)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create material, Renderer is null")
 
 			switch (RendererAPI::GetAPI())
 			{
 			case RendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-			case RendererAPI::API::VULKAN: return CreateScope<NewVulkanMaterial>();
+			case RendererAPI::API::VULKAN: return CreateScope<NewVulkanMaterial>(createInfo);
 			}
 		return nullptr;
 	}
 
-	void BaseMaterial::SetTexture(MaterialTextureType textureType, Ref<Texture2D> texture2D)
+	void BaseMaterial::SetTexture(TextureType textureType, Ref<Texture2D> texture2D)
 	{
-		CORE_ASSERT(textureType < MaterialTextureType::COUNT, "BaseMaterial::SetTexture invalid textureType");
+		CORE_ASSERT(textureType != TextureType::eUNDEFINED, "BaseMaterial::SetTexture invalid textureType");
+		CORE_ASSERT(textureType < TextureType::COUNT, "BaseMaterial::SetTexture invalid textureType");
+
 		m_textures[to_underlying(textureType)] = texture2D;
 	}
 
-	BaseMaterial::BaseMaterial() : IRegister(Renderer::GraphicsContext()->BaseMaterials())
+	BaseMaterial::BaseMaterial(const BaseMaterialCreateInfo createInfo) : IRegister(Renderer::GraphicsContext()->BaseMaterials())
 	{
+		//Load textures
+		for (int i = 1; i < to_underlying(TextureType::COUNT); i++)
+		{
+			const std::string& texturePath = createInfo.TextureNames[i];
+			if (!texturePath.empty())
+			{
+				TextureType textureType = static_cast<TextureType>(i);
+				Texture2DCreateInfo textureInfo{ texturePath, texturePath, textureType };
+				//SetTexture(textureType, Renderer::GraphicsContext()->CreateTexture2D(textureInfo));
+			}
+		}
 		
 	}
 }

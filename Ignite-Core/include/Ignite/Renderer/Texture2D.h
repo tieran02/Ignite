@@ -10,7 +10,8 @@ namespace Ignite
 		eDIFFUSE,
 		eSPECULAR,
 		eNORMAL,
-		eALPHAMASK
+		eALPHAMASK,
+		COUNT
 	};
 
 	struct Texture2DCreateInfo : CreateProperties

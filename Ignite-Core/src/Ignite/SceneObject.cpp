@@ -32,7 +32,7 @@ namespace Ignite
 		return m_objectType;
 	}
 
-	std::unique_ptr<SceneObject> SceneObject::CreateObject(const SceneObjectCreateInfo* createInfo)
+	Ref<SceneObject> SceneObject::CreateObject(const SceneObjectCreateInfo* createInfo)
 	{
 		switch (createInfo->ObjectType())
 		{
@@ -49,12 +49,12 @@ namespace Ignite
 		case SceneObjectType::LIGHT:
 		{
 			const auto lightCreateInfo = reinterpret_cast<const LightSceneObjectCreateInfo*>(createInfo);
-			return std::make_unique<Light>(lightCreateInfo->LightType, lightCreateInfo->ObjectTransfrom.Position(), lightCreateInfo->Color);
+			return CreateRef<Light>(lightCreateInfo->LightType, lightCreateInfo->ObjectTransfrom.Position(), lightCreateInfo->Color);
 		}
 		case SceneObjectType::CAMERA:
 		{
 			const auto cameraCreateInfo = reinterpret_cast<const CameraSceneObjectCreateInfo*>(createInfo);
-			return std::make_unique<Camera>(cameraCreateInfo->ObjectTransfrom.Position());
+			return CreateRef<Camera>(cameraCreateInfo->ObjectTransfrom.Position());
 		}
 		case SceneObjectType::UNDEFINED:
 			break;

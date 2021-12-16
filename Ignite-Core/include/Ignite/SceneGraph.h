@@ -13,7 +13,7 @@ namespace Ignite
 		std::string Name;
 		bool IsEnabled;
 		Transform Transform;
-		std::unique_ptr<SceneObject> Object;
+		Ref<SceneObject> Object;
 		SceneNode* Parent;
 	};
 

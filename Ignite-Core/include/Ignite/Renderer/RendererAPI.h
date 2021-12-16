@@ -35,7 +35,7 @@ namespace Ignite {
 
         virtual void Clear() = 0;
 
-        virtual void DrawIndexed(const Buffer* vertexBuffer, const Buffer* indexBuffer, uint32_t indexCount, const glm::mat4& transform) = 0;
+        virtual void DrawIndexed(const Ref<Buffer>& vertexBuffer, const Ref<Buffer>& indexBuffer, uint32_t indexCount, const glm::mat4& transform) = 0;
 
         virtual void SetModelUniformBufferObject(const ModelUniformBuffer& ubo) = 0;
 

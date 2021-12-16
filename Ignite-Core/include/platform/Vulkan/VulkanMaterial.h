@@ -15,8 +15,8 @@ namespace Ignite
 		void Cleanup() override;
 	public:
 		~VulkanMaterial() override;
-		void Bind(const Pipeline* pipeline) const override;
-		void Unbind(const Pipeline* pipeline) const override;
+		void Bind(const Ref<Pipeline>& pipeline) const override;
+		void Unbind(const Ref<Pipeline>& pipeline) const override;
 
 		void CreateDescriptorSets();
 	private:
@@ -28,7 +28,7 @@ namespace Ignite
 	class NewVulkanMaterial : public BaseMaterial
 	{
 	public:
-
+		NewVulkanMaterial(const BaseMaterialCreateInfo& createInfo);
 	private:
 	};
 }

@@ -19,9 +19,9 @@ void Ignite::Renderer::Init()
 	Texture2DCreateInfo defaultSpecularInfo{ "default_specular", "resources/textures/default_black.jpg", TextureType::eSPECULAR };
 	Texture2DCreateInfo defaultNormalInfo{ "default_normal", "resources/textures/default_normal.jpg", TextureType::eNORMAL };
 	
-	const Texture2D* defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
-	const Texture2D* defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
-	const Texture2D* defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
+	Ref<Texture2D> defaultDiffuseTexture = GraphicsContext()->CreateTexture2D(defaultDiffuseInfo);
+	Ref<Texture2D> defaultSpecularTexture = GraphicsContext()->CreateTexture2D(defaultSpecularInfo);
+	Ref<Texture2D> defaultNormalTexture = GraphicsContext()->CreateTexture2D(defaultNormalInfo);
 }
 
 void Ignite::Renderer::Shutdown()
@@ -59,7 +59,7 @@ void Ignite::Renderer::EndScene()
 	Application::Instance().GetRenderer()->EndScene();
 }
 
-void Ignite::Renderer::Submit(const Pipeline* pipeline, const Mesh* mesh,const glm::mat4& transform)
+void Ignite::Renderer::Submit(const Ref<Pipeline>& pipeline, const Ref<Mesh>& mesh,const glm::mat4& transform)
 {
 	if (Application::Instance().Window()->Width() <= 0 || Application::Instance().Window()->Height() <= 0)
 		return;
@@ -70,14 +70,14 @@ void Ignite::Renderer::Submit(const Pipeline* pipeline, const Mesh* mesh,const g
 	pipeline->Unbind();
 }
 
-void Ignite::Renderer::Submit(const Pipeline* pipeline, const Model* model, const glm::mat4& transform)
+void Ignite::Renderer::Submit(const Ref<Pipeline>& pipeline, const Ref<Model>& model, const glm::mat4& transform)
 {
 	if(!model)
 		return;
 	
 	//bind pipeline
 	pipeline->Bind();
-		for (const Mesh* mesh : model->Meshes())
+		for (const auto& mesh : model->Meshes())
 		{
 			submitMesh(pipeline,mesh,transform);
 		}
@@ -103,7 +103,7 @@ Ignite::SceneUniformBuffer& Ignite::Renderer::SceneUBO()
 	return m_sceneUBO;
 }
 
-void Ignite::Renderer::submitMesh(const Pipeline* pipeline, const Mesh* mesh, const glm::mat4& transform)
+void Ignite::Renderer::submitMesh(const Ref<Pipeline>& pipeline, const Ref<Mesh>& mesh, const glm::mat4& transform)
 {
 	if (mesh != nullptr)
 	{

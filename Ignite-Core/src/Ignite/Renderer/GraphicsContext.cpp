@@ -23,27 +23,27 @@ namespace Ignite
             return std::unique_ptr<GraphicsContext>();
     }
 
-    Pipeline* GraphicsContext::CreatePipeline(const PipelineCreateInfo& pipelineInfo)
+    Ref<Pipeline> GraphicsContext::CreatePipeline(const PipelineCreateInfo& pipelineInfo)
     {
 		return ResourceFactory::Create<Pipeline>(pipelineInfo, m_pipelines);
     }
 
-    Texture2D* GraphicsContext::CreateTexture2D(const Texture2DCreateInfo& textureInfo)
+	Ref<Texture2D> GraphicsContext::CreateTexture2D(const Texture2DCreateInfo& textureInfo)
     {
 		return ResourceFactory::Create<Texture2D>(textureInfo, m_texture2Ds);
     }
 
-    Mesh* GraphicsContext::CreateMesh(const MeshCreateInfo& meshInfo)
+	Ref<Mesh> GraphicsContext::CreateMesh(const MeshCreateInfo& meshInfo)
     {
 		return ResourceFactory::Create<Mesh>(meshInfo, m_meshes);
     }
 
-    Material* GraphicsContext::CreateMaterial(const MaterialCreateInfo& materialInfo)
+	Ref<Material> GraphicsContext::CreateMaterial(const MaterialCreateInfo& materialInfo)
     {
 		return ResourceFactory::Create<Material>(materialInfo, m_materials);
     }
 
-    Buffer* GraphicsContext::CreateBuffer(const BufferCreateInfo& bufferInfo)
+	Ref<Buffer> GraphicsContext::CreateBuffer(const BufferCreateInfo& bufferInfo)
     {
 		return ResourceFactory::Create<Buffer>(bufferInfo, m_buffers);
     }

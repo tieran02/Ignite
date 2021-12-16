@@ -15,7 +15,7 @@ namespace Ignite
 			if (m_context->Texture2Ds().find("default_diffuse") != m_context->Texture2Ds().end())
 			{
 				//get default texture
-				m_materialInfo.m_diffuseTexture = m_context->Texture2Ds().at("default_diffuse").get();
+				m_materialInfo.m_diffuseTexture = m_context->Texture2Ds().at("default_diffuse");
 			}
 			else
 			{
@@ -28,7 +28,7 @@ namespace Ignite
 			if (m_context->Texture2Ds().find("default_specular") != m_context->Texture2Ds().end())
 			{
 				//get default texture
-				m_materialInfo.m_specularTexture = m_context->Texture2Ds().at("default_specular").get();
+				m_materialInfo.m_specularTexture = m_context->Texture2Ds().at("default_specular");
 			}
 			else
 			{
@@ -41,7 +41,7 @@ namespace Ignite
 			if (m_context->Texture2Ds().find("default_normal") != m_context->Texture2Ds().end())
 			{
 				//get default texture
-				m_materialInfo.m_normalTexture = m_context->Texture2Ds().at("default_normal").get();
+				m_materialInfo.m_normalTexture = m_context->Texture2Ds().at("default_normal");
 			}
 			else
 			{
@@ -54,7 +54,7 @@ namespace Ignite
 			if (m_context->Texture2Ds().find("default_diffuse") != m_context->Texture2Ds().end())
 			{
 				//get default texture
-				m_materialInfo.m_alphaTexture = m_context->Texture2Ds().at("default_diffuse").get();
+				m_materialInfo.m_alphaTexture = m_context->Texture2Ds().at("default_diffuse");
 			}
 			else
 			{
@@ -63,19 +63,19 @@ namespace Ignite
 		}
 	}
 
-	std::unique_ptr<Material> Material::Create(const MaterialCreateInfo& materialInfo)
+	Ref<Material> Material::Create(const MaterialCreateInfo& materialInfo)
 	{
 		CORE_ASSERT(Renderer::IsInitialised(), "Failed to create buffer, Renderer is null")
 
 			switch (RendererAPI::GetAPI())
 			{
 			case RendererAPI::API::NONE:    CORE_ASSERT(false, "IRendererAPI::NONE is currently not supported!"); return nullptr;
-			case RendererAPI::API::VULKAN: return std::unique_ptr<VulkanMaterial>(new VulkanMaterial(materialInfo));
+			case RendererAPI::API::VULKAN:	return Ref<VulkanMaterial>(new VulkanMaterial(materialInfo));
 			}
 		return nullptr;
 	}
 
-	const Material* Material::DefaultMaterial()
+	Ref<Material> Material::DefaultMaterial()
 	{
 		MaterialCreateInfo createInfo
 		{
